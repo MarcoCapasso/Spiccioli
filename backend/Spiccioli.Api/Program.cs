@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Spiccioli.Api.Data;
+using Spiccioli.Api.Repositories;
+using Spiccioli.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
         
 //Registra il DbContext
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+//Repository e Service: uno per richiesta HTTP, come il DbContext che usano
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
