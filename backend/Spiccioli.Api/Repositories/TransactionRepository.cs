@@ -28,13 +28,13 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<Transaction?> GetByIdAsync(int id, Guid userId)
     {
-        return await _context.Transactions
+        return await _context.Transactions                  //Niente AsNoTracking: il risultato può essere modificato e salvato dal Service
             .Include(t => t.Category)
             .Where(t => t.UserId == userId && t.Id == id)   //solo se appartiene all'utente che richiede altrimenti null, come se non esistesse
             .FirstOrDefaultAsync();
     }
 
-    public async  Task AddAsync(Transaction transaction)
+    public async Task AddAsync(Transaction transaction)
     {
        _context.Transactions.Add(transaction);  //Registra la transazione nel tracciamento
        await _context.SaveChangesAsync();       //invia l'INSERT al database
