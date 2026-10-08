@@ -9,6 +9,10 @@ public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _repository;
 
+    //Paginazione predefinita del client
+    private const int DefaultPage = 1;
+    private const int DefaultPageSize = 20;
+
     //Riceve il contratto da Repository
     public TransactionService(ITransactionRepository repository)
     {
@@ -23,12 +27,17 @@ public class TransactionService : ITransactionService
         return transaction is null ? null : ToResponse(transaction);
     }
 
-    public async Task<IReadOnlyList<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter)
+    public async Task<PagedResponse<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter)
     {
-        var (transactions, _) = await _repository.GetByUserAsync(
-            userId, filter.From, filter.To, filter.CategoryId, page: 1, pageSize: 20);
+        var page = filter.Page ?? DefaultPage;
+        var pageSize = filter.PageSize ?? DefaultPageSize;
 
-        return transactions.Select(t => ToResponse(t)).ToList();
+        var (transactions, totalCount) = await _repository.GetByUserAsync(
+            userId, filter.From, filter.To, filter.CategoryId, page, pageSize);
+
+        var items = transactions.Select(t => ToResponse(t)).ToList();
+
+        return new PagedResponse<TransactionResponse>(items, page, pageSize, totalCount);
     }
 
     public async Task<TransactionResponse> CreateAsync(Guid userId, CreateTransactionRequest request)

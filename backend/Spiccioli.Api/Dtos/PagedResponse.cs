@@ -7,5 +7,5 @@ public record PagedResponse<T>(
     int PageSize,
     int TotalCount)
 {
-    public int TotalPage => (int) Math.Ceiling(TotalCount / (double)PageSize);
+    public int TotalPages => (int) Math.Ceiling(TotalCount / (double)PageSize);
 }

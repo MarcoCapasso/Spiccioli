@@ -18,7 +18,7 @@ public class TransactionsController : ControllerBase
 
     //Restituisce tutte le transazioni dell'utente (filtri facoltativi)
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<TransactionResponse>>> GetAll([FromQuery] TransactionFilter filter)
+    public async Task<ActionResult<PagedResponse<TransactionResponse>>> GetAll([FromQuery] TransactionFilter filter)
     {
         var transactions = await _service.GetByUserAsync(GetCurrentUserId(), filter);
         return Ok(transactions);

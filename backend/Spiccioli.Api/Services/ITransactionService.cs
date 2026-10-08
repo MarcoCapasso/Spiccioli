@@ -4,8 +4,8 @@ namespace Spiccioli.Api.Services;
 
 public interface ITransactionService
 {
-    //Tutte le transazioni dell'utente come DTO, dalla più recente
-    Task<IReadOnlyList<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter);
+    // Una pagina delle transazioni dell'utente come DTO, filtrate secondo il TransactionFilter
+    Task<PagedResponse<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter);
     
     //Una transazione dell'utente come DTO, oppure null se non esiste o non è sua
     Task<TransactionResponse?> GetByIdAsync(int id, Guid userId);

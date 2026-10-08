@@ -4,5 +4,7 @@ namespace Spiccioli.Api.Dtos;
 public record TransactionFilter(
     DateOnly? From,
     DateOnly? To,
-    int? CategoryId
+    int? CategoryId,
+    int? Page,
+    int? PageSize
 );

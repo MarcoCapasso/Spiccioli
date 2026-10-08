@@ -23,3 +23,12 @@ GET {{baseUrl}}/api/transactions?categoryId=1
 
 ### Data non valida
 GET {{baseUrl}}/api/transactions?from=ottobre
+
+### Pagina 1, una transazione per pagina
+GET {{baseUrl}}/api/transactions?page=1&pageSize=1
+
+### Pagina 2, una transazione per pagina
+GET {{baseUrl}}/api/transactions?page=2&pageSize=1
+
+### Pagina non valida
+GET {{baseUrl}}/api/transactions?page=0&pageSize=5
