@@ -23,10 +23,10 @@ public class TransactionService : ITransactionService
         return transaction is null ? null : ToResponse(transaction);
     }
 
-    public async Task<IReadOnlyList<TransactionResponse>> GetByUserAsync(Guid userId)
+    public async Task<IReadOnlyList<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter)
     {
         var transactions = await _repository.GetByUserAsync(
-            userId, from: null, to: null, categoryId: null);
+            userId, from: filter.From, to: filter.To, categoryId: filter.CategoryId);
 
         return transactions.Select(t => ToResponse(t)).ToList();
     }

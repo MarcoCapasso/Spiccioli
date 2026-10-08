@@ -8,9 +8,18 @@ POST {{baseUrl}}/api/transactions
 Content-Type: application/json
 
 {
-  "amount": 42.30,
-  "date": "2026-10-08",
-  "type": "Uscita",
+  "amount": 2.30,
+  "date": "2026-09-08",
+  "type": "Expense",
   "categoryId": 1,
   "description": "Spesa al supermercato"
 }
+
+### Transazioni di ottobre
+GET {{baseUrl}}/api/transactions?from=ottobre
+
+### Solo una categoria
+GET {{baseUrl}}/api/transactions?categoryId=1
+
+### Data non valida
+GET {{baseUrl}}/api/transactions?from=ottobre

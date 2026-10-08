@@ -16,12 +16,12 @@ public class TransactionsController : ControllerBase
         _service = service;
     }
 
-    //Restituisce tutte le transazioni dell'utente
+    //Restituisce tutte le transazioni dell'utente (filtri facoltativi)
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<TransactionResponse>>> GetAll()
+    public async Task<ActionResult<IReadOnlyList<TransactionResponse>>> GetAll([FromQuery] TransactionFilter filter)
     {
-        var transaction = await _service.GetByUserAsync(GetCurrentUserId());
-        return Ok(transaction);
+        var transactions = await _service.GetByUserAsync(GetCurrentUserId(), filter);
+        return Ok(transactions);
     }
 
     //Restituisce una transazione specifica, oppure error 404 se la richiesta viene da un utente che non è proprietario della transazione
