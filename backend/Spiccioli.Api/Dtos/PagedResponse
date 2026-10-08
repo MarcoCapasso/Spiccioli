@@ -1,0 +1,11 @@
+namespace Spiccioli.Api.Dtos;
+
+//Una pagina di risultati di qualsiasi tipo T
+public record PagedResponse<T>(
+    IReadOnlyList<T> Items,
+    int Page,
+    int PageSize,
+    int TotalCount)
+{
+    public int TotalPage => (int) Math.Ceiling(TotalCount / (double)PageSize);
+}

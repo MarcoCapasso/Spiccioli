@@ -15,8 +15,8 @@ public class TransactionRepository : ITransactionRepository
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Transaction>> GetByUserAsync(
-    Guid userId, DateOnly? from, DateOnly? to, int? categoryId)
+    public async Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(
+    Guid userId, DateOnly? from, DateOnly? to, int? categoryId, int page, int pageSize)
     {
         //Solo le transazioni dell'utente, nessun filtro
         var query = _context.Transactions
@@ -40,10 +40,16 @@ public class TransactionRepository : ITransactionRepository
             query = query.Where(t => t.CategoryId == categoryId.Value);
         }
 
-        return await query
+        var totalCount = await query.CountAsync();
+
+        var items = await query
             .OrderByDescending(t => t.Date)
-            .ThenByDescending(t => t.Id)
-            .ToListAsync(); // Qui tutti i Where diventano un'unica query SQL
+            .ThenByDescending(t => t.Id)    //senza le pagine si sovrappongono
+            .Skip((page - 1) * pageSize)    //salta le pagine precedenti
+            .Take(pageSize)                 //prende solo la pagina
+            .ToListAsync();                 //Qui tutti i Where diventano un'unica query SQL
+
+        return (items, totalCount);
     }
 
     public async Task<Transaction?> GetByIdAsync(int id, Guid userId)
