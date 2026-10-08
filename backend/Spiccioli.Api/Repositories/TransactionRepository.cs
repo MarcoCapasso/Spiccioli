@@ -15,15 +15,35 @@ public class TransactionRepository : ITransactionRepository
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Transaction>> GetByUserAsync(Guid userId)
+    public async Task<IReadOnlyList<Transaction>> GetByUserAsync(
+    Guid userId, DateOnly? from, DateOnly? to, int? categoryId)
     {
-        return await _context.Transactions
-            .AsNoTracking()                     //Solo lettura, no tracciamento
-            .Include(t => t.Category)           //Carica anche la categoria collegata
-            .Where(t => t.UserId == userId)     //Prende solo le transazioni dell'utente
-            .OrderByDescending(t => t.Date)     //Ordina a partire dalla più recente
-            .ThenByDescending(t => t.Id)        //Se due transazioni hanno la stessa data, l'ultima va inserita prima 
-            .ToListAsync();
+        //Solo le transazioni dell'utente, nessun filtro
+        var query = _context.Transactions
+            .AsNoTracking()
+            .Include(t => t.Category)
+            .Where(t => t.UserId == userId);
+
+        //Ogni filtro si aggiunge solo se richiesto (null = nessun filtro)
+        if (from is not null)
+        {
+            query = query.Where(t => t.Date >= from.Value);
+        }
+
+        if (to is not null)
+        {
+            query = query.Where(t => t.Date <= to.Value);
+        }
+
+        if (categoryId is not null)
+        {
+            query = query.Where(t => t.CategoryId == categoryId.Value);
+        }
+
+        return await query
+            .OrderByDescending(t => t.Date)
+            .ThenByDescending(t => t.Id)
+            .ToListAsync(); // Qui tutti i Where diventano un'unica query SQL
     }
 
     public async Task<Transaction?> GetByIdAsync(int id, Guid userId)

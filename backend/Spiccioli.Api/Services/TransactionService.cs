@@ -25,7 +25,8 @@ public class TransactionService : ITransactionService
 
     public async Task<IReadOnlyList<TransactionResponse>> GetByUserAsync(Guid userId)
     {
-        var transactions = await _repository.GetByUserAsync(userId);
+        var transactions = await _repository.GetByUserAsync(
+            userId, from: null, to: null, categoryId: null);
 
         return transactions.Select(t => ToResponse(t)).ToList();
     }
