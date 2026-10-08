@@ -10,7 +10,7 @@ Content-Type: application/json
 {
   "amount": 42.30,
   "date": "2026-10-08",
-  "type": 1,
+  "type": "Uscita",
   "categoryId": 1,
   "description": "Spesa al supermercato"
 }
