@@ -18,27 +18,12 @@ public class TransactionRepository : ITransactionRepository
     public async Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(
     Guid userId, DateOnly? from, DateOnly? to, int? categoryId, int page, int pageSize)
     {
-        //Solo le transazioni dell'utente, nessun filtro
         var query = _context.Transactions
             .AsNoTracking()
             .Include(t => t.Category)
             .Where(t => t.UserId == userId);
 
-        //Ogni filtro si aggiunge solo se richiesto (null = nessun filtro)
-        if (from is not null)
-        {
-            query = query.Where(t => t.Date >= from.Value);
-        }
-
-        if (to is not null)
-        {
-            query = query.Where(t => t.Date <= to.Value);
-        }
-
-        if (categoryId is not null)
-        {
-            query = query.Where(t => t.CategoryId == categoryId.Value);
-        }
+        query = ApplyFilters(query, from, to, categoryId);
 
         var totalCount = await query.CountAsync();
 
@@ -65,5 +50,41 @@ public class TransactionRepository : ITransactionRepository
        _context.Transactions.Add(transaction);  //Registra la transazione nel tracciamento
        await _context.SaveChangesAsync();       //invia l'INSERT al database
     }
+
+    public async Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(
+        Guid userId, DateOnly? from, DateOnly? to, int? categoryId)
+    {
+        var query = _context.Transactions.Where(t => t.UserId == userId);
+        query = ApplyFilters(query, from, to, categoryId);
+
+        //Il database raggruppa per tipo e somma, tornano al massimo due righe
+        var sums = await query
+            .GroupBy(t => t.Type)
+            .Select(g => new { Type = g.Key, Total = g.Sum(t => t.Amount) })
+            .ToListAsync();
+
+        //Un tipo senza transazioni non forma nessun gruppo e il suo totale è zero
+        var income = sums.FirstOrDefault(s => s.Type == TransactionType.Income)?.Total ?? 0;
+        var expense = sums.FirstOrDefault(s => s.Type == TransactionType.Expense)?.Total ?? 0;
+
+        return (income, expense);
+    }
+
+    //Unico punto dove vengono applicati i filtri sulle transazioni
+    private static IQueryable<Transaction> ApplyFilters(IQueryable<Transaction> query, DateOnly? from, DateOnly? to, int? categoryId)
+    {
+        if (from is not null)
+            query = query.Where(t => t.Date >= from.Value);
+        
+        if (to is not null)
+            query = query.Where(t => t.Date <= to.Value);
+
+        if (categoryId is not null)
+            query = query.Where(t => t.CategoryId == categoryId.Value);
+
+        return query;
+    
+    }
+    
 
 }
