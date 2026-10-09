@@ -33,13 +33,21 @@ public class TransactionsController : ControllerBase
         return transaction is null ? NotFound() : Ok(transaction);   
     }
 
-    //
+    //Resoconto
     [HttpGet("summary")]
     public async Task<ActionResult<TransactionSummaryResponse>> GetSummary([FromQuery] TransactionSummaryFilter filter)
     {
         var summary = await _service.GetSummaryAsync(GetCurrentUserId(), filter);
 
         return Ok(summary);
+    }
+
+    //Restituisce il resoconto per categoria
+    [HttpGet("summary/by-category")]
+    public async Task<ActionResult<IReadOnlyList<CategoryTotalResponse>>> GetTotalsByCategory([FromQuery] DateRangeFilter filter)
+    {
+        var totals = await _service.GetTotalsByCategoryAsync(GetCurrentUserId(), filter);
+        return Ok(totals);
     }
     
 

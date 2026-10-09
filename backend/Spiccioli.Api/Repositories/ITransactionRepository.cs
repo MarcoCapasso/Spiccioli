@@ -17,4 +17,8 @@ public interface ITransactionRepository
     //Somma di entrate e uscite dell'utente, con gli stessi filtri dell'elenco
     Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(
         Guid userId, DateOnly? from, DateOnly? to, int? categoryId);    
+
+    //Totale per categoria e tipo nel periodo, dal più alto; CategoryName null = senza categoria
+    Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total)>>
+        GetTotalsByCategoryAsync(Guid userId, DateOnly? from, DateOnly? to);
 }

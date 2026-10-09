@@ -70,6 +70,27 @@ public class TransactionRepository : ITransactionRepository
         return (income, expense);
     }
 
+    public async Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total)>>
+        GetTotalsByCategoryAsync(Guid userId, DateOnly? from, DateOnly? to)
+    {
+        var query = _context.Transactions.Where(t => t.UserId == userId);
+        query = ApplyFilters(query, from, to, categoryId: null);
+
+        //Chiave composta categoria e tipo, entrate e uscite non si mescolano mai
+        var groups = await query
+            .GroupBy(t => new
+            {
+                t.CategoryId,
+                CategoryName = t.Category == null ? null : t.Category.Name,
+                t.Type
+            })
+            .Select(g => new { g.Key.CategoryId, g.Key.CategoryName, g.Key.Type, Total = g.Sum(t => t.Amount) })
+            .OrderByDescending(x => x.Total)   // Ordinato dal database, per totale
+            .ToListAsync();
+
+        return groups.Select(x => (x.CategoryId, x.CategoryName, x.Type, x.Total)).ToList();
+    }
+
     //Unico punto dove vengono applicati i filtri sulle transazioni
     private static IQueryable<Transaction> ApplyFilters(IQueryable<Transaction> query, DateOnly? from, DateOnly? to, int? categoryId)
     {
@@ -85,6 +106,5 @@ public class TransactionRepository : ITransactionRepository
         return query;
     
     }
-    
 
 }

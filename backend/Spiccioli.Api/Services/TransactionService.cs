@@ -1,3 +1,4 @@
+using Spiccioli.Api.Controllers;
 using Spiccioli.Api.Dtos;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Repositories;
@@ -68,6 +69,17 @@ public class TransactionService : ITransactionService
             userId, filter.From, filter.To, filter.CategoryId);
 
         return new TransactionSummaryResponse(totalIncome, totalExpense);
+    }
+
+    public async Task<IReadOnlyList<CategoryTotalResponse>> GetTotalsByCategoryAsync(Guid userId, DateRangeFilter filter)
+    {
+        var totals = await _repository.GetTotalsByCategoryAsync(
+            userId, filter.From, filter.To);
+        
+        return totals
+            .Select(x => new CategoryTotalResponse(x.CategoryId, x.CategoryName, x.Type, x.Total))
+            .ToList();
+        
     }
 
     //Conversione da modello a DTO di risposta
