@@ -61,6 +61,15 @@ public class TransactionService : ITransactionService
         return ToResponse(created);
     }
 
+    public async Task<TransactionSummaryResponse> GetSummaryAsync(
+    Guid userId, TransactionSummaryFilter filter)
+    {
+        var (totalIncome, totalExpense) = await _repository.GetTotalsAsync(
+            userId, filter.From, filter.To, filter.CategoryId);
+
+        return new TransactionSummaryResponse(totalIncome, totalExpense);
+    }
+
     //Conversione da modello a DTO di risposta
     private static TransactionResponse ToResponse(Transaction transaction)
     {

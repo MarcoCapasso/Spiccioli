@@ -33,6 +33,16 @@ public class TransactionsController : ControllerBase
         return transaction is null ? NotFound() : Ok(transaction);   
     }
 
+    //
+    [HttpGet("summary")]
+    public async Task<ActionResult<TransactionSummaryResponse>> GetSummary([FromQuery] TransactionSummaryFilter filter)
+    {
+        var summary = await _service.GetSummaryAsync(GetCurrentUserId(), filter);
+
+        return Ok(summary);
+    }
+    
+
     //Crea una transazione e restituisce Codice 201 
     [HttpPost]
     public async Task<ActionResult<TransactionResponse>> Create(CreateTransactionRequest request)
@@ -41,6 +51,8 @@ public class TransactionsController : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
+
+
 
     // TEMPORANEO fino alla Fase 8: utente di prova fisso, poi letto dal token JWT
     private Guid GetCurrentUserId()

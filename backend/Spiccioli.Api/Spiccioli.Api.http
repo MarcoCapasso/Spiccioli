@@ -27,6 +27,12 @@ GET {{baseUrl}}/api/transactions?from=10-01-2026
 ### Filtro data
 GET {{baseUrl}}/api/transactions?from=2026-10-01&to=2026-10-31
 
+### Riepilogo di ottobre
+GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
+
+### Riepilogo di un periodo senza transazioni
+GET {{baseUrl}}/api/transactions/summary?from=2025-01-01&to=2025-12-31
+
 ### Pagina 1, una transazione per pagina
 GET {{baseUrl}}/api/transactions?page=1&pageSize=1
 
@@ -35,3 +41,6 @@ GET {{baseUrl}}/api/transactions?page=2&pageSize=1
 
 ### Pagina non valida
 GET {{baseUrl}}/api/transactions?page=0&pageSize=5
+
+### Id non numerico
+GET {{baseUrl}}/api/transactions/abc

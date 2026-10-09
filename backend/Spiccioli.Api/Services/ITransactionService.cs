@@ -12,4 +12,7 @@ public interface ITransactionService
     
     //Crea una transazione per l'utente a partire dalla richiesta del client
     Task<TransactionResponse> CreateAsync(Guid userId, CreateTransactionRequest request);
+
+    // Entrate, uscite e saldo dell'utente, filtrati secondo il TransactionSummaryFilter
+    Task<TransactionSummaryResponse> GetSummaryAsync(Guid userId, TransactionSummaryFilter filter);
 }
