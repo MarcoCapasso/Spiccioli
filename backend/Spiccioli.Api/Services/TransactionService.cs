@@ -1,4 +1,3 @@
-using Spiccioli.Api.Controllers;
 using Spiccioli.Api.Dtos;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Repositories;
@@ -62,8 +61,35 @@ public class TransactionService : ITransactionService
         return ToResponse(created);
     }
 
+    public async Task<TransactionResponse?> UpdateAsync(
+        Guid userId, int id, UpdateTransactionRequest request)
+    {
+        //Caricata con tracciamento e EF Core rileva automaticamente i campi modificati
+        var transaction = await _repository.GetByIdAsync(id, userId);
+        if (transaction is null)
+        {
+            return null;
+        }
+
+        transaction.Amount = request.Amount;
+        transaction.Date = request.Date;
+        transaction.Type = request.Type;
+        transaction.CategoryId = request.CategoryId;
+        transaction.Description = request.Description;
+
+        await _repository.SaveChangesAsync();
+
+        //Ricarica
+        var updated = await _repository.GetByIdAsync(id, userId)
+            ?? throw new InvalidOperationException("Transazione appena modificata non trovata");
+        
+        return ToResponse(updated);
+    }
+
+
+
     public async Task<TransactionSummaryResponse> GetSummaryAsync(
-    Guid userId, TransactionSummaryFilter filter)
+        Guid userId, TransactionSummaryFilter filter)
     {
         var (totalIncome, totalExpense) = await _repository.GetTotalsAsync(
             userId, filter.From, filter.To, filter.CategoryId);

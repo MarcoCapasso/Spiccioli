@@ -16,7 +16,7 @@ public class TransactionRepository : ITransactionRepository
     }
 
     public async Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(
-    Guid userId, DateOnly? from, DateOnly? to, int? categoryId, int page, int pageSize)
+        Guid userId, DateOnly? from, DateOnly? to, int? categoryId, int page, int pageSize)
     {
         var query = _context.Transactions
             .AsNoTracking()
@@ -49,6 +49,11 @@ public class TransactionRepository : ITransactionRepository
     {
        _context.Transactions.Add(transaction);  //Registra la transazione nel tracciamento
        await _context.SaveChangesAsync();       //invia l'INSERT al database
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 
     public async Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(

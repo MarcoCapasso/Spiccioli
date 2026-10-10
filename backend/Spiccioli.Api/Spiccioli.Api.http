@@ -15,6 +15,18 @@ Content-Type: application/json
   "description": "Spesa al supermercato"
 }
 
+### Modifica una spesa
+PUT {{baseUrl}}/api/transactions/6
+Content-Type: application/json
+
+{
+  "amount": 16.00,
+  "date": "2026-10-10",
+  "type": "Expense",
+  "categoryId": 3,
+  "description": "Spesa in negozio"
+}
+
 ### Transazioni di ottobre
 GET {{baseUrl}}/api/transactions?from=ottobre
 

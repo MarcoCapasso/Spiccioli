@@ -60,6 +60,14 @@ public class TransactionsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
+    //Sostituisce i dati modificabili, oppure 404
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<TransactionResponse>> Update(int id, UpdateTransactionRequest request)
+    {
+        var updated = await _service.UpdateAsync(GetCurrentUserId(), id, request);
+        return updated is null ? NotFound() : Ok(updated);
+    }
+
 
 
     // TEMPORANEO fino alla Fase 8: utente di prova fisso, poi letto dal token JWT
