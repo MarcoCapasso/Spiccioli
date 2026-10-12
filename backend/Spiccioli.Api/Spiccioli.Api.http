@@ -76,7 +76,7 @@ Content-Type: application/json
 }
 
 ### Elimina la transazione
-DELETE {{baseUrl}}/api/transactions/8
+DELETE {{baseUrl}}/api/transactions/9
 
 ### Crea una categoria di prova
 POST {{baseUrl}}/api/categories
@@ -98,8 +98,8 @@ Content-Type: application/json
   "name": "Prova rinominata"
 }
 
-### Elimina
-DELETE {{baseUrl}}/api/categories/4
+### Elimina categoria
+DELETE {{baseUrl}}/api/categories/
 
 ### Rileggi dopo l'eliminazione
 GET {{baseUrl}}/api/categories/4
@@ -124,3 +124,43 @@ Content-Type: application/json
   "name": "Trasporti",
   "type": "Expense"
 }
+
+### Richiesta con più errori di forma
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "amount": -10,
+  "date": "2026-10-13",
+  "categoryId": 0,
+  "description": "Prova validazione"
+}
+
+### Categoria con nome di soli spazi
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "   ",
+  "type": "Expense"
+}
+
+### Pagina non valida
+GET {{baseUrl}}/api/transactions?page=0&pageSize=500
+
+### Prima pagina
+GET {{baseUrl}}/api/transactions?page=1&pageSize=1
+
+### Transazione senza data
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "amount": 3.00,
+  "type": "Expense",
+  "categoryId": 1,
+  "description": "Senza data"
+}
+
+### Intervallo di date rovesciato
+GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
