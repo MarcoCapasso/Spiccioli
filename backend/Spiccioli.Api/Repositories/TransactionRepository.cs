@@ -56,6 +56,15 @@ public class TransactionRepository : ITransactionRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> DeleteAsync(int id, Guid userId)
+    {
+        var deletedRows = await _context.Transactions
+            .Where(t => t.Id == id && t.UserId == userId)
+            .ExecuteDeleteAsync();
+        
+        return deletedRows > 0;
+    }
+
     public async Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(
         Guid userId, DateOnly? from, DateOnly? to, int? categoryId)
     {

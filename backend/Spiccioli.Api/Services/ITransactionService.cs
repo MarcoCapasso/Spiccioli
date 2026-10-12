@@ -8,13 +8,16 @@ public interface ITransactionService
     Task<PagedResponse<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter);
     
     //Una transazione dell'utente come DTO, oppure null se non esiste o non è sua
-    Task<TransactionResponse?> GetByIdAsync(int id, Guid userId);
+    Task<TransactionResponse?> GetByIdAsync(Guid userId, int id);
     
     //Crea una transazione per l'utente a partire dalla richiesta del client
     Task<TransactionResponse> CreateAsync(Guid userId, CreateTransactionRequest request);
 
     // Sostituisce i dati modificabili di una transazione dell'utente; null se non esiste o non è sua
     Task<TransactionResponse?> UpdateAsync(Guid userId, int id, UpdateTransactionRequest request);
+
+    //Elimina una transazione solo se appartiene all'utente
+    Task<bool> DeleteAsync(Guid userId, int id);
 
     //Entrate, uscite e saldo dell'utente, filtrati secondo il TransactionSummaryFilter
     Task<TransactionSummaryResponse> GetSummaryAsync(Guid userId, TransactionSummaryFilter filter);

@@ -62,3 +62,18 @@ GET {{baseUrl}}/api/transactions/summary/by-category?from=2026-10-01&to=2026-10-
 
 ### Riepilogo di ottobre, per il confronto
 GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
+
+### Transazione da eliminare
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "amount": 5.00,
+  "date": "2026-10-12",
+  "type": "Expense",
+  "categoryId": 1,
+  "description": "Da eliminare"
+}
+
+### Elimina la transazione
+DELETE {{baseUrl}}/api/transactions/8

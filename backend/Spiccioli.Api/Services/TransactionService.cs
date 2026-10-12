@@ -19,7 +19,7 @@ public class TransactionService : ITransactionService
         _repository = repository;
     }
 
-    public async Task<TransactionResponse?> GetByIdAsync(int id, Guid userId)
+    public async Task<TransactionResponse?> GetByIdAsync(Guid userId, int id)
     {
         var transaction = await _repository.GetByIdAsync(id, userId);
 
@@ -40,6 +40,7 @@ public class TransactionService : ITransactionService
         return new PagedResponse<TransactionResponse>(items, page, pageSize, totalCount);
     }
 
+    //Crea la transazione
     public async Task<TransactionResponse> CreateAsync(Guid userId, CreateTransactionRequest request)
     {
         var transaction = new Transaction
@@ -61,6 +62,7 @@ public class TransactionService : ITransactionService
         return ToResponse(created);
     }
 
+    //Aggiorna la transazione
     public async Task<TransactionResponse?> UpdateAsync(
         Guid userId, int id, UpdateTransactionRequest request)
     {
@@ -86,6 +88,11 @@ public class TransactionService : ITransactionService
         return ToResponse(updated);
     }
 
+    //Elimina la transazione
+    public async Task<bool> DeleteAsync(Guid userId, int id)
+    {
+        return await _repository.DeleteAsync(id, userId);
+    }
 
 
     public async Task<TransactionSummaryResponse> GetSummaryAsync(

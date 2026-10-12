@@ -14,8 +14,11 @@ public interface ITransactionRepository
     //Salva una nuova transazione del database
     Task AddAsync(Transaction transaction);
 
-    //Salva nel database le modifiche agli oggetti tracciati
+    //Salva nel database le modifiche agli oggetti 
     Task SaveChangesAsync();
+
+    //Elimina una transazione solo se appartiene all'utente
+    Task<bool> DeleteAsync(int id, Guid userId);
 
     //Somma di entrate e uscite dell'utente, con gli stessi filtri dell'elenco
     Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(Guid userId, DateOnly? from, DateOnly? to, int? categoryId);    
