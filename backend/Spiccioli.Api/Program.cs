@@ -16,7 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 
 //Repository e Service: uno per richiesta HTTP, come il DbContext che usano
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
