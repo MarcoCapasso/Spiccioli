@@ -77,3 +77,50 @@ Content-Type: application/json
 
 ### Elimina la transazione
 DELETE {{baseUrl}}/api/transactions/8
+
+### Crea una categoria di prova
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "  Prova  ",
+  "type": "Expense"
+}
+
+### Elenco delle categorie attive
+GET {{baseUrl}}/api/categories
+
+### Rinomina
+PUT {{baseUrl}}/api/categories/4
+Content-Type: application/json
+
+{
+  "name": "Prova rinominata"
+}
+
+### Elimina
+DELETE {{baseUrl}}/api/categories/4
+
+### Rileggi dopo l'eliminazione
+GET {{baseUrl}}/api/categories/4
+
+### Elimina Alimentari
+DELETE {{baseUrl}}/api/categories/1
+
+### Elenco normale
+GET {{baseUrl}}/api/categories
+
+### Elenco con le archiviate
+GET {{baseUrl}}/api/categories?includeArchived=true
+
+### Ripristina Alimentari
+POST {{baseUrl}}/api/categories/1/restore
+
+### Nome già esistente
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "Trasporti",
+  "type": "Expense"
+}

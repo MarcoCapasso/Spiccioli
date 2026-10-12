@@ -7,7 +7,7 @@ namespace Spiccioli.Api.Controllers;
 //Endpoint HTTP delle transazioni
 [ApiController]
 [Route("api/[controller]")]
-public class TransactionsController : ControllerBase
+public class TransactionsController : ApiControllerBase
 {
     private readonly ITransactionService _service;
 
@@ -83,11 +83,4 @@ public class TransactionsController : ControllerBase
         return deleted ? NoContent() : NotFound();
     }
 
-
-
-    // TEMPORANEO fino alla Fase 9: utente di prova fisso, poi letto dal token JWT
-    private Guid GetCurrentUserId()
-    {
-        return Guid.Parse("11111111-1111-1111-1111-111111111111");
-    }
 }
