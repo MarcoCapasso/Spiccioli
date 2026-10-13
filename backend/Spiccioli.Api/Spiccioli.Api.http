@@ -7,7 +7,7 @@
 @baseUrl = http://localhost:5046
 
 # --- Dati di prova ---
-@transactionId = 1
+@transactionId = 
 @expenseCategoryId = 1
 @incomeCategoryId = 2
 @otherExpenseCategoryId = 3
@@ -104,3 +104,46 @@ Content-Type: application/json
   "amount": 3.00,
   "type": "Expense",
   "categoryId":
+}
+
+### Nome già esistente → 409
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{ "name": "Trasporti", "type": "Expense" }
+
+### Stesso nome con maiuscole diverse → 409
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{ "name": "trasporti", "type": "Expense" }
+
+### Archivia Trasporti (è usata, quindi non viene eliminata)
+DELETE {{baseUrl}}/api/categories/3
+
+### Crea una categoria con il nome di quella archiviata → 409
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{ "name": "Trasporti", "type": "Expense" }
+
+### Ripristina Trasporti
+POST {{baseUrl}}/api/categories/3/restore
+
+### Cambia solo le maiuscole del nome → 200
+PUT {{baseUrl}}/api/categories/3
+Content-Type: application/json
+
+{ "name": "TRASPORTI" }
+
+### Riporta il nome originale → 200
+PUT {{baseUrl}}/api/categories/3
+Content-Type: application/json
+
+{ "name": "Trasporti" }
+
+### Rinomina con il nome di un'altra categoria → 409
+PUT {{baseUrl}}/api/categories/3
+Content-Type: application/json
+
+{ "name": "Alimentari" }

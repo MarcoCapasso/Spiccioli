@@ -39,17 +39,26 @@ public class CategoriesController : ApiControllerBase
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Create(CreateCategoryRequest request)
     {
-        var created = await _service.CreateAsync(GetCurrentUserId(), request);
+        var result = await _service.CreateAsync(GetCurrentUserId(), request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
 
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
     }
 
     // PUT /api/categories/{id}
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> Rename(int id, UpdateCategoryRequest request)
     {
-        var renamed = await _service.RenameAsync(GetCurrentUserId(), id, request);
-        return renamed is null ? NotFound() : Ok(renamed);
+        var result = await _service.RenameAsync(GetCurrentUserId(), id, request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
     }
 
     // DELETE /api/categories/{id}

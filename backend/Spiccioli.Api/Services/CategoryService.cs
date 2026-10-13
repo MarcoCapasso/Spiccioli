@@ -1,4 +1,5 @@
 using Spiccioli.Api.Dtos;
+using Spiccioli.Api.Common;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Repositories;
 
@@ -24,33 +25,49 @@ public class CategoryService : ICategoryService
         return category is null ? null : ToResponse(category);
     }
 
-    public async Task<CategoryResponse> CreateAsync(Guid userId, CreateCategoryRequest request)
+    public async Task<Result<CategoryResponse>> CreateAsync(Guid userId, CreateCategoryRequest request) 
     {
+        // Prima si pulisce il nome, poi lo si confronta: "  Cibo " e "Cibo" sono lo stesso nome
+        var name = request.Name.Trim();
+
+        var nameError = await CheckNameAvailableAsync(userId, name);
+        if (nameError is not null)
+        {
+            return Result<CategoryResponse>.Failure(nameError);
+        }
+
         var category = new Category
         {
-            Name = request.Name.Trim(),
+            Name = name,
             Type = request.Type,
             UserId = userId,
         };
 
         await _repository.AddAsync(category);
 
-        return ToResponse(category);
+        return Result<CategoryResponse>.Success(ToResponse(category));
     }
 
-    public async Task<CategoryResponse?> RenameAsync(Guid userId, int id, UpdateCategoryRequest request)
+    public async Task<Result<CategoryResponse>> RenameAsync(Guid userId, int id, UpdateCategoryRequest request)
     {
         var category = await _repository.GetByIdAsync(id, userId);
         if (category is null)
         {
-            return null;
+            return Result<CategoryResponse>.Failure(Error.NotFound("Categoria non trovata"));
         }
 
-        category.Name = request.Name.Trim();
+        var name = request.Name.Trim();
 
+        var nameError = await CheckNameAvailableAsync(userId, name, excludedCategoryId: id);
+        if (nameError is not null)
+        {
+            return Result<CategoryResponse>.Failure(nameError);
+        }
+
+        category.Name = name;
         await _repository.SaveChangesAsync();
 
-        return ToResponse(category);
+        return Result<CategoryResponse>.Success(ToResponse(category));
     }
 
     public async Task<bool> DeleteAsync(Guid userId, int id)
@@ -99,5 +116,20 @@ public class CategoryService : ICategoryService
             category.Type,
             category.IsArchived
         );
+    }
+
+    //Il nome deve essere libero tra le categorie dell'utente, archiviate comprese, senza maiuscole.
+    private async Task<Error?> CheckNameAvailableAsync(Guid userId, string name, int? excludedCategoryId = null)
+    {
+        var existing = await _repository.FindByNameAsync(userId, name);
+
+        if (existing is null || existing.Id == excludedCategoryId)
+        {
+            return null;
+        }
+
+        return existing.IsArchived
+            ? Error.Conflict($"Esiste già una categoria archiviata chiamata \"{existing.Name}\": puoi ripristinarla.")
+            : Error.Conflict($"Esiste già una categoria chiamata \"{existing.Name}\".");
     }
 }

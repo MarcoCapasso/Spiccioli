@@ -10,6 +10,9 @@ public interface ICategoryRepository
     //Una categoria, solo dell'utente
     Task<Category?> GetByIdAsync(int id, Guid userId);
 
+    //Ricerca per nome per impedire duplicati
+    Task<Category?> FindByNameAsync(Guid userId, string name);
+
     //Salva una nuova categoria
     Task AddAsync(Category category);
 

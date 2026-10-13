@@ -39,6 +39,15 @@ public class CategoryRepository : ICategoryRepository
             .Where(c => c.Id == id && c.UserId == userId)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<Category?> FindByNameAsync(Guid userId, string name)
+    {
+        //il confronto avviene nel database
+        return await _context.Categories
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && c.Name.ToLower() == name.ToLower())
+            .FirstOrDefaultAsync();
+    }
     
     public async Task AddAsync(Category category)
     {
