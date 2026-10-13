@@ -17,5 +17,8 @@ public record UpdateTransactionRequest(
     int CategoryId,
 
     [StringLength(200, ErrorMessage = "La descrizione non può superare i 200 caratteri.")]
-    string? Description
-);
+    string? Description) : IValidatableObject
+{
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        => ValidationRules.RequiredDate(Date);
+}

@@ -164,3 +164,24 @@ Content-Type: application/json
 
 ### Intervallo di date rovesciato
 GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
+
+
+### Intervallo rovesciato sull'elenco
+GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
+
+### Intervallo rovesciato sui totali
+GET {{baseUrl}}/api/transactions/summary?from=2026-10-31&to=2026-10-01
+
+### Intervallo aperto (deve funzionare)
+GET {{baseUrl}}/api/transactions?from=2026-10-01
+
+### Transazione senza data
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "amount": 3.00,
+  "type": "Expense",
+  "categoryId": 1,
+  "description": "Senza data"
+}

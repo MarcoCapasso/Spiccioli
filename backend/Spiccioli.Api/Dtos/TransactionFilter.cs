@@ -12,5 +12,8 @@ public record TransactionFilter(
     int? Page,
 
     [Range(1, 100, ErrorMessage = "La dimensione della pagina deve essere tra 1 e 100.")]
-    int? PageSize
-);
+    int? PageSize) : IValidatableObject
+{
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        => ValidationRules.DateRange(From, To);
+}
