@@ -1,131 +1,91 @@
+# ============================================================
+# Spiccioli API - richieste
+# Le date si inviano sempre in formato ISO: anno-mese-giorno.
+# Gli Id si riferiscono ai dati provvisori
+# ============================================================
+
 @baseUrl = http://localhost:5046
 
-### Elenco delle transazioni
+# --- Dati di prova ---
+@transactionId = 1
+@expenseCategoryId = 1
+@incomeCategoryId = 2
+@otherExpenseCategoryId = 3
+
+# Da impostare prima di usare le richieste di eliminazione
+@transactionToDeleteId = 0
+@unusedCategoryId = 0
+
+
+# ============================================================
+# TRANSAZIONI
+# ============================================================
+
+# ------------------------------------------------------------
+# Lettura
+# ------------------------------------------------------------
+
+### Elenco paginato con i valori predefiniti (pagina 1, 20 elementi) → 200
 GET {{baseUrl}}/api/transactions
 
-### Crea una spesa
+### Elenco filtrato per periodo e categoria, con paginazione → 200
+GET {{baseUrl}}/api/transactions?from=2026-10-01&to=2026-10-31&categoryId={{expenseCategoryId}}&page=1&pageSize=5
+
+### Intervallo aperto: dal 1° ottobre in poi → 200
+GET {{baseUrl}}/api/transactions?from=2026-10-01
+
+### Una transazione per Id → 200
+GET {{baseUrl}}/api/transactions/{{transactionId}}
+
+# ------------------------------------------------------------
+# Riepiloghi
+# ------------------------------------------------------------
+
+### Entrate, uscite e saldo di ottobre → 200
+GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
+
+### Totali per categoria di ottobre → 200
+GET {{baseUrl}}/api/transactions/summary/by-category?from=2026-10-01&to=2026-10-31
+
+### Periodo senza transazioni: tutti i totali a zero → 200
+GET {{baseUrl}}/api/transactions/summary?from=2025-01-01&to=2025-12-31
+
+# ------------------------------------------------------------
+# Scrittura (ATTENZIONE: modificano i dati)
+# ------------------------------------------------------------
+
+### Crea una spesa → 201, con intestazione Location
 POST {{baseUrl}}/api/transactions
 Content-Type: application/json
 
 {
-  "amount": 2.30,
-  "date": "2026-09-08",
+  "amount": 5.00,
+  "date": "2026-10-13",
   "type": "Expense",
-  "categoryId": 1,
-  "description": "Spesa al supermercato"
+  "categoryId": {{expenseCategoryId}},
+  "description": "Spesa di prova"
 }
 
-### Modifica una spesa
-PUT {{baseUrl}}/api/transactions/6
+### Modifica una transazione (PUT: vanno inviati tutti i campi) → 200
+PUT {{baseUrl}}/api/transactions/{{transactionId}}
 Content-Type: application/json
 
 {
   "amount": 16.00,
   "date": "2026-10-10",
   "type": "Expense",
-  "categoryId": 3,
+  "categoryId": {{otherExpenseCategoryId}},
   "description": "Spesa in negozio"
 }
 
-### Transazioni di ottobre
-GET {{baseUrl}}/api/transactions?from=ottobre
+### Elimina una transazione → 204 (imposta prima @transactionToDeleteId)
+DELETE {{baseUrl}}/api/transactions/{{transactionToDeleteId}}
 
-### Solo una categoria
-GET {{baseUrl}}/api/transactions?categoryId=1
+# ------------------------------------------------------------
+# Errori attesi
+# ------------------------------------------------------------
 
-### Data
-GET {{baseUrl}}/api/transactions?from=10-01-2026
-
-### Filtro data
-GET {{baseUrl}}/api/transactions?from=2026-10-01&to=2026-10-31
-
-### Riepilogo di ottobre
-GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
-
-### Riepilogo di un periodo senza transazioni
-GET {{baseUrl}}/api/transactions/summary?from=2025-01-01&to=2025-12-31
-
-### Pagina 1, una transazione per pagina
-GET {{baseUrl}}/api/transactions?page=1&pageSize=1
-
-### Pagina 2, una transazione per pagina
-GET {{baseUrl}}/api/transactions?page=2&pageSize=1
-
-### Pagina non valida
-GET {{baseUrl}}/api/transactions?page=0&pageSize=5
-
-### Id non numerico
-GET {{baseUrl}}/api/transactions/abc
-
-### Totali per categoria di ottobre
-GET {{baseUrl}}/api/transactions/summary/by-category?from=2026-10-01&to=2026-10-31
-
-### Riepilogo di ottobre, per il confronto
-GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
-
-### Transazione da eliminare
-POST {{baseUrl}}/api/transactions
-Content-Type: application/json
-
-{
-  "amount": 5.00,
-  "date": "2026-10-12",
-  "type": "Expense",
-  "categoryId": 1,
-  "description": "Da eliminare"
-}
-
-### Elimina la transazione
-DELETE {{baseUrl}}/api/transactions/9
-
-### Crea una categoria di prova
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{
-  "name": "  Prova  ",
-  "type": "Expense"
-}
-
-### Elenco delle categorie attive
-GET {{baseUrl}}/api/categories
-
-### Rinomina
-PUT {{baseUrl}}/api/categories/4
-Content-Type: application/json
-
-{
-  "name": "Prova rinominata"
-}
-
-### Elimina categoria
-DELETE {{baseUrl}}/api/categories/
-
-### Rileggi dopo l'eliminazione
-GET {{baseUrl}}/api/categories/4
-
-### Elimina Alimentari
-DELETE {{baseUrl}}/api/categories/1
-
-### Elenco normale
-GET {{baseUrl}}/api/categories
-
-### Elenco con le archiviate
-GET {{baseUrl}}/api/categories?includeArchived=true
-
-### Ripristina Alimentari
-POST {{baseUrl}}/api/categories/1/restore
-
-### Nome già esistente
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{
-  "name": "Trasporti",
-  "type": "Expense"
-}
-
-### Richiesta con più errori di forma
+### Più errori di forma insieme: importo negativo, tipo mancante, categoria 0 → 400
 POST {{baseUrl}}/api/transactions
 Content-Type: application/json
 
@@ -136,52 +96,11 @@ Content-Type: application/json
   "description": "Prova validazione"
 }
 
-### Categoria con nome di soli spazi
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{
-  "name": "   ",
-  "type": "Expense"
-}
-
-### Pagina non valida
-GET {{baseUrl}}/api/transactions?page=0&pageSize=500
-
-### Prima pagina
-GET {{baseUrl}}/api/transactions?page=1&pageSize=1
-
-### Transazione senza data
+### Data mancante → 400
 POST {{baseUrl}}/api/transactions
 Content-Type: application/json
 
 {
   "amount": 3.00,
   "type": "Expense",
-  "categoryId": 1,
-  "description": "Senza data"
-}
-
-### Intervallo di date rovesciato
-GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
-
-
-### Intervallo rovesciato sull'elenco
-GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
-
-### Intervallo rovesciato sui totali
-GET {{baseUrl}}/api/transactions/summary?from=2026-10-31&to=2026-10-01
-
-### Intervallo aperto (deve funzionare)
-GET {{baseUrl}}/api/transactions?from=2026-10-01
-
-### Transazione senza data
-POST {{baseUrl}}/api/transactions
-Content-Type: application/json
-
-{
-  "amount": 3.00,
-  "type": "Expense",
-  "categoryId": 1,
-  "description": "Senza data"
-}
+  "categoryId":
