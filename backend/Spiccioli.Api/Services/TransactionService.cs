@@ -1,3 +1,4 @@
+using Spiccioli.Api.Common;
 using Spiccioli.Api.Dtos;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Repositories;
@@ -8,23 +9,17 @@ namespace Spiccioli.Api.Services;
 public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _repository;
+    private readonly ICategoryRepository _categoryRepository;
 
     //Paginazione predefinita del client
     private const int DefaultPage = 1;
     private const int DefaultPageSize = 20;
 
     //Riceve il contratto da Repository
-    public TransactionService(ITransactionRepository repository)
+    public TransactionService(ITransactionRepository repository, ICategoryRepository categoryRepository)
     {
         _repository = repository;
-    }
-
-    public async Task<TransactionResponse?> GetByIdAsync(Guid userId, int id)
-    {
-        var transaction = await _repository.GetByIdAsync(id, userId);
-
-        //Non trovata (o non dell'utente): null; altrimenti la risposta
-        return transaction is null ? null : ToResponse(transaction);
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<PagedResponse<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter)
@@ -40,9 +35,23 @@ public class TransactionService : ITransactionService
         return new PagedResponse<TransactionResponse>(items, page, pageSize, totalCount);
     }
 
-    //Crea la transazione
-    public async Task<TransactionResponse> CreateAsync(Guid userId, CreateTransactionRequest request)
+    public async Task<TransactionResponse?> GetByIdAsync(Guid userId, int id)
     {
+        var transaction = await _repository.GetByIdAsync(id, userId);
+
+        //Non trovata (o non dell'utente): null; altrimenti la risposta
+        return transaction is null ? null : ToResponse(transaction);
+    }
+
+    //Crea la transazione
+     public async Task<Result<TransactionResponse>> CreateAsync(Guid userId, CreateTransactionRequest request)
+    {
+        var categoryError = await ValidateCategoryAsync(userId, request.CategoryId, request.Type);
+        if (categoryError is not null)
+        {
+            return Result<TransactionResponse>.Failure(categoryError);
+        }   
+
         var transaction = new Transaction
         {
             Amount = request.Amount,
@@ -55,22 +64,27 @@ public class TransactionService : ITransactionService
 
         await _repository.AddAsync(transaction);
 
-        // Ricarica con la categoria inclusa: l'oggetto creato qui non ha la navigazione    
+        //Ricarica con la categoria inclusa
         var created = await _repository.GetByIdAsync(transaction.Id, userId)
             ?? throw new InvalidOperationException("Transazione appena creata non trovata.");
 
-        return ToResponse(created);
+        return Result<TransactionResponse>.Success(ToResponse(created));
     }
 
     //Aggiorna la transazione
-    public async Task<TransactionResponse?> UpdateAsync(
-        Guid userId, int id, UpdateTransactionRequest request)
+    public async Task<Result<TransactionResponse>> UpdateAsync(Guid userId, int id, UpdateTransactionRequest request)
     {
         //Caricata con tracciamento e EF Core rileva automaticamente i campi modificati
         var transaction = await _repository.GetByIdAsync(id, userId);
         if (transaction is null)
         {
-            return null;
+            return Result<TransactionResponse>.Failure(Error.NotFound("Transazione non trovata"));
+        }
+
+        var categoryError = await ValidateCategoryAsync(userId, categoryId: request.CategoryId, type: request.Type);
+        if (categoryError is not null)
+        {
+            return Result<TransactionResponse>.Failure(categoryError);
         }
 
         transaction.Amount = request.Amount;
@@ -85,7 +99,7 @@ public class TransactionService : ITransactionService
         var updated = await _repository.GetByIdAsync(id, userId)
             ?? throw new InvalidOperationException("Transazione appena modificata non trovata");
         
-        return ToResponse(updated);
+        return Result<TransactionResponse>.Success(ToResponse(updated));
     }
 
     //Elimina la transazione
@@ -127,5 +141,29 @@ public class TransactionService : ITransactionService
             transaction.CategoryId,
             transaction.Category?.Name
         );
+    }
+
+    private async Task<Error?> ValidateCategoryAsync(Guid userId, int categoryId, TransactionType type)
+    {
+        var field = nameof(CreateTransactionRequest.CategoryId);
+        var category = await _categoryRepository.GetByIdAsync(categoryId, userId);
+
+        if (category is null)
+        {
+            //Il messaggio è lo stesso sia se la categoria non esiste sia se appartiene a qualcun'altro
+            return Error.Validation(field, "La categoria indicata non esiste.");
+        }
+
+        if (category.IsArchived)
+        {
+            return Error.Validation(field, "La categoria è archiviata: ripristinala o scegline un'altra.");
+        }
+
+        if (category.Type != type)
+        {
+            return Error.Validation(field, "Il tipo della categoria non corrisponde a quello della transazione.");
+        }
+
+        return null;
     }
 }

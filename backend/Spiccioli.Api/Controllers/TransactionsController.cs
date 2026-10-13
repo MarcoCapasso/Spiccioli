@@ -60,9 +60,13 @@ public class TransactionsController : ApiControllerBase
     [HttpPost]
     public async Task<ActionResult<TransactionResponse>> Create(CreateTransactionRequest request)
     {
-        var created = await _service.CreateAsync(GetCurrentUserId(), request);
+        var result = await _service.CreateAsync(GetCurrentUserId(), request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
 
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
     }
 
     //Sostituisce i dati modificabili, oppure 404
@@ -70,8 +74,13 @@ public class TransactionsController : ApiControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<TransactionResponse>> Update(int id, UpdateTransactionRequest request)
     {
-        var updated = await _service.UpdateAsync(GetCurrentUserId(), id, request);
-        return updated is null ? NotFound() : Ok(updated);
+        var result = await _service.UpdateAsync(GetCurrentUserId(), id, request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
     }
 
     //Elimina una transazione, 204 se eliminata, altrimenti 404
