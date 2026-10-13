@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Spiccioli.Api.Tests/Spiccioli.Api.Tests.csproj" />
   <Project Path="Spiccioli.Api/Spiccioli.Api.csproj" />
 </Solution>
