@@ -9,7 +9,7 @@ public class ValidationRulesTests
     [Theory]
     [InlineData("2026-10-01", "2026-10-31", 0)] // intervallo corretto
     [InlineData("2026-10-31", "2026-10-01", 1)] // intervallo rovesciato
-    [InlineData("2026-10-01", "2026-10-01", 0)] // stesso giorno: il caso limite
+    [InlineData("2026-10-01", "2026-10-01", 0)] // stesso giorno
     [InlineData("2026-10-01", null, 0)]         // aperto a destra
     [InlineData(null, "2026-10-31", 0)]         // aperto a sinistra
     [InlineData(null, null, 0)]                 // nessun estremo
