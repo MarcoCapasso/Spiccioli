@@ -147,3 +147,39 @@ PUT {{baseUrl}}/api/categories/3
 Content-Type: application/json
 
 { "name": "Alimentari" }
+
+# ============================================================
+# AUTENTICAZIONE
+# ============================================================
+
+### Registrazione: email con spazi e maiuscole → 201
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Marco",
+  "lastName" : "Test",
+  "email": "  Marco.Prova@Esempio.IT ",
+  "password": "una password lunga"
+}
+
+### Stessa email con maiuscole diverse → 409
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Marco",
+  "lastName" : "Test",
+  "email": "marco.prova2@esempio.it",
+  "password": "una password lunga"
+}
+
+### Password troppo corta → 400
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Luca",
+  "email": "luca.prova@esempio.it",
+  "password": "corta"
+}

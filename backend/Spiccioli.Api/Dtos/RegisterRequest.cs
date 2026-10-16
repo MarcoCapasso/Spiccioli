@@ -8,7 +8,7 @@ public record RegisterRequest(
     string FirstName,
 
     [StringLength(100, ErrorMessage = "Il cognome non può superare i 100 caratteri.")]
-    string LastName,
+    string? LastName,
 
     [Required(ErrorMessage = "L'email è obbligatoria.")]
     [EmailAddress(ErrorMessage = "L'email non è valida.")]
