@@ -1,4 +1,3 @@
-using Spiccioli.Api.Common;
 using Spiccioli.Api.Dtos;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Services;
