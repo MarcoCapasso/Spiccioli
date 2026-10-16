@@ -183,3 +183,21 @@ Content-Type: application/json
   "email": "luca.prova@esempio.it",
   "password": "corta"
 }
+
+### Login corretto → 200 con il token
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "marco.prova@esempio.it", "password": "una password lunga" }
+
+### Password sbagliata → 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "marco.prova@esempio.it", "password": "password sbagliata" }
+
+### Email inesistente → 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "nessuno@esempio.it", "password": "una password lunga" }

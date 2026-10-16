@@ -23,9 +23,13 @@ public abstract class ApiControllerBase : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var statusCode = error.Type == ErrorType.NotFound
-            ? StatusCodes.Status404NotFound
-            : StatusCodes.Status409Conflict;
+        var statusCode = error.Type switch
+        {
+            ErrorType.NotFound => StatusCodes.Status404NotFound,
+            ErrorType.Conflict => StatusCodes.Status409Conflict,
+            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
+            _ => StatusCodes.Status500InternalServerError,
+        };
 
         return Problem(detail: error.Message, statusCode: statusCode);
     }

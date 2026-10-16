@@ -29,4 +29,18 @@ public class AuthController : ApiControllerBase
 
         return StatusCode(StatusCodes.Status201Created, result.Value);
     }
+
+    // Verifica le credenziali: 200 con il token, oppure 401 con un messaggio che non rivela il motivo
+    // POST /api/auth/login
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
+    {
+        var result = await _service.LoginAsync(request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
+    }
 }
