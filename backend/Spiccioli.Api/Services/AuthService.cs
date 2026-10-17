@@ -50,7 +50,7 @@ public class AuthService : IAuthService
 
         await _users.AddAsync(user);
 
-        return Result<UserResponse>.Success(ToResponse(user));
+        return Result<UserResponse>.Success(UserResponse.FromUser(user));
     }
 
     public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
@@ -72,21 +72,10 @@ public class AuthService : IAuthService
         }
 
         var token = _tokens.CreateToken(user);
-        return Result<AuthResponse>.Success(new AuthResponse(token, ToResponse(user)));
+        return Result<AuthResponse>.Success(new AuthResponse(token, UserResponse.FromUser(user)));
     }
 
     //L'email è un identificativo un'unica regola per registrazione e login,
     // se divergessero alcuni utenti non potrebbero più accedere
     private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
-
-    //Conversione modello → DTO
-    private static UserResponse ToResponse(User user)
-    {
-        return new UserResponse(
-            user.Id,
-            user.FirstName,
-            user.LastName,
-            user.Email,
-            user.HasCompletedOnboarding);
-    }
 }

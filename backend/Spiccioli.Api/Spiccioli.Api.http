@@ -90,6 +90,18 @@ Content-Type: application/json
 ### Senza token → 401
 GET {{baseUrl}}/api/transactions
 
+# ============================================================
+# PROFILO
+# ============================================================
+
+### Il mio profilo → 200
+GET {{baseUrl}}/api/me
+Authorization: Bearer {{token}}
+
+### Le categorie proposte nell'onboarding → 200
+GET {{baseUrl}}/api/me/default-categories
+Authorization: Bearer {{token}}
+
 
 # ============================================================
 # TRANSAZIONI

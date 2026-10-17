@@ -23,6 +23,14 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
     }
 
+    //L'utente con questo Id, tracciato: l'onboarding lo modificherà
+    public async Task<User?> GetByIdAsync(Guid id)
+    {
+        return await _context.Users
+            .Where(u => u.Id == id)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task AddAsync(User user)
     {
         _context.Users.Add(user);

@@ -1,3 +1,5 @@
+using Spiccioli.Api.Models;
+
 namespace Spiccioli.Api.Dtos;
 
 public record UserResponse(
@@ -5,5 +7,9 @@ public record UserResponse(
     string FirstName,
     string? LastName,
     string Email,
-    bool HasCompletedOnboarding);
+    bool HasCompletedOnboarding)
+{
+    public static UserResponse FromUser(User user) =>
+        new(user.Id, user.FirstName, user.LastName, user.Email, user.HasCompletedOnboarding);   
+}
 
