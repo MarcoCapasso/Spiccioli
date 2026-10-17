@@ -1,16 +1,25 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 using Spiccioli.Api.Common;
 
 namespace Spiccioli.Api.Controllers;
 
+
 // Base comune dei Controller: un solo punto in cui si determina l'utente corrente
+[Authorize]
 public abstract class ApiControllerBase : ControllerBase
 {
-    // TEMPORANEO fino alla Fase 9: utente di prova fisso, poi letto dal token JWT
+    //L'utente corrente, letto dal token già verificato
+    //  il claim "sub" contiene il suo Id
     protected Guid GetCurrentUserId()
     {
-        return Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var subject = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? throw new InvalidOperationException("Token autenticato senza claim 'sub'.");
+
+        return Guid.Parse(subject);
     }
 
     //Traduce un errore del Service nella risposta HTTP corrispondente, in formato Problem Details

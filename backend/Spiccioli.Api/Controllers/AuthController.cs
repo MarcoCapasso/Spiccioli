@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Spiccioli.Api.Dtos;
 using Spiccioli.Api.Services;
 
@@ -6,8 +7,10 @@ namespace Spiccioli.Api.Controllers;
 
 //Endpoint di registrazione e login: gli unici che non richiederanno un token
 [ApiController]
+[AllowAnonymous]
 [Route("api/auth")]
-public class AuthController : ApiControllerBase
+
+public class AuthController : ApiControllerBase 
 {
     private readonly IAuthService _service;
 

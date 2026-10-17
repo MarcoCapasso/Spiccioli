@@ -1,13 +1,23 @@
 # ============================================================
-# Spiccioli API - richieste
-# Le date si inviano sempre in formato ISO: anno-mese-giorno.
-# Gli Id si riferiscono ai dati provvisori
+# Spiccioli API - richieste di esempio
+# Eseguire "Login utente 1", che fornisce il token alle altre richieste.
 # ============================================================
 
 @baseUrl = http://localhost:5046
 
-# --- Dati di prova ---
-@transactionId = 
+# I token vengono letti dalle risposte dei login
+@token = {{login.response.body.accessToken}}
+@token2 = {{login2.response.body.accessToken}}
+
+# Account di prova, SOLO per lo sviluppo: password inventate, non usate altrove
+@testEmail = marco.prova@esempio.it
+@testPassword = una password lunga
+
+@test2Email = marco.prova2@esempio.it
+@test2Password = una password lunga
+
+# Dati di prova (dell'utente 1)
+@transactionId = 6
 @expenseCategoryId = 1
 @incomeCategoryId = 2
 @otherExpenseCategoryId = 3
@@ -18,139 +28,22 @@
 
 
 # ============================================================
-# TRANSAZIONI
+# AUTENTICAZIONE 
 # ============================================================
 
-# ------------------------------------------------------------
-# Lettura
-# ------------------------------------------------------------
-
-### Elenco paginato con i valori predefiniti (pagina 1, 20 elementi) → 200
-GET {{baseUrl}}/api/transactions
-
-### Elenco filtrato per periodo e categoria, con paginazione → 200
-GET {{baseUrl}}/api/transactions?from=2026-10-01&to=2026-10-31&categoryId={{expenseCategoryId}}&page=1&pageSize=5
-
-### Intervallo aperto: dal 1° ottobre in poi → 200
-GET {{baseUrl}}/api/transactions?from=2026-10-01
-
-### Una transazione per Id → 200
-GET {{baseUrl}}/api/transactions/{{transactionId}}
-
-# ------------------------------------------------------------
-# Riepiloghi
-# ------------------------------------------------------------
-
-### Entrate, uscite e saldo di ottobre → 200
-GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
-
-### Totali per categoria di ottobre → 200
-GET {{baseUrl}}/api/transactions/summary/by-category?from=2026-10-01&to=2026-10-31
-
-### Periodo senza transazioni: tutti i totali a zero → 200
-GET {{baseUrl}}/api/transactions/summary?from=2025-01-01&to=2025-12-31
-
-# ------------------------------------------------------------
-# Scrittura (ATTENZIONE: modificano i dati)
-# ------------------------------------------------------------
-
-### Crea una spesa → 201, con intestazione Location
-POST {{baseUrl}}/api/transactions
+### Login utente 1 → 200 con il token
+# @name login
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
-{
-  "amount": 5.00,
-  "date": "2026-10-13",
-  "type": "Expense",
-  "categoryId": {{expenseCategoryId}},
-  "description": "Spesa di prova"
-}
+{ "email": "{{testEmail}}", "password": "{{testPassword}}" }
 
-### Modifica una transazione (PUT: vanno inviati tutti i campi) → 200
-PUT {{baseUrl}}/api/transactions/{{transactionId}}
+### Login utente 2 → 200 con il token
+# @name login2
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
-{
-  "amount": 16.00,
-  "date": "2026-10-10",
-  "type": "Expense",
-  "categoryId": {{otherExpenseCategoryId}},
-  "description": "Spesa in negozio"
-}
-
-### Elimina una transazione → 204 (imposta prima @transactionToDeleteId)
-DELETE {{baseUrl}}/api/transactions/{{transactionToDeleteId}}
-
-# ------------------------------------------------------------
-# Errori attesi
-# ------------------------------------------------------------
-
-### Più errori di forma insieme: importo negativo, tipo mancante, categoria 0 → 400
-POST {{baseUrl}}/api/transactions
-Content-Type: application/json
-
-{
-  "amount": -10,
-  "date": "2026-10-13",
-  "categoryId": 0,
-  "description": "Prova validazione"
-}
-
-### Data mancante → 400
-POST {{baseUrl}}/api/transactions
-Content-Type: application/json
-
-{
-  "amount": 3.00,
-  "type": "Expense",
-  "categoryId":
-}
-
-### Nome già esistente → 409
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{ "name": "Trasporti", "type": "Expense" }
-
-### Stesso nome con maiuscole diverse → 409
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{ "name": "trasporti", "type": "Expense" }
-
-### Archivia Trasporti (è usata, quindi non viene eliminata)
-DELETE {{baseUrl}}/api/categories/3
-
-### Crea una categoria con il nome di quella archiviata → 409
-POST {{baseUrl}}/api/categories
-Content-Type: application/json
-
-{ "name": "Trasporti", "type": "Expense" }
-
-### Ripristina Trasporti
-POST {{baseUrl}}/api/categories/3/restore
-
-### Cambia solo le maiuscole del nome → 200
-PUT {{baseUrl}}/api/categories/3
-Content-Type: application/json
-
-{ "name": "TRASPORTI" }
-
-### Riporta il nome originale → 200
-PUT {{baseUrl}}/api/categories/3
-Content-Type: application/json
-
-{ "name": "Trasporti" }
-
-### Rinomina con il nome di un'altra categoria → 409
-PUT {{baseUrl}}/api/categories/3
-Content-Type: application/json
-
-{ "name": "Alimentari" }
-
-# ============================================================
-# AUTENTICAZIONE
-# ============================================================
+{ "email": "{{test2Email}}", "password": "{{test2Password}}" }
 
 ### Registrazione: email con spazi e maiuscole → 201
 POST {{baseUrl}}/api/auth/register
@@ -158,19 +51,17 @@ Content-Type: application/json
 
 {
   "firstName": "Marco",
-  "lastName" : "Test",
-  "email": "  Marco.Prova@Esempio.IT ",
+  "email": "  Marco.Prova3@Esempio.IT ",
   "password": "una password lunga"
 }
 
-### Stessa email con maiuscole diverse → 409
+### Email già registrata, con maiuscole diverse → 409
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
   "firstName": "Marco",
-  "lastName" : "Test",
-  "email": "marco.prova2@esempio.it",
+  "email": "MARCO.PROVA@esempio.it",
   "password": "una password lunga"
 }
 
@@ -184,20 +75,238 @@ Content-Type: application/json
   "password": "corta"
 }
 
-### Login corretto → 200 con il token
-POST {{baseUrl}}/api/auth/login
-Content-Type: application/json
-
-{ "email": "marco.prova@esempio.it", "password": "una password lunga" }
-
 ### Password sbagliata → 401
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
-{ "email": "marco.prova@esempio.it", "password": "password sbagliata" }
+{ "email": "{{testEmail}}", "password": "password sbagliata" }
 
-### Email inesistente → 401
+### Email inesistente → 401 (stessa risposta della password sbagliata)
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 { "email": "nessuno@esempio.it", "password": "una password lunga" }
+
+### Senza token → 401
+GET {{baseUrl}}/api/transactions
+
+
+# ============================================================
+# TRANSAZIONI
+# ============================================================
+
+# ------------------------------------------------------------
+# Lettura
+# ------------------------------------------------------------
+
+### Elenco paginato con i valori predefiniti (pagina 1, 20 elementi) → 200
+GET {{baseUrl}}/api/transactions
+Authorization: Bearer {{token}}
+
+### Elenco filtrato per periodo e categoria, con paginazione → 200
+GET {{baseUrl}}/api/transactions?from=2026-10-01&to=2026-10-31&categoryId={{expenseCategoryId}}&page=1&pageSize=5
+Authorization: Bearer {{token}}
+
+### Intervallo aperto: dal 1° ottobre in poi → 200
+GET {{baseUrl}}/api/transactions?from=2026-10-01
+Authorization: Bearer {{token}}
+
+### Una transazione per Id → 200
+GET {{baseUrl}}/api/transactions/{{transactionId}}
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Riepiloghi
+# ------------------------------------------------------------
+
+### Entrate, uscite e saldo di ottobre → 200
+GET {{baseUrl}}/api/transactions/summary?from=2026-10-01&to=2026-10-31
+Authorization: Bearer {{token}}
+
+### Totali per categoria di ottobre → 200
+GET {{baseUrl}}/api/transactions/summary/by-category?from=2026-10-01&to=2026-10-31
+Authorization: Bearer {{token}}
+
+### Periodo senza transazioni: tutti i totali a zero → 200
+GET {{baseUrl}}/api/transactions/summary?from=2025-01-01&to=2025-12-31
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Scrittura (ATTENZIONE: modificano i dati)
+# ------------------------------------------------------------
+
+### Crea una spesa → 201, con intestazione Location
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": 5.00,
+  "date": "2026-10-13",
+  "type": "Expense",
+  "categoryId": {{expenseCategoryId}},
+  "description": "Spesa di prova"
+}
+
+### Modifica una transazione (PUT: vanno inviati tutti i campi) → 200
+PUT {{baseUrl}}/api/transactions/{{transactionId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": 16.00,
+  "date": "2026-10-10",
+  "type": "Expense",
+  "categoryId": {{otherExpenseCategoryId}},
+  "description": "Spesa in negozio"
+}
+
+### Elimina una transazione → 204 (imposta prima @transactionToDeleteId)
+DELETE {{baseUrl}}/api/transactions/{{transactionToDeleteId}}
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Errori attesi
+# ------------------------------------------------------------
+
+### Più errori di forma insieme: importo negativo, tipo mancante, categoria 0 → 400
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": -10,
+  "date": "2026-10-13",
+  "categoryId": 0,
+  "description": "Prova validazione"
+}
+
+### Data mancante → 400
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": 3.00,
+  "type": "Expense",
+  "categoryId": {{expenseCategoryId}},
+  "description": "Senza data"
+}
+
+### Categoria inesistente → 400
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 5.00, "date": "2026-10-13", "type": "Expense", "categoryId": 999 }
+
+### Uscita in una categoria di entrata → 400
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 5.00, "date": "2026-10-13", "type": "Expense", "categoryId": {{incomeCategoryId}} }
+
+### Transazione inesistente → 404
+GET {{baseUrl}}/api/transactions/999
+Authorization: Bearer {{token}}
+
+### Intervallo rovesciato → 400
+GET {{baseUrl}}/api/transactions?from=2026-10-31&to=2026-10-01
+Authorization: Bearer {{token}}
+
+### Paginazione non valida → 400
+GET {{baseUrl}}/api/transactions?page=0&pageSize=500
+Authorization: Bearer {{token}}
+
+
+# ============================================================
+# CATEGORIE
+# ============================================================
+
+# ------------------------------------------------------------
+# Lettura
+# ------------------------------------------------------------
+
+### Categorie attive, in ordine alfabetico → 200
+GET {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+
+### Categorie comprese le archiviate → 200
+GET {{baseUrl}}/api/categories?includeArchived=true
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Scrittura 
+# ------------------------------------------------------------
+
+### Crea una categoria: gli spazi esterni vengono tolti → 201
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "  Prova  ", "type": "Expense" }
+
+### Cambia solo le maiuscole del nome → 200
+PUT {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "TRASPORTI" }
+
+### Riporta il nome originale → 200
+PUT {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "Trasporti" }
+
+### Elimina una categoria mai usata: eliminazione fisica → 204
+DELETE {{baseUrl}}/api/categories/{{unusedCategoryId}}
+Authorization: Bearer {{token}}
+
+### Elimina una categoria usata: viene archiviata → 204
+DELETE {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}
+Authorization: Bearer {{token}}
+
+### Ripristina una categoria archiviata → 200
+POST {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}/restore
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Errori attesi
+# ------------------------------------------------------------
+
+### Nome di soli spazi → 400
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "   ", "type": "Expense" }
+
+### Nome già esistente, anche con maiuscole diverse → 409
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "trasporti", "type": "Expense" }
+
+### Rinomina con il nome di un'altra categoria → 409
+PUT {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "Alimentari" }
+
+
+# ============================================================
+# ISOLAMENTO TRA UTENTI (Prima login 2)
+# ============================================================
+
+### L'utente 2 vede solo le sue transazioni → 200
+GET {{baseUrl}}/api/transactions
+Authorization: Bearer {{token2}}
+
+### L'utente 2 chiede una transazione dell'utente 1 → 404
+GET {{baseUrl}}/api/transactions/{{transactionId}}
+Authorization: Bearer {{token2}}

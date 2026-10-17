@@ -1,11 +1,16 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using System.Text.Json.Serialization;
+using Microsoft.IdentityModel.Tokens;
+
 using Spiccioli.Api.Data;
 using Spiccioli.Api.Repositories;
 using Spiccioli.Api.Services;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Common;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +50,27 @@ builder.Services.AddOptions<JwtOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            ?? throw new InvalidOperationException("Sezione 'Jwt' mancante nella configurazione. Vedi README.");
+
+        //Mantiene i nomi nel claim così come dal token
+        options.MapInboundClaims = false;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+        };
+    });
+
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
@@ -61,6 +87,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//Prima si stabilisce chi è l'utente (dal token), poi si decide cosa può fare
+app.UseAuthentication();
 
 app.UseAuthorization();
 
