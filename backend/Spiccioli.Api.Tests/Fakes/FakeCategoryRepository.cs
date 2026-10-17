@@ -28,4 +28,6 @@ public class FakeCategoryRepository : ICategoryRepository
 
     //Le modifiche sono già sugli oggetti in lista, non c'è nulla da salvare
     public Task SaveChangesAsync() => Task.CompletedTask;
+
+    public void AddRange(IEnumerable<Category> categories) => Categories.AddRange(categories);
 }

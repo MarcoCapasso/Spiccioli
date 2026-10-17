@@ -38,4 +38,19 @@ public class ProfileController : ApiControllerBase
     {
         return Ok(DefaultCategories.All);
     }
+
+    // Completa il setup iniziale: 200 con il profilo aggiornato,
+    // 409 se già completato, 400 se una categoria non è tra quelle proposte
+    // POST /api/me/onboarding
+    [HttpPost("onboarding")]
+    public async Task<ActionResult<UserResponse>> CompleteOnboarding(CompleteOnboardingRequest request)
+    {
+        var result = await _service.CompleteOnboardingAsync(GetCurrentUserId(), request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
+    }
 }

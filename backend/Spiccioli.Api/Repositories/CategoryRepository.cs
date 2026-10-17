@@ -73,4 +73,10 @@ public class CategoryRepository : ICategoryRepository
         await _context.SaveChangesAsync();
     }
 
+    //Registra più categorie senza salvarle
+    public void AddRange(IEnumerable<Category> categories)
+    {
+        _context.Categories.AddRange(categories);
+    }
+
 }

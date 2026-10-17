@@ -102,6 +102,34 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/api/me/default-categories
 Authorization: Bearer {{token}}
 
+### Completa l'onboarding → 200 con il profilo aggiornato
+POST {{baseUrl}}/api/me/onboarding
+Content-Type: application/json
+Authorization: Bearer {{token2}}
+
+{ "categoryNames": ["Alimentari", "Stipendio", "Svago"] }
+
+### Onboarding ripetuto → 409
+POST {{baseUrl}}/api/me/onboarding
+Content-Type: application/json
+Authorization: Bearer {{token2}}
+
+{ "categoryNames": ["Casa"] }
+
+### Categoria non prevista → 400
+POST {{baseUrl}}/api/me/onboarding
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "categoryNames": ["Alimentari", "Viaggi spaziali"] }
+
+### Utente con categorie già esistenti → 200, crea solo quelle mancanti
+POST {{baseUrl}}/api/me/onboarding
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "categoryNames": ["Alimentari", "Casa", "Bollette"] }
+
 
 # ============================================================
 # TRANSAZIONI
@@ -242,7 +270,7 @@ Authorization: Bearer {{token}}
 
 ### Categorie attive, in ordine alfabetico → 200
 GET {{baseUrl}}/api/categories
-Authorization: Bearer {{token}}
+Authorization: Bearer {{token2}}
 
 ### Categorie comprese le archiviate → 200
 GET {{baseUrl}}/api/categories?includeArchived=true
