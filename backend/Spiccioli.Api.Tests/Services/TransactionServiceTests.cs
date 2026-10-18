@@ -18,7 +18,7 @@ public class TransactionServiceTests
     //xUnit crea una nuova istanza per ogni test, ognuno parte da Repository vuoti
     public TransactionServiceTests()
     {
-        _service = new TransactionService(_transactions, _categories);
+        _service = new TransactionService(_transactions, new CategoryValidator(_categories));
     }
 
     [Fact]

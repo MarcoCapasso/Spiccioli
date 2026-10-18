@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
 
 //Hash delle password algoritmo lento con salt, mai la password in chiaro
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

@@ -9,17 +9,17 @@ namespace Spiccioli.Api.Services;
 public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _repository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategoryValidator _categoryValidator;
 
     //Paginazione predefinita del client
     private const int DefaultPage = 1;
     private const int DefaultPageSize = 20;
 
     //Riceve il contratto da Repository
-    public TransactionService(ITransactionRepository repository, ICategoryRepository categoryRepository)
+    public TransactionService(ITransactionRepository repository, ICategoryValidator categoryValidator)
     {
         _repository = repository;
-        _categoryRepository = categoryRepository;
+        _categoryValidator = categoryValidator;
     }
 
     public async Task<PagedResponse<TransactionResponse>> GetByUserAsync(Guid userId, TransactionFilter filter)
@@ -46,7 +46,8 @@ public class TransactionService : ITransactionService
     //Crea la transazione
      public async Task<Result<TransactionResponse>> CreateAsync(Guid userId, CreateTransactionRequest request)
     {
-        var categoryError = await ValidateCategoryAsync(userId, request.CategoryId, request.Type);
+        var categoryError = await _categoryValidator.ValidateAsync(
+            userId, request.CategoryId, expectedType: request.Type, field: nameof(request.CategoryId));
         if (categoryError is not null)
         {
             return Result<TransactionResponse>.Failure(categoryError);
@@ -81,7 +82,8 @@ public class TransactionService : ITransactionService
             return Result<TransactionResponse>.Failure(Error.NotFound("Transazione non trovata"));
         }
 
-        var categoryError = await ValidateCategoryAsync(userId, categoryId: request.CategoryId, type: request.Type);
+        var categoryError = await _categoryValidator.ValidateAsync(
+            userId, request.CategoryId, expectedType: request.Type, field: nameof(request.CategoryId));
         if (categoryError is not null)
         {
             return Result<TransactionResponse>.Failure(categoryError);
@@ -141,29 +143,5 @@ public class TransactionService : ITransactionService
             transaction.CategoryId,
             transaction.Category?.Name
         );
-    }
-
-    private async Task<Error?> ValidateCategoryAsync(Guid userId, int categoryId, TransactionType type)
-    {
-        var field = nameof(CreateTransactionRequest.CategoryId);
-        var category = await _categoryRepository.GetByIdAsync(categoryId, userId);
-
-        if (category is null)
-        {
-            //Il messaggio è lo stesso sia se la categoria non esiste sia se appartiene a qualcun'altro
-            return Error.Validation(field, "La categoria indicata non esiste.");
-        }
-
-        if (category.IsArchived)
-        {
-            return Error.Validation(field, "La categoria è archiviata: ripristinala o scegline un'altra.");
-        }
-
-        if (category.Type != type)
-        {
-            return Error.Validation(field, "Il tipo della categoria non corrisponde a quello della transazione.");
-        }
-
-        return null;
     }
 }
