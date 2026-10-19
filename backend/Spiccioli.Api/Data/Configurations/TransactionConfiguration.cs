@@ -21,12 +21,14 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasForeignKey(t => t.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Pagamento previsto eliminato: la transazione resta (è realtà), solo scollegata
+        //Uno a uno: un pagamento previsto ha al massimo una transazione (EF Core crea un indice unico),
+        //la difesa definitiva contro i doppi pagamenti, anche con richieste simultanee.
+        //Pagamento previsto eliminato: la transazione resta (è realtà), solo scollegata
         builder.HasOne(t => t.PlannedPayment)
             .WithOne()
             .HasForeignKey<Transaction>(t => t.PlannedPaymentId)
             .OnDelete(DeleteBehavior.SetNull);
-        
+
         //Lunghezza massima per la descrizione
         builder.Property(t => t.Description).HasMaxLength(200);
     }

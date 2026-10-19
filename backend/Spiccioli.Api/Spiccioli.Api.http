@@ -1,11 +1,10 @@
 # ============================================================
 # Spiccioli API - richieste di esempio
-# Eseguire "Login utente 1", che fornisce il token alle altre richieste.
 # ============================================================
 
 @baseUrl = http://localhost:5046
 
-# I token vengono letti dalle risposte dei login
+# I token vengono letti dalle risposte dei login: non scriverli mai nel file
 @token = {{login.response.body.accessToken}}
 @token2 = {{login2.response.body.accessToken}}
 
@@ -21,10 +20,23 @@
 @expenseCategoryId = 1
 @incomeCategoryId = 2
 @otherExpenseCategoryId = 3
-# Categoria "Casa" dell'utente 1 (creata dall'onboarding): leggere l'Id dall'elenco delle categorie
-@houseCategoryId = 1
-# Spesa ricorrente di prova: impostare dopo averla creata
-@recurringExpenseId = 3
+
+# ID Categoria (Alimentari; Casa; Trasporti; Svago; Stipendio;)
+@expenseCategoryId = 1 
+@houseCategoryId = 2 
+@otherExpenseCategoryId = 4
+@leisureCategoryId = 5
+@incomeCategoryId = 6
+
+
+#Affitto
+@rentId = 2
+
+#Assicurazione
+@insuranceId = 3
+
+# Pagamento previsto da saldare: leggere l'Id dalla risposta del piano del mese
+@rentPaymentId = 1
 
 # Da impostare prima di usare le richieste di eliminazione
 @transactionToDeleteId = 0
@@ -32,7 +44,7 @@
 
 
 # ============================================================
-# AUTENTICAZIONE 
+# AUTENTICAZIONE
 # ============================================================
 
 ### Login utente 1 → 200 con il token
@@ -55,7 +67,7 @@ Content-Type: application/json
 
 {
   "firstName": "Marco",
-  "email": "  Marco.Prova3@Esempio.IT ",
+  "email": "  marco.prova@Esempio.IT ",
   "password": "una password lunga"
 }
 
@@ -94,6 +106,7 @@ Content-Type: application/json
 ### Senza token → 401
 GET {{baseUrl}}/api/transactions
 
+
 # ============================================================
 # PROFILO
 # ============================================================
@@ -106,12 +119,14 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/api/me/default-categories
 Authorization: Bearer {{token}}
 
-### Completa l'onboarding → 200 con il profilo aggiornato
+# Le richieste di onboarding funzionano una sola volta per utente: dopo, rispondono 409
+
+### Completa l'onboarding (utente 1) → 200 con il profilo aggiornato
 POST {{baseUrl}}/api/me/onboarding
 Content-Type: application/json
-Authorization: Bearer {{token2}}
+Authorization: Bearer {{token}}
 
-{ "categoryNames": ["Alimentari", "Stipendio", "Svago"] }
+{ "categoryNames": ["Alimentari", "Casa", "Bollette", "Svago", "Trasporti", "Stipendio"] }
 
 ### Onboarding ripetuto → 409
 POST {{baseUrl}}/api/me/onboarding
@@ -274,14 +289,14 @@ Authorization: Bearer {{token}}
 
 ### Categorie attive, in ordine alfabetico → 200
 GET {{baseUrl}}/api/categories
-Authorization: Bearer {{token2}}
+Authorization: Bearer {{token}}
 
 ### Categorie comprese le archiviate → 200
 GET {{baseUrl}}/api/categories?includeArchived=true
 Authorization: Bearer {{token}}
 
 # ------------------------------------------------------------
-# Scrittura 
+# Scrittura (ATTENZIONE: modificano i dati)
 # ------------------------------------------------------------
 
 ### Crea una categoria: gli spazi esterni vengono tolti → 201
@@ -305,11 +320,11 @@ Authorization: Bearer {{token}}
 
 { "name": "Trasporti" }
 
-### Elimina una categoria mai usata: eliminazione fisica → 204
+### Elimina una categoria mai usata: eliminazione fisica → 204 (imposta prima @unusedCategoryId)
 DELETE {{baseUrl}}/api/categories/{{unusedCategoryId}}
 Authorization: Bearer {{token}}
 
-### Elimina una categoria usata: viene archiviata → 204
+### Elimina una categoria usata: viene archiviata → 204 (ripristinala subito dopo!)
 DELETE {{baseUrl}}/api/categories/{{otherExpenseCategoryId}}
 Authorization: Bearer {{token}}
 
@@ -344,7 +359,7 @@ Authorization: Bearer {{token}}
 
 
 # ============================================================
-# ISOLAMENTO TRA UTENTI (Prima login 2)
+# ISOLAMENTO TRA UTENTI (eseguire prima "Login utente 2")
 # ============================================================
 
 ### L'utente 2 vede solo le sue transazioni → 200
@@ -354,6 +369,7 @@ Authorization: Bearer {{token2}}
 ### L'utente 2 chiede una transazione dell'utente 1 → 404
 GET {{baseUrl}}/api/transactions/{{transactionId}}
 Authorization: Bearer {{token2}}
+
 
 # ============================================================
 # SPESE RICORRENTI
@@ -367,15 +383,15 @@ Authorization: Bearer {{token2}}
 GET {{baseUrl}}/api/recurring-expenses
 Authorization: Bearer {{token}}
 
-### Una spesa ricorrente per Id → 200 (imposta prima @recurringExpenseId)
-GET {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+### L'affitto per Id → 200 (imposta prima @rentId)
+GET {{baseUrl}}/api/recurring-expenses/{{rentId}}
 Authorization: Bearer {{token}}
 
 # ------------------------------------------------------------
-# Scrittura (ATTENZIONE: modificano i dati)
+# Scrittura (ATTENZIONE: modificano i dati e sincronizzano i piani dal mese corrente)
 # ------------------------------------------------------------
 
-### Crea un affitto mensile senza data di fine → 201 (imposta prima @houseCategoryId)
+### Crea un affitto mensile senza data di fine → 201
 POST {{baseUrl}}/api/recurring-expenses
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -388,7 +404,7 @@ Authorization: Bearer {{token}}
   "categoryId": {{houseCategoryId}}
 }
 
-###
+### Crea un'assicurazione trimestrale → 201
 POST {{baseUrl}}/api/recurring-expenses
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -398,24 +414,51 @@ Authorization: Bearer {{token}}
   "amount": 120.00,
   "frequency": "Quarterly",
   "startDate": "2025-11-10",
+  "categoryId": {{otherExpenseCategoryId}}
+}
+
+### Crea abbonamento palestra
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Palestra",
+  "amount": 40.00,
+  "frequency": "Monthly",
+  "startDate": "2026-10-20",
+  "categoryId": {{leisureCategoryId}}
+}
+
+
+### Modifica l'affitto (PUT: vanno inviati tutti i campi) → 200
+PUT {{baseUrl}}/api/recurring-expenses/{{rentId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Affitto",
+  "amount": 680.00,
+  "frequency": "Monthly",
+  "startDate": "2026-01-01",
   "categoryId": {{houseCategoryId}}
 }
 
-### Modifica la spesa (PUT: vanno inviati tutti i campi) → 200
-PUT {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+### Modifica l'assicurazione (PUT: vanno inviati tutti i campi) → 200
+PUT {{baseUrl}}/api/recurring-expenses/{{insuranceId}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
   "name": "Assicurazione",
-  "amount": 120.00,
+  "amount": 130.00,
   "frequency": "Quarterly",
   "startDate": "2025-11-10",
   "categoryId": {{houseCategoryId}}
 }
 
-### Elimina la spesa: mai usata → eliminazione fisica, già usata → terminazione; 204 in entrambi i casi
-DELETE {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+### Elimina l'assicurazione: mai usata → eliminazione fisica, già usata → terminazione; 204 in entrambi i casi
+DELETE {{baseUrl}}/api/recurring-expenses/{{insuranceId}}
 Authorization: Bearer {{token}}
 
 # ------------------------------------------------------------
@@ -483,29 +526,29 @@ Authorization: Bearer {{token}}
 # PIANI MENSILI
 # ============================================================
 
-### Apre ottobre: la prima volta lo crea → 201
+# ------------------------------------------------------------
+# Apertura: POST idempotente, 201 la prima volta, 200 le successive
+# ------------------------------------------------------------
+
+### Apre ottobre 2026 → 201 la prima volta, 200 dopo
 POST {{baseUrl}}/api/budgets/2026/10
 Authorization: Bearer {{token}}
 
-### Apre di nuovo ottobre: esiste già → 200, stesso piano
-POST {{baseUrl}}/api/budgets/2026/10
-Authorization: Bearer {{token}}
-
-### Apre febbraio 2027 → 201, con affitto e assicurazione
-POST {{baseUrl}}/api/budgets/2027/2
-Authorization: Bearer {{token}}
-
-### Apre novembre → 201
+### Apre novembre 2026 → 201 la prima volta, 200 dopo
 POST {{baseUrl}}/api/budgets/2026/11
 Authorization: Bearer {{token}}
 
-### Mese non valido → 400
-POST {{baseUrl}}/api/budgets/2026/13
+### Apre dicembre 2026: copia l'ultimo piano esistente → 201 la prima volta, 200 dopo
+POST {{baseUrl}}/api/budgets/2026/12
 Authorization: Bearer {{token}}
 
-### Oltre dodici mesi nel futuro → 400
-POST {{baseUrl}}/api/budgets/2027/11
+### Apre febbraio 2027: affitto e assicurazione → 201 la prima volta, 200 dopo
+POST {{baseUrl}}/api/budgets/2027/2
 Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Modifica (ATTENZIONE: modificano i dati)
+# ------------------------------------------------------------
 
 ### Imposta entrate e risparmio di novembre → 200
 PUT {{baseUrl}}/api/budgets/2026/11
@@ -514,14 +557,7 @@ Authorization: Bearer {{token}}
 
 { "plannedIncome": 1800.00, "savingsTarget": 300.00 }
 
-### Imposta la voce di Alimentari: la crea → 200
-PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{expenseCategoryId}}
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{ "amount": 300.00 }
-
-### Imposta di nuovo la voce di Alimentari: la aggiorna → 200
+### Imposta la voce di Alimentari: la crea o la aggiorna → 200
 PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{expenseCategoryId}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -534,6 +570,22 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 { "amount": 0 }
+
+### Toglie la voce di Casa → 204 (la seconda volta 404)
+DELETE {{baseUrl}}/api/budgets/2026/11/allocations/{{houseCategoryId}}
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Errori attesi
+# ------------------------------------------------------------
+
+### Mese non valido → 400
+POST {{baseUrl}}/api/budgets/2026/13
+Authorization: Bearer {{token}}
+
+### Oltre dodici mesi nel futuro → 400
+POST {{baseUrl}}/api/budgets/2027/11
+Authorization: Bearer {{token}}
 
 ### Voce in una categoria di entrata → 400
 PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{incomeCategoryId}}
@@ -549,10 +601,41 @@ Authorization: Bearer {{token}}
 
 { "plannedIncome": 1000.00, "savingsTarget": 0 }
 
-### Toglie la voce di Casa → 204
-DELETE {{baseUrl}}/api/budgets/2026/11/allocations/{{houseCategoryId}}
+
+# ============================================================
+# PAGAMENTI PREVISTI
+# ============================================================
+
+### Salda un pagamento previsto → 201, con Location verso la transazione (imposta prima @rentPaymentId)
+POST {{baseUrl}}/api/planned-payments/{{rentPaymentId}}/pay
+Content-Type: application/json
 Authorization: Bearer {{token}}
 
-### Apre dicembre: copia novembre → 201
-POST {{baseUrl}}/api/budgets/2026/12
+{ "amount": 680.00, "date": "2026-10-03" }
+
+### Pagamento già saldato → 409
+POST {{baseUrl}}/api/planned-payments/{{rentPaymentId}}/pay
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 680.00, "date": "2026-10-03" }
+
+### Pagamento inesistente → 404
+POST {{baseUrl}}/api/planned-payments/999/pay
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 10.00, "date": "2026-10-03" }
+
+
+# ============================================================
+# DASHBOARD
+# ============================================================
+
+### Andamento di ottobre: previsto contro reale → 200
+GET {{baseUrl}}/api/budgets/2026/10/dashboard
+Authorization: Bearer {{token}}
+
+### Dashboard di un mese mai aperto → 404
+GET {{baseUrl}}/api/budgets/2026/9/dashboard
 Authorization: Bearer {{token}}

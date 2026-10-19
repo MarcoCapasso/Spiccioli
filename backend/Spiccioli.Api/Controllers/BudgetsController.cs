@@ -10,10 +10,12 @@ namespace Spiccioli.Api.Controllers;
 public class BudgetsController : ApiControllerBase
 {
     private readonly IMonthlyBudgetService _service;
+    private readonly IDashboardService _dashboard;
 
-    public BudgetsController(IMonthlyBudgetService service)
+    public BudgetsController(IMonthlyBudgetService service, IDashboardService dashboard)
     {
         _service = service;
+        _dashboard = dashboard;
     }
 
     //Apre il piano del mese, lo crea se non esiste: 201 se appena creato, 200 se esisteva già.
@@ -70,6 +72,20 @@ public class BudgetsController : ApiControllerBase
     {
         var removed = await _service.RemoveAllocationAsync(GetCurrentUserId(), year, month, categoryId);
         return removed ? NoContent() : NotFound();
+    }
+
+    //L'andamento del mese, previsto contro reale: 200, oppure 404 se il piano non è stato aperto.
+    // GET /api/budgets/{year}/{month}/dashboard
+    [HttpGet("{year:int}/{month:int}/dashboard")]
+    public async Task<ActionResult<DashboardResponse>> GetDashboard(int year, int month)
+    {
+        var result = await _dashboard.GetAsync(GetCurrentUserId(), year, month);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
     }
 
 }

@@ -5,5 +5,6 @@ public record PlannedPaymentResponse(
     int Id,
     string Name,
     decimal Amount,
-    DateOnly DueDate
+    DateOnly DueDate,
+    bool IsPaid
 );

@@ -17,7 +17,7 @@ namespace Spiccioli.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -47,7 +47,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("MonthlyBudgetId", "CategoryId")
                         .IsUnique();
 
-                    b.ToTable("BudgetAllocations");
+                    b.ToTable("BudgetAllocations", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.Category", b =>
@@ -77,7 +77,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("UserId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.MonthlyBudget", b =>
@@ -110,7 +110,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("UserId", "Year", "Month")
                         .IsUnique();
 
-                    b.ToTable("MonthlyBudgets");
+                    b.ToTable("MonthlyBudgets", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.PlannedPayment", b =>
@@ -145,7 +145,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("RecurringExpenseId");
 
-                    b.ToTable("PlannedPayments");
+                    b.ToTable("PlannedPayments", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.RecurringExpense", b =>
@@ -186,7 +186,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RecurringExpenses");
+                    b.ToTable("RecurringExpenses", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.Transaction", b =>
@@ -229,7 +229,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.User", b =>
@@ -264,7 +264,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.BudgetAllocation", b =>

@@ -17,4 +17,13 @@ public interface IMonthlyBudgetRepository
 
     //Salva le modifiche al piano tracciato, comprese le voci aggiunte, cambiate o tolte dalla lista
     Task SaveChangesAsync();
+
+    //I piani dell'utente da quel mese in avanti, con i pagamenti previsti, tracciati per poterli modificare
+    Task<IReadOnlyList<MonthlyBudget>> GetFromMonthAsync(Guid userId, int year, int month);
+
+    //Tra i pagamenti indicati, quelli già saldati (con una transazione collegata)
+    Task<HashSet<int>> GetPaidPaymentIdsAsync(IEnumerable<int> plannedPaymentIds);
+
+    //Un pagamento previsto, solo se appartiene a un piano dell'utente, con la sua spesa ricorrente; null altrimenti
+    Task<PlannedPayment?> GetPlannedPaymentAsync(Guid userId, int plannedPaymentId);
 }

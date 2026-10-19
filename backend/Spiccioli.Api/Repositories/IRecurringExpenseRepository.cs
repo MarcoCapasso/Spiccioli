@@ -11,8 +11,8 @@ public interface IRecurringExpenseRepository
     //Una spesa, solo dell'utente, tracciata per poterla modificare; null se non esiste o non è sua
     Task<RecurringExpense?> GetByIdAsync(int id, Guid userId);
 
-    //Salva una nuova spesa ricorrente
-    Task AddAsync(RecurringExpense expense);
+    //Registra una nuova spesa senza salvarla: il salvataggio avviene insieme ai piani sincronizzati
+    void Add(RecurringExpense expense);
 
     //Salva nel database le modifiche
     Task SaveChangesAsync();

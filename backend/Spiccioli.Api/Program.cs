@@ -37,6 +37,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IRecurringExpenseService, RecurringExpenseService>();
 builder.Services.AddScoped<IMonthlyBudgetService, MonthlyBudgetService>();
+builder.Services.AddScoped<IPlannedPaymentSynchronizer, PlannedPaymentSynchronizer>();
+builder.Services.AddScoped<IPlannedPaymentService, PlannedPaymentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 //Verifica una categoria, a disposizione degli altri Service
 builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();

@@ -33,7 +33,7 @@ public class MonthlyBudgetService : IMonthlyBudgetService
         var existing = await _budgets.GetAsync(userId, year, month);
         if (existing is not null)
         {
-            return Result<(MonthlyBudgetResponse, bool)>.Success((ToResponse(existing), false));
+            return Result<(MonthlyBudgetResponse, bool)>.Success((await ToResponseAsync(existing), false));
         }
 
         var budget = await BuildNewBudgetAsync(userId, year, month);
@@ -43,14 +43,14 @@ public class MonthlyBudgetService : IMonthlyBudgetService
             //Creato un istante prima da un'altra richiesta: si restituisce il suo, senza errori
             var createdByOther = await _budgets.GetAsync(userId, year, month)
                 ?? throw new InvalidOperationException("Piano creato da un'altra richiesta ma non trovato.");
-            return Result<(MonthlyBudgetResponse, bool)>.Success((ToResponse(createdByOther), false));
+            return Result<(MonthlyBudgetResponse, bool)>.Success((await ToResponseAsync(createdByOther), false));
         }
 
         //Ricarica con le categorie delle voci, per avere i nomi nella risposta
         var saved = await _budgets.GetAsync(userId, year, month)
             ?? throw new InvalidOperationException("Piano appena creato non trovato.");
 
-        return Result<(MonthlyBudgetResponse, bool)>.Success((ToResponse(saved), true));
+        return Result<(MonthlyBudgetResponse, bool)>.Success((await ToResponseAsync(saved), true));
     }
 
     //Imposta entrate previste e obiettivo di risparmio del piano
@@ -68,7 +68,7 @@ public class MonthlyBudgetService : IMonthlyBudgetService
         await _budgets.SaveChangesAsync();
 
         //Nessuna ricarica: cambiano solo due valori del piano, le voci e le loro categorie sono già caricate
-        return Result<MonthlyBudgetResponse>.Success(ToResponse(budget));
+        return Result<MonthlyBudgetResponse>.Success(await ToResponseAsync(budget));
     }
 
 
@@ -105,7 +105,7 @@ public class MonthlyBudgetService : IMonthlyBudgetService
         var updated = await _budgets.GetAsync(userId, year, month)
             ?? throw new InvalidOperationException("Piano appena modificato non trovato.");
 
-        return Result<MonthlyBudgetResponse>.Success(ToResponse(updated));
+        return Result<MonthlyBudgetResponse>.Success(await ToResponseAsync(updated));
     }
 
     public async Task<bool> RemoveAllocationAsync(Guid userId, int year, int month, int categoryId)
@@ -199,9 +199,12 @@ public class MonthlyBudgetService : IMonthlyBudgetService
     }
 
 
-    //Conversione modello a DTO, con le voci in ordine di categoria e i pagamenti in ordine di scadenza
-    private static MonthlyBudgetResponse ToResponse(MonthlyBudget budget)
+    //Conversione modello a DTO, con le voci in ordine di categoria e i pagamenti in ordine di scadenza.
+    // Asincrona: per sapere quali pagamenti sono saldati serve una query sulle transazioni
+    private async Task<MonthlyBudgetResponse> ToResponseAsync(MonthlyBudget budget)
     {
+        var paidIds = await _budgets.GetPaidPaymentIdsAsync(budget.PlannedPayments.Select(p => p.Id));
+
         var allocations = budget.Allocations
             .OrderBy(a => a.Category?.Name)
             .Select(a => new BudgetAllocationResponse(a.CategoryId, a.Category?.Name, a.Amount))
@@ -209,7 +212,7 @@ public class MonthlyBudgetService : IMonthlyBudgetService
 
         var plannedPayments = budget.PlannedPayments
             .OrderBy(p => p.DueDate).ThenBy(p => p.Name)
-            .Select(p => new PlannedPaymentResponse(p.Id, p.Name, p.Amount, p.DueDate))
+            .Select(p => new PlannedPaymentResponse(p.Id, p.Name, p.Amount, p.DueDate, paidIds.Contains(p.Id)))
             .ToList();
 
         return new MonthlyBudgetResponse(

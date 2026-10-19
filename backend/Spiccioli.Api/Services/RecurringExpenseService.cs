@@ -10,14 +10,16 @@ public class RecurringExpenseService : IRecurringExpenseService
 {
     private readonly IRecurringExpenseRepository _repository;
     private readonly ICategoryValidator _categoryValidator;
+    private readonly IPlannedPaymentSynchronizer _synchronizer;
     private readonly TimeProvider _time;
 
     //L'orologio arriva dalla DI
     public RecurringExpenseService(
-        IRecurringExpenseRepository repository, ICategoryValidator categoryValidator, TimeProvider time)
+        IRecurringExpenseRepository repository, ICategoryValidator categoryValidator, IPlannedPaymentSynchronizer synchronizer, TimeProvider time)
     {
         _repository = repository;
         _categoryValidator = categoryValidator;
+        _synchronizer = synchronizer;
         _time = time;
     }
 
@@ -56,7 +58,10 @@ public class RecurringExpenseService : IRecurringExpenseService
             UserId = userId,
         };
 
-        await _repository.AddAsync(expense);
+        //Spesa e pagamenti nei piani già aperti vengono salvati insieme
+        _repository.Add(expense);
+        await _synchronizer.SyncAsync(expense);
+        await _repository.SaveChangesAsync();
 
         // Ricarica con la categoria inclusa, come per le transazioni
         var created = await _repository.GetByIdAsync(expense.Id, userId)
@@ -87,6 +92,9 @@ public class RecurringExpenseService : IRecurringExpenseService
         recurringExpense.StartDate = request.StartDate;
         recurringExpense.EndDate = request.EndDate;
         recurringExpense.CategoryId = request.CategoryId;
+
+        //I piani del mese corrente in avanti riflettono i nuovi dati
+        await _synchronizer.SyncAsync(recurringExpense);
 
         await _repository.SaveChangesAsync();
 
@@ -119,6 +127,10 @@ public class RecurringExpenseService : IRecurringExpenseService
         if (expense.EndDate is null || expense.EndDate > endOfMonth)
         {
             expense.EndDate = endOfMonth;
+
+            //Dopo la fine, i pagamenti non saldati dei mesi successivi spariscono
+            await _synchronizer.SyncAsync(expense); 
+            
             await _repository.SaveChangesAsync();
         }
 

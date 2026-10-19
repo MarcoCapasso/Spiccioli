@@ -30,7 +30,7 @@ public class TransactionService : ITransactionService
         var (transactions, totalCount) = await _repository.GetByUserAsync(
             userId, filter.From, filter.To, filter.CategoryId, page, pageSize);
 
-        var items = transactions.Select(t => ToResponse(t)).ToList();
+        var items = transactions.Select(t => TransactionResponse.FromTransaction(t)).ToList();
 
         return new PagedResponse<TransactionResponse>(items, page, pageSize, totalCount);
     }
@@ -40,7 +40,7 @@ public class TransactionService : ITransactionService
         var transaction = await _repository.GetByIdAsync(id, userId);
 
         //Non trovata (o non dell'utente): null; altrimenti la risposta
-        return transaction is null ? null : ToResponse(transaction);
+        return transaction is null ? null : TransactionResponse.FromTransaction(transaction);
     }
 
     //Crea la transazione
@@ -69,7 +69,7 @@ public class TransactionService : ITransactionService
         var created = await _repository.GetByIdAsync(transaction.Id, userId)
             ?? throw new InvalidOperationException("Transazione appena creata non trovata.");
 
-        return Result<TransactionResponse>.Success(ToResponse(created));
+        return Result<TransactionResponse>.Success(TransactionResponse.FromTransaction(created));
     }
 
     //Aggiorna la transazione
@@ -101,7 +101,7 @@ public class TransactionService : ITransactionService
         var updated = await _repository.GetByIdAsync(id, userId)
             ?? throw new InvalidOperationException("Transazione appena modificata non trovata");
         
-        return Result<TransactionResponse>.Success(ToResponse(updated));
+        return Result<TransactionResponse>.Success(TransactionResponse.FromTransaction(updated));
     }
 
     //Elimina la transazione
@@ -129,19 +129,5 @@ public class TransactionService : ITransactionService
             .Select(x => new CategoryTotalResponse(x.CategoryId, x.CategoryName, x.Type, x.Total))
             .ToList();
         
-    }
-
-    //Conversione da modello a DTO di risposta
-    private static TransactionResponse ToResponse(Transaction transaction)
-    {
-        return new TransactionResponse(
-            transaction.Id,
-            transaction.Amount,
-            transaction.Date,
-            transaction.Type,
-            transaction.Description,
-            transaction.CategoryId,
-            transaction.Category?.Name
-        );
     }
 }

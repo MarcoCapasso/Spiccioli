@@ -36,10 +36,9 @@ public class RecurringExpenseRepository : IRecurringExpenseRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task AddAsync(RecurringExpense expense)
+    public void Add(RecurringExpense expense)
     {
         _context.RecurringExpenses.Add(expense);
-        await _context.SaveChangesAsync();
     }
 
     public async Task SaveChangesAsync()

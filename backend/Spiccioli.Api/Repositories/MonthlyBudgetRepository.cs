@@ -57,4 +57,34 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IReadOnlyList<MonthlyBudget>> GetFromMonthAsync(Guid userId, int year, int month)
+    {
+        //"Da quel mese in avanti": un anno successivo, oppure lo stesso anno da quel mese in poi
+        return await _context.MonthlyBudgets
+            .Include(b => b.PlannedPayments)
+            .Where(b => b.UserId == userId && (b.Year > year || (b.Year == year && b.Month >= month)))
+            .ToListAsync();
+    }
+
+    public async Task<HashSet<int>> GetPaidPaymentIdsAsync(IEnumerable<int> plannedPaymentIds)
+    {
+        //Un pagamento è saldato se una transazione lo indica: la regola 8, nessun campo IsPaid
+        var paid = await _context.Transactions
+            .Where(t => t.PlannedPaymentId != null && plannedPaymentIds.Contains(t.PlannedPaymentId.Value))
+            .Select(t => t.PlannedPaymentId!.Value)
+            .ToListAsync();
+
+        return paid.ToHashSet();
+    }
+
+    public async Task<PlannedPayment?> GetPlannedPaymentAsync(Guid userId, int plannedPaymentId)
+    {
+        //Il pagamento non ha uno UserId: l'appartenenza si verifica attraverso il suo piano
+        return await _context.PlannedPayments
+            .AsNoTracking()
+            .Include(p => p.RecurringExpense)
+            .Where(p => p.Id == plannedPaymentId && p.MonthlyBudget!.UserId == userId)
+            .FirstOrDefaultAsync();
+    }
 }

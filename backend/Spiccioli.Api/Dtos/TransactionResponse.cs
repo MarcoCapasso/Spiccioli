@@ -10,4 +10,17 @@ public record TransactionResponse(
     TransactionType Type,
     string? Description,
     int? CategoryId,
-    string? CategoryName);
+    string? CategoryName)
+{
+    //Unico punto di conversione dal modello, utilizzato da tutti i service
+    public static TransactionResponse FromTransaction(Transaction transaction) =>
+        new(
+            transaction.Id,
+            transaction.Amount,
+            transaction.Date,
+            transaction.Type,
+            transaction.Description,
+            transaction.CategoryId,
+            transaction.Category?.Name
+        );
+}
