@@ -24,7 +24,7 @@
 # Categoria "Casa" dell'utente 1 (creata dall'onboarding): leggere l'Id dall'elenco delle categorie
 @houseCategoryId = 1
 # Spesa ricorrente di prova: impostare dopo averla creata
-@recurringExpenseId = 1
+@recurringExpenseId = 3
 
 # Da impostare prima di usare le richieste di eliminazione
 @transactionToDeleteId = 0
@@ -388,16 +388,29 @@ Authorization: Bearer {{token}}
   "categoryId": {{houseCategoryId}}
 }
 
+###
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Assicurazione",
+  "amount": 120.00,
+  "frequency": "Quarterly",
+  "startDate": "2025-11-10",
+  "categoryId": {{houseCategoryId}}
+}
+
 ### Modifica la spesa (PUT: vanno inviati tutti i campi) → 200
 PUT {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "name": "Affitto",
-  "amount": 680.00,
-  "frequency": "Monthly",
-  "startDate": "2026-01-01",
+  "name": "Assicurazione",
+  "amount": 120.00,
+  "frequency": "Quarterly",
+  "startDate": "2025-11-10",
   "categoryId": {{houseCategoryId}}
 }
 
@@ -463,4 +476,33 @@ Authorization: Bearer {{token}}
 
 ### Spesa ricorrente inesistente → 404
 GET {{baseUrl}}/api/recurring-expenses/999
+Authorization: Bearer {{token}}
+
+
+# ============================================================
+# PIANI MENSILI
+# ============================================================
+
+### Apre ottobre: la prima volta lo crea → 201
+POST {{baseUrl}}/api/budgets/2026/10
+Authorization: Bearer {{token}}
+
+### Apre di nuovo ottobre: esiste già → 200, stesso piano
+POST {{baseUrl}}/api/budgets/2026/10
+Authorization: Bearer {{token}}
+
+### Apre febbraio 2027 → 201, con affitto e assicurazione
+POST {{baseUrl}}/api/budgets/2027/2
+Authorization: Bearer {{token}}
+
+### Apre novembre → 201
+POST {{baseUrl}}/api/budgets/2026/11
+Authorization: Bearer {{token}}
+
+### Mese non valido → 400
+POST {{baseUrl}}/api/budgets/2026/13
+Authorization: Bearer {{token}}
+
+### Oltre dodici mesi nel futuro → 400
+POST {{baseUrl}}/api/budgets/2027/11
 Authorization: Bearer {{token}}

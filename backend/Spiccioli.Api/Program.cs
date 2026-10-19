@@ -27,6 +27,7 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
+builder.Services.AddScoped<IMonthlyBudgetRepository, MonthlyBudgetRepository>();
 
 //Service: stesso ciclo di vita dei Repository da cui dipendono
 builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -34,8 +35,11 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
-builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
 builder.Services.AddScoped<IRecurringExpenseService, RecurringExpenseService>();
+builder.Services.AddScoped<IMonthlyBudgetService, MonthlyBudgetService>();
+
+//Verifica una categoria, a disposizione degli altri Service
+builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
 
 //Hash delle password algoritmo lento con salt, mai la password in chiaro
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
