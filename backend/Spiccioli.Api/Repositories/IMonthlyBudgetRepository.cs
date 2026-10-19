@@ -14,4 +14,7 @@ public interface IMonthlyBudgetRepository
     //Salva un nuovo piano con voci e pagamenti, tutto insieme.
     // False se nel frattempo un'altra richiesta ha già creato il piano di quel mese
     Task<bool> TryAddAsync(MonthlyBudget budget);
+
+    //Salva le modifiche al piano tracciato, comprese le voci aggiunte, cambiate o tolte dalla lista
+    Task SaveChangesAsync();
 }

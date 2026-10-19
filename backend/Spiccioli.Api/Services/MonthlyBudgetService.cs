@@ -5,17 +5,20 @@ using Spiccioli.Api.Dtos;
 
 namespace Spiccioli.Api.Services;
 
+//Apertura e modifica dei piani mensili: entrate, risparmio e voci di spesa
 public class MonthlyBudgetService : IMonthlyBudgetService
 {
     private readonly IMonthlyBudgetRepository _budgets;
     private readonly IRecurringExpenseRepository _recurringExpenses;
     private readonly TimeProvider _time;
+    private readonly ICategoryValidator _categoryValidator;
 
-    public MonthlyBudgetService(IMonthlyBudgetRepository budgets, IRecurringExpenseRepository recurringExpenses, TimeProvider time)
+    public MonthlyBudgetService(IMonthlyBudgetRepository budgets, IRecurringExpenseRepository recurringExpenses, TimeProvider time, ICategoryValidator categoryValidator)
     {
         _budgets = budgets;
         _recurringExpenses = recurringExpenses;
         _time = time;
+        _categoryValidator = categoryValidator;
     }
 
     public async Task<Result<(MonthlyBudgetResponse Budget, bool Created)>> OpenAsync(Guid userId, int year, int month)
@@ -48,6 +51,82 @@ public class MonthlyBudgetService : IMonthlyBudgetService
             ?? throw new InvalidOperationException("Piano appena creato non trovato.");
 
         return Result<(MonthlyBudgetResponse, bool)>.Success((ToResponse(saved), true));
+    }
+
+    //Imposta entrate previste e obiettivo di risparmio del piano
+    public async Task<Result<MonthlyBudgetResponse>> UpdateAsync(Guid userId, int year, int month, UpdateBudgetRequest request)
+    {
+        var budget = await _budgets.GetAsync(userId, year, month);
+        if (budget is null)
+        {
+            return Result<MonthlyBudgetResponse>.Failure(Error.NotFound("Piano del mese non trovato: aprilo prima di modificarlo."));
+        }
+
+        budget.PlannedIncome = request.PlannedIncome;
+        budget.SavingsTarget = request.SavingsTarget;
+
+        await _budgets.SaveChangesAsync();
+
+        //Nessuna ricarica: cambiano solo due valori del piano, le voci e le loro categorie sono già caricate
+        return Result<MonthlyBudgetResponse>.Success(ToResponse(budget));
+    }
+
+
+    public async Task<Result<MonthlyBudgetResponse>> SetAllocationAsync(Guid userId, int year, int month, int categoryId, SetAllocationRequest request)
+    {
+        var budget = await _budgets.GetAsync(userId, year, month);
+        if (budget is null)
+        {
+            return Result<MonthlyBudgetResponse>.Failure(Error.NotFound("Piano del mese non trovato: aprilo prima di modificarlo."));
+        }
+
+        //Le voci sono solo per categorie di uscita, utilizzabili dall'utente
+        var categoryError = await _categoryValidator.ValidateAsync(
+            userId, categoryId, expectedType: TransactionType.Expense, field: nameof(categoryId));
+        if (categoryError is not null)
+        {
+            return Result<MonthlyBudgetResponse>.Failure(categoryError);
+        }
+
+        //Inserisce o aggiorna: una sola voce per categoria
+        var allocation = budget.Allocations.FirstOrDefault(a => a.CategoryId == categoryId);
+        if (allocation is null)
+        {
+            budget.Allocations.Add(new BudgetAllocation { CategoryId = categoryId, Amount = request.Amount });
+        }
+        else
+        {
+            allocation.Amount = request.Amount;
+        }
+
+        await _budgets.SaveChangesAsync();
+
+        //Ricarica per avere il nome della categoria anche sulla voce appena aggiunta
+        var updated = await _budgets.GetAsync(userId, year, month)
+            ?? throw new InvalidOperationException("Piano appena modificato non trovato.");
+
+        return Result<MonthlyBudgetResponse>.Success(ToResponse(updated));
+    }
+
+    public async Task<bool> RemoveAllocationAsync(Guid userId, int year, int month, int categoryId)
+    {
+        var budget = await _budgets.GetAsync(userId, year, month);
+        if (budget is null)
+        {
+            return false;
+        }
+
+        var allocation = budget.Allocations.FirstOrDefault(a => a.CategoryId == categoryId);
+        if (allocation is null)
+        {
+            return false;
+        }
+
+        budget.Allocations.Remove(allocation);
+        await _budgets.SaveChangesAsync();
+
+        return true;
+
     }
 
 

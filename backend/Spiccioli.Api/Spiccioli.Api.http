@@ -506,3 +506,53 @@ Authorization: Bearer {{token}}
 ### Oltre dodici mesi nel futuro → 400
 POST {{baseUrl}}/api/budgets/2027/11
 Authorization: Bearer {{token}}
+
+### Imposta entrate e risparmio di novembre → 200
+PUT {{baseUrl}}/api/budgets/2026/11
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "plannedIncome": 1800.00, "savingsTarget": 300.00 }
+
+### Imposta la voce di Alimentari: la crea → 200
+PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{expenseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 300.00 }
+
+### Imposta di nuovo la voce di Alimentari: la aggiorna → 200
+PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{expenseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 350.00 }
+
+### Voce a zero per Casa: "ho deciso di non spendere" → 200
+PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{houseCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 0 }
+
+### Voce in una categoria di entrata → 400
+PUT {{baseUrl}}/api/budgets/2026/11/allocations/{{incomeCategoryId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "amount": 100.00 }
+
+### Modifica di un piano mai aperto → 404
+PUT {{baseUrl}}/api/budgets/2026/9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "plannedIncome": 1000.00, "savingsTarget": 0 }
+
+### Toglie la voce di Casa → 204
+DELETE {{baseUrl}}/api/budgets/2026/11/allocations/{{houseCategoryId}}
+Authorization: Bearer {{token}}
+
+### Apre dicembre: copia novembre → 201
+POST {{baseUrl}}/api/budgets/2026/12
+Authorization: Bearer {{token}}
