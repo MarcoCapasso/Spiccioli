@@ -6,7 +6,7 @@ namespace Spiccioli.Api.Controllers;
 
 //Endpoint HTTP delle categorie
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/categories")] 
 public class CategoriesController : ApiControllerBase
 {
     private readonly ICategoryService _service;

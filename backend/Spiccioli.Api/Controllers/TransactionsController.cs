@@ -6,7 +6,7 @@ namespace Spiccioli.Api.Controllers;
 
 //Endpoint HTTP delle transazioni
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/transactions")] 
 public class TransactionsController : ApiControllerBase
 {
     private readonly ITransactionService _service;

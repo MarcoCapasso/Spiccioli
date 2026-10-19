@@ -21,6 +21,10 @@
 @expenseCategoryId = 1
 @incomeCategoryId = 2
 @otherExpenseCategoryId = 3
+# Categoria "Casa" dell'utente 1 (creata dall'onboarding): leggere l'Id dall'elenco delle categorie
+@houseCategoryId = 1
+# Spesa ricorrente di prova: impostare dopo averla creata
+@recurringExpenseId = 1
 
 # Da impostare prima di usare le richieste di eliminazione
 @transactionToDeleteId = 0
@@ -350,3 +354,113 @@ Authorization: Bearer {{token2}}
 ### L'utente 2 chiede una transazione dell'utente 1 → 404
 GET {{baseUrl}}/api/transactions/{{transactionId}}
 Authorization: Bearer {{token2}}
+
+# ============================================================
+# SPESE RICORRENTI
+# ============================================================
+
+# ------------------------------------------------------------
+# Lettura
+# ------------------------------------------------------------
+
+### Spese ricorrenti dell'utente, in ordine di nome → 200
+GET {{baseUrl}}/api/recurring-expenses
+Authorization: Bearer {{token}}
+
+### Una spesa ricorrente per Id → 200 (imposta prima @recurringExpenseId)
+GET {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Scrittura (ATTENZIONE: modificano i dati)
+# ------------------------------------------------------------
+
+### Crea un affitto mensile senza data di fine → 201 (imposta prima @houseCategoryId)
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Affitto",
+  "amount": 650.00,
+  "frequency": "Monthly",
+  "startDate": "2026-01-01",
+  "categoryId": {{houseCategoryId}}
+}
+
+### Modifica la spesa (PUT: vanno inviati tutti i campi) → 200
+PUT {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Affitto",
+  "amount": 680.00,
+  "frequency": "Monthly",
+  "startDate": "2026-01-01",
+  "categoryId": {{houseCategoryId}}
+}
+
+### Elimina la spesa: mai usata → eliminazione fisica, già usata → terminazione; 204 in entrambi i casi
+DELETE {{baseUrl}}/api/recurring-expenses/{{recurringExpenseId}}
+Authorization: Bearer {{token}}
+
+# ------------------------------------------------------------
+# Errori attesi
+# ------------------------------------------------------------
+
+### Data di fine prima di quella di inizio → 400
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Rata errata",
+  "amount": 100.00,
+  "frequency": "Monthly",
+  "startDate": "2026-06-01",
+  "endDate": "2026-01-01",
+  "categoryId": {{houseCategoryId}}
+}
+
+### Data di inizio mancante → 400
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Senza inizio",
+  "amount": 100.00,
+  "frequency": "Monthly",
+  "categoryId": {{houseCategoryId}}
+}
+
+### Categoria di entrata → 400
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Spesa in Stipendio",
+  "amount": 100.00,
+  "frequency": "Monthly",
+  "startDate": "2026-01-01",
+  "categoryId": {{incomeCategoryId}}
+}
+
+### Frequenza non prevista → 400
+POST {{baseUrl}}/api/recurring-expenses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Settimanale",
+  "amount": 10.00,
+  "frequency": "Weekly",
+  "startDate": "2026-01-01",
+  "categoryId": {{houseCategoryId}}
+}
+
+### Spesa ricorrente inesistente → 404
+GET {{baseUrl}}/api/recurring-expenses/999
+Authorization: Bearer {{token}}

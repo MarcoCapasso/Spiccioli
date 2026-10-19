@@ -26,6 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
 
 //Service: stesso ciclo di vita dei Repository da cui dipendono
 builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -34,9 +35,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
+builder.Services.AddScoped<IRecurringExpenseService, RecurringExpenseService>();
 
 //Hash delle password algoritmo lento con salt, mai la password in chiaro
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+//L'orologio come dipendenza: l'ora di sistema nell'applicazione
+builder.Services.AddSingleton(TimeProvider.System);
 
 
 builder.Services.AddControllers()
