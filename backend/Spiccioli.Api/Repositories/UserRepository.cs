@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Spiccioli.Api.Data;
 using Spiccioli.Api.Models;
+
 
 namespace Spiccioli.Api.Repositories;
 
@@ -14,15 +16,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    //L'email arriva già normalizzata dal Service
-    public async Task<User?> GetByEmailAsync(string email)
-    {
-        return await _context.Users
-            .AsNoTracking()
-            .Where(u => u.Email == email)
-            .FirstOrDefaultAsync();
-    }
-
+    
     //L'utente con questo Id, tracciato: l'onboarding lo modificherà
     public async Task<User?> GetByIdAsync(Guid id)
     {
@@ -31,10 +25,26 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task AddAsync(User user)
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        return await _context.Users.AnyAsync(u => u.Id == id);
+    }
+
+    public async Task<bool> TryAddAsync(User user)
     {
         _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            //Un'altra richiesta ha creato lo stesso utente un istante prima: si scarta il nostro tentativo
+            _context.ChangeTracker.Clear();
+            return false;
+        }
     }
 
     public async Task SaveChangesAsync()

@@ -36,6 +36,10 @@ builder.Services.AddScoped<IPlannedPaymentSynchronizer, PlannedPaymentSynchroniz
 builder.Services.AddScoped<IPlannedPaymentService, PlannedPaymentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
+//Crea l'utente al primo accesso; la cache ricorda chi esiste già
+builder.Services.AddScoped<IUserProvisioner, UserProvisioner>();
+builder.Services.AddMemoryCache();
+
 //Verifica una categoria, a disposizione degli altri Service
 builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
 
@@ -77,6 +81,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = SupabaseOptions.Audience,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+        };
+
+        //Dopo ogni token valido prima di qualunque Controller
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var provisioner = context.HttpContext.RequestServices.GetRequiredService<IUserProvisioner>();
+                await provisioner.EnsureExistsAsync(context.Principal!);
+            },
         };
     });
 
