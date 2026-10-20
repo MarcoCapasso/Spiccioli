@@ -64,24 +64,33 @@ builder.Services.AddOptions<JwtOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+//Impostazioni di Supabase Auth, verificate all'avvio
+builder.Services.AddOptions<SupabaseOptions>()
+    .Bind(builder.Configuration.GetSection(SupabaseOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+//Verifica dei token di Supabase: firma con le chiavi pubbliche, scoperte dall'Authority
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-            ?? throw new InvalidOperationException("Sezione 'Jwt' mancante nella configurazione. Vedi README.");
+        var supabase = builder.Configuration.GetSection(SupabaseOptions.SectionName).Get<SupabaseOptions>()
+            ?? throw new InvalidOperationException("Sezione 'Supabase' mancante nella configurazione. Vedi README.");
 
-        //Mantiene i nomi nel claim così come dal token
+        //Da qui ASP.NET Core scarica le chiavi pubbliche, e le aggiorna da solo
+        options.Authority = supabase.Authority;
+
+        //Mantiene i nomi dei claim come sono nel token ("sub", "email")
         options.MapInboundClaims = false;
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = jwt.Issuer,
+            ValidIssuer = supabase.Authority,
             ValidateAudience = true,
-            ValidAudience = jwt.Audience,
+            ValidAudience = SupabaseOptions.Audience,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
         };
     });
 
