@@ -8,6 +8,9 @@ import { Input } from "../components/Input";
 import { Field } from "../components/Field";
 import { Select } from "../components/Select";
 import { Textarea } from "../components/Textarea";
+import { AmountInput } from "../components/AmountInput";
+import type { TransactionType } from "../types";
+import { TypeToggle } from "../components/TypeToggle";
 import { useState } from "react";
 import "../styles/design-system.css";
 
@@ -30,6 +33,8 @@ const COLOR_TOKENS = [
 //Pagina di sviluppo: tutti i token e i componenti, in tema chiaro e scuro
 export function DesignSystemPage() {
   const [demoText, setDemoText] = useState("");
+  const [demoAmount, setDemoAmount] = useState("");
+  const [demoType, setDemoType] = useState<TransactionType>("Expense");
 
   return (
     <div className="ds-page">
@@ -119,6 +124,18 @@ export function DesignSystemPage() {
         <Field id="ds-note" label="Nota">
           <Textarea id="ds-note" placeholder="Aggiungi un dettaglio" rows={2} />
         </Field>
+      </div>
+
+      <div>
+        <Field id="ds-amount" label="Importo">
+          <AmountInput
+            id="ds-amount"
+            value={demoAmount}
+            onChange={setDemoAmount}
+            tone={demoType}
+          />
+        </Field>
+        <TypeToggle value={demoType} onChange={setDemoType} />
       </div>
 
       <div>

@@ -1,0 +1,40 @@
+/* ───────────── Interruttore Uscita/Entrata ───────────── */
+
+/* Il riquadro incassato che contiene i due segmenti */
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-sunk);
+  border-radius: var(--r);
+}
+
+.seg button {
+  height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background .15s, color .15s;
+}
+
+.seg button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.seg button[aria-pressed="true"] {
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.seg button[aria-pressed="true"].exp { color: var(--danger-ink); }
+.seg button[aria-pressed="true"].inc { color: var(--success-ink); }

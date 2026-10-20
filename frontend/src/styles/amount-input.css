@@ -1,0 +1,57 @@
+/* ───────────── Campo dell'importo ───────────── */
+
+/* Il contenitore, bordo, sfondo, focus ed errore */
+.amount-box {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+/* Quando il campo al suo interno è attivo, è il contenitore a mostrarlo */
+.amount-box:focus-within {
+  border-color: var(--primary);
+  box-shadow: var(--ring);
+}
+
+.amount-box[data-invalid="true"] {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.amount-box .cur {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+/* Il campo vero: invisibile come campo, si vede solo il numero */
+.amount-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-box input:focus {
+  box-shadow: none;
+}
+
+/* Il colore dell'importo segue il tipo di movimento */
+.amount-box.exp input {
+  color: var(--danger-ink);
+}
+.amount-box.inc input {
+  color: var(--success-ink);
+}

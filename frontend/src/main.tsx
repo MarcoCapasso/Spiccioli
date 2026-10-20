@@ -14,6 +14,8 @@ import "./styles/badge.css";
 import "./styles/card.css";
 import "./styles/input.css";
 import "./styles/field.css";
+import "./styles/amount-input.css";
+import "./styles/type-toggle.css"
 
 import App from "./App.tsx";
 
