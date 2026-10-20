@@ -1,0 +1,21 @@
+/* ───────────── Impaginazione ───────────── */
+
+/* Elementi in fila, che vanno a capo se non c'è spazio */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Elementi in colonna, con una distanza regolare */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+}
+
+/* Occupa tutto lo spazio libero in una fila: spinge ciò che segue verso destra */
+.spacer {
+  flex: 1;
+}

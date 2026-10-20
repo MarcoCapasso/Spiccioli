@@ -21,6 +21,11 @@
   gap: 14px;
 }
 
+.ds-icon {
+  width: 24px;
+  height: 24px;
+}
+
 .swatch {
   display: flex;
   flex-direction: column;

@@ -1,0 +1,38 @@
+/* ───────────── Card ───────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Una card con la spaziatura interna, per i contenuti semplici */
+.card-pad {
+  padding: var(--s6);
+}
+
+/* L'intestazione: titolo a sinistra, un'eventuale azione a destra */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 10px;
+}
+
+/* Il collegamento dell'intestazione, come "Vedi tutti" */
+.card-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.card-link:hover {
+  background: var(--primary-soft);
+}

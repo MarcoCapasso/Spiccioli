@@ -1,0 +1,36 @@
+/* ───────────── Badge ───────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Sfondo tenue e testo pieno della stessa famiglia di colore */
+.badge-income {
+  background: var(--success-soft);
+  color: var(--success-ink);
+}
+.badge-expense {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+.badge-neutral {
+  background: var(--surface-sunk);
+  color: var(--text-2);
+}
+.badge-primary {
+  background: var(--primary-soft);
+  color: var(--primary-ink);
+}
