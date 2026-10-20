@@ -12,6 +12,8 @@ import "./styles/button.css";
 import "./styles/icon-button.css";
 import "./styles/badge.css";
 import "./styles/card.css";
+import "./styles/input.css";
+import "./styles/field.css";
 
 import App from "./App.tsx";
 

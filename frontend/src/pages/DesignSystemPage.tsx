@@ -4,6 +4,11 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { Button } from "../components/Button";
 import { Badge, TransactionTypeBadge } from "../components/Badge";
 import { Card, CardHeader } from "../components/Card";
+import { Input } from "../components/Input";
+import { Field } from "../components/Field";
+import { Select } from "../components/Select";
+import { Textarea } from "../components/Textarea";
+import { useState } from "react";
 import "../styles/design-system.css";
 
 //I token di colore da mostrare: nome leggibile e nome della variabile CSS
@@ -24,6 +29,8 @@ const COLOR_TOKENS = [
 
 //Pagina di sviluppo: tutti i token e i componenti, in tema chiaro e scuro
 export function DesignSystemPage() {
+  const [demoText, setDemoText] = useState("");
+
   return (
     <div className="ds-page">
       <div>
@@ -62,6 +69,56 @@ export function DesignSystemPage() {
             ))}
           </div>
         </section>
+      </div>
+
+      <div
+        className="ds-grid"
+        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}
+      >
+        <Field id="ds-text" label="Testo" hint="Un suggerimento sotto il campo">
+          <Input
+            id="ds-text"
+            value={demoText}
+            onChange={(e) => setDemoText(e.target.value)}
+            placeholder="Es. Spesa al mercato"
+          />
+        </Field>
+        <Field
+          id="ds-error"
+          label="Con errore"
+          error="Inserisci un importo valido"
+        >
+          <Input id="ds-error" invalid defaultValue="abc" />
+        </Field>
+        <Field id="ds-disabled" label="Disabilitato">
+          <Input id="ds-disabled" disabled defaultValue="Non modificabile" />
+        </Field>
+        <Field id="ds-search" label="Con icona">
+          <Input
+            id="ds-search"
+            icon="search"
+            placeholder="Cerca per titolo o nota"
+          />
+        </Field>
+      </div>
+
+      <div>
+        <Field id="ds-select" label="Categoria">
+          <Select id="ds-select" defaultValue="">
+            <option value="" disabled>
+              Scegli una categoria
+            </option>
+            <option value="1">Alimentari</option>
+            <option value="2">Casa</option>
+            <option value="3">Trasporti</option>
+          </Select>
+        </Field>
+        <Field id="ds-date" label="Data">
+          <Input id="ds-date" type="date" />
+        </Field>
+        <Field id="ds-note" label="Nota">
+          <Textarea id="ds-note" placeholder="Aggiungi un dettaglio" rows={2} />
+        </Field>
       </div>
 
       <div>
