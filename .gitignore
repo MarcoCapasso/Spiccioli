@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+#File di richieste test
+backend/Spiccioli.Api/Spiccioli.Api.http
+
 # User-specific files
 *.rsuser
 *.suo
