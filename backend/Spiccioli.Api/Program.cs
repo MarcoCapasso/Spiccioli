@@ -1,14 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 
 using Spiccioli.Api.Data;
 using Spiccioli.Api.Repositories;
 using Spiccioli.Api.Services;
-using Spiccioli.Api.Models;
 using Spiccioli.Api.Common;
 
 
@@ -32,8 +29,6 @@ builder.Services.AddScoped<IMonthlyBudgetRepository, MonthlyBudgetRepository>();
 //Service: stesso ciclo di vita dei Repository da cui dipendono
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IRecurringExpenseService, RecurringExpenseService>();
 builder.Services.AddScoped<IMonthlyBudgetService, MonthlyBudgetService>();
@@ -43,9 +38,6 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 //Verifica una categoria, a disposizione degli altri Service
 builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
-
-//Hash delle password algoritmo lento con salt, mai la password in chiaro
-builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 //L'orologio come dipendenza: l'ora di sistema nell'applicazione
 builder.Services.AddSingleton(TimeProvider.System);
@@ -57,12 +49,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter(allowIntegerValues : false));
     });
-
-//Impostazioni dei token, verificate all'avvio: senza una chiave valida il server non parte
-builder.Services.AddOptions<JwtOptions>()
-    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
 
 //Impostazioni di Supabase Auth, verificate all'avvio
 builder.Services.AddOptions<SupabaseOptions>()

@@ -47,7 +47,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("MonthlyBudgetId", "CategoryId")
                         .IsUnique();
 
-                    b.ToTable("BudgetAllocations", (string)null);
+                    b.ToTable("BudgetAllocations");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.Category", b =>
@@ -77,7 +77,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("UserId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.MonthlyBudget", b =>
@@ -110,7 +110,7 @@ namespace Spiccioli.Api.Migrations
                     b.HasIndex("UserId", "Year", "Month")
                         .IsUnique();
 
-                    b.ToTable("MonthlyBudgets", (string)null);
+                    b.ToTable("MonthlyBudgets");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.PlannedPayment", b =>
@@ -145,7 +145,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("RecurringExpenseId");
 
-                    b.ToTable("PlannedPayments", (string)null);
+                    b.ToTable("PlannedPayments");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.RecurringExpense", b =>
@@ -186,7 +186,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RecurringExpenses", (string)null);
+                    b.ToTable("RecurringExpenses");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.Transaction", b =>
@@ -229,7 +229,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.User", b =>
@@ -255,16 +255,12 @@ namespace Spiccioli.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Spiccioli.Api.Models.BudgetAllocation", b =>
