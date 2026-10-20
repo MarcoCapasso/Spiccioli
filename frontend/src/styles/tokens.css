@@ -1,0 +1,66 @@
+:root {
+/* ───────────── Design colori ───────────── */
+  /* Sfondo, per livelli */
+  --bg: #f5f1e8;
+  --surface: #fffcf6;
+  --surface-2: #faf5ea;
+  --surface-sunk: #ece4d3;
+  --panna-deep: #ebe2ce;
+  --panna-line: #ddd2bc;
+
+  /* Colore primario */
+  --primary: #f97316;
+  --primary-h: #ea580c; /*hover*/
+  --primary-soft: #fff1e6;
+  --primary-ink: #c2410c;
+
+  /* Colore secondario */
+  --secondary: #414141;
+  --secondary-h: #2e2e2e;
+
+  /* Gerarchia del testo */
+  --text: #1f1f1f;
+  --text-2: #6b6b6b;
+  --text-3: #9a958c;
+
+  /* Bordi */
+  --border: #e9e1d1;
+  --border-strong: #dad0bc;
+
+  /* Significati: entrate, uscite, successo ed errore */
+  --success: #22c55e;
+  --success-ink: #15803d;
+  --success-soft: #e9f9ef;
+  --danger: #ef4444;
+  --danger-ink: #dc2626;
+  --danger-soft: #fdecec;
+
+/* ───────────── Ombre ───────────── */
+  --shadow-sm: 0 1px 2px rgba(70, 52, 28, 0.06);
+  --shadow: 0 1px 2px rgba(70, 52, 28, 0.05), 0 6px 20px rgba(70, 52, 28, 0.06);
+  --shadow-lg: 0 12px 40px rgba(50, 36, 18, 0.18);
+
+/* ───────────── Raggi degli angoli ───────────── */
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+
+/* ───────────── Spaziature ───────────── */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+
+/* ───────────── Carattere e anello di focus ───────────── */
+  --font:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  --ring: 0 0 0 3px rgba(249, 115, 22, 0.35);
+
+  color-scheme: light;
+}

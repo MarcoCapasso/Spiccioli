@@ -1,0 +1,32 @@
+/* ───────────── Tema scuro ───────────── */
+:root[data-theme="dark"] {
+  --bg: #1b1916;
+  --surface: #25221e;
+  --surface-2: #2b2823;
+  --surface-sunk: #211e1a;
+  --panna-deep: #2e2924;
+  --panna-line: #3f3932;
+
+  --primary-soft: #3a2414;
+  --primary-ink: #fdba74;
+
+  --secondary: #e7e3dc;
+  --secondary-h: #ffffff;
+
+  --text: #f3efe7;
+  --text-2: #b2aba1;
+  --text-3: #857e74;
+
+  --border: #38342e;
+  --border-strong: #4a453e;
+
+  --success-ink: #4ade80;
+  --success-soft: #16301f;
+  --danger-ink: #f87171;
+  --danger-soft: #3a1c1c;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+
+  color-scheme: dark;
+}
