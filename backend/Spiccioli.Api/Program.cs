@@ -60,6 +60,19 @@ builder.Services.AddOptions<SupabaseOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+//Le origini da cui il browser può chiamare l'API
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 //Verifica dei token di Supabase: firma con le chiavi pubbliche, scoperte dall'Authority
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -110,6 +123,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//Il permesso del browser
+app.UseCors();
 
 //Prima si stabilisce chi è l'utente (dal token), poi si decide cosa può fare
 app.UseAuthentication();
