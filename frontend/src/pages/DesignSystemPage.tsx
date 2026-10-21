@@ -5,6 +5,7 @@ import { Badge, TransactionTypeBadge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { Card, CardHeader } from "../components/Card";
 import { ConfirmModal } from "../components/ConfirmModal";
+import { apiFetch, ApiError, errorMessage } from "../api/client";
 import { EmptyState } from "../components/States";
 import { ErrorState } from "../components/States";
 import { Field } from "../components/Field";
@@ -40,16 +41,29 @@ const COLOR_TOKENS = [
 
 //Le icone da mostrare nella pagina
 const DEMO_ICONS: IconName[] = [
-  "home", "list", "tag", "plus", "edit", "trash", "search",
-  "wallet", "coin", "sun", "moon", "check", "alert", "info",
+  "home",
+  "list",
+  "tag",
+  "plus",
+  "edit",
+  "trash",
+  "search",
+  "wallet",
+  "coin",
+  "sun",
+  "moon",
+  "check",
+  "alert",
+  "info",
 ];
 
 //Una griglia di campi, ognuno largo almeno 250px
-const FIELDS_GRID = { gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" };
+const FIELDS_GRID = {
+  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+};
 
 //Pagina di sviluppo
 export function DesignSystemPage() {
-
   //Stati delle prove interattive
   const [demoText, setDemoText] = useState("");
   const [demoAmount, setDemoAmount] = useState("");
@@ -58,13 +72,30 @@ export function DesignSystemPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const showToast = useToast();
 
+  //Prova: una chiamata al backend con il client dell'API
+  async function tryApi() {
+    try {
+      await apiFetch("/api/me");
+      showToast({ kind: "success", title: "Risposta ricevuta" });
+    } catch (error) {
+      const status = error instanceof ApiError ? ` (${error.status})` : "";
+      showToast({
+        kind: "error",
+        title: `Richiesta non riuscita${status}`,
+        message: errorMessage(error),
+      });
+    }
+  }
+
   return (
     <div className="ds-page">
       {/* ───────────── Intestazione ───────────── */}
       <header className="row">
         <div className="spacer">
           <h1 className="t-h1">Sistema di design</h1>
-          <p className="t-small" style={{ margin: 0 }}>Componenti e stati riutilizzabili</p>
+          <p className="t-small" style={{ margin: 0 }}>
+            Componenti e stati riutilizzabili
+          </p>
         </div>
         <ThemeToggle />
       </header>
@@ -91,11 +122,15 @@ export function DesignSystemPage() {
         <Card padded>
           <div className="stack" style={{ gap: 10 }}>
             <div className="t-display num">2.450,00 €</div>
-            <div className="t-xs">Display · cifre tabellari per gli importi</div>
+            <div className="t-xs">
+              Display · cifre tabellari per gli importi
+            </div>
             <h1 className="t-h1">Titolo pagina</h1>
             <h2 className="t-h2">Titolo sezione</h2>
             <div className="t-label">Etichetta campo</div>
-            <p style={{ margin: 0 }}>Testo di corpo per descrizioni e paragrafi.</p>
+            <p style={{ margin: 0 }}>
+              Testo di corpo per descrizioni e paragrafi.
+            </p>
             <div className="t-small">Testo secondario per i metadati</div>
             <div className="t-xs">Testo minimo per date e dettagli</div>
           </div>
@@ -118,7 +153,9 @@ export function DesignSystemPage() {
           <Button icon="plus">Primario</Button>
           <Button variant="secondary">Secondario</Button>
           <Button variant="dark">Scuro</Button>
-          <Button variant="danger" icon="trash">Elimina</Button>
+          <Button variant="danger" icon="trash">
+            Elimina
+          </Button>
           <Button variant="ghost">Ghost</Button>
           <Button disabled>Disabilitato</Button>
           <Button loading>Salvataggio…</Button>
@@ -154,7 +191,10 @@ export function DesignSystemPage() {
               title="Movimenti recenti"
               action={<button className="card-link">Vedi tutti</button>}
             />
-            <p className="t-small" style={{ padding: "0 20px 20px", margin: 0 }}>
+            <p
+              className="t-small"
+              style={{ padding: "0 20px 20px", margin: 0 }}
+            >
               Il contenuto gestisce la sua spaziatura.
             </p>
           </Card>
@@ -165,7 +205,11 @@ export function DesignSystemPage() {
       <section className="ds-section">
         <h2 className="t-h2">Campi</h2>
         <div className="ds-grid" style={FIELDS_GRID}>
-          <Field id="ds-text" label="Testo" hint="Un suggerimento sotto il campo">
+          <Field
+            id="ds-text"
+            label="Testo"
+            hint="Un suggerimento sotto il campo"
+          >
             <Input
               id="ds-text"
               value={demoText}
@@ -173,18 +217,28 @@ export function DesignSystemPage() {
               placeholder="Es. Spesa al mercato"
             />
           </Field>
-          <Field id="ds-error" label="Con errore" error="Inserisci un importo valido">
+          <Field
+            id="ds-error"
+            label="Con errore"
+            error="Inserisci un importo valido"
+          >
             <Input id="ds-error" invalid defaultValue="abc" />
           </Field>
           <Field id="ds-disabled" label="Disabilitato">
             <Input id="ds-disabled" disabled defaultValue="Non modificabile" />
           </Field>
           <Field id="ds-search" label="Con icona">
-            <Input id="ds-search" icon="search" placeholder="Cerca per titolo o nota" />
+            <Input
+              id="ds-search"
+              icon="search"
+              placeholder="Cerca per titolo o nota"
+            />
           </Field>
           <Field id="ds-select" label="Categoria">
             <Select id="ds-select" defaultValue="">
-              <option value="" disabled>Scegli una categoria</option>
+              <option value="" disabled>
+                Scegli una categoria
+              </option>
               <option value="1">Alimentari</option>
               <option value="2">Casa</option>
               <option value="3">Trasporti</option>
@@ -194,7 +248,11 @@ export function DesignSystemPage() {
             <Input id="ds-date" type="date" />
           </Field>
           <Field id="ds-note" label="Nota">
-            <Textarea id="ds-note" placeholder="Aggiungi un dettaglio" rows={2} />
+            <Textarea
+              id="ds-note"
+              placeholder="Aggiungi un dettaglio"
+              rows={2}
+            />
           </Field>
         </div>
       </section>
@@ -203,7 +261,12 @@ export function DesignSystemPage() {
         <h2 className="t-h2">Importo e tipo</h2>
         <div className="ds-grid" style={FIELDS_GRID}>
           <Field id="ds-amount" label="Importo">
-            <AmountInput id="ds-amount" value={demoAmount} onChange={setDemoAmount} tone={demoType} />
+            <AmountInput
+              id="ds-amount"
+              value={demoAmount}
+              onChange={setDemoAmount}
+              tone={demoType}
+            />
           </Field>
           <div className="field">
             <span className="t-label">Tipo</span>
@@ -216,10 +279,18 @@ export function DesignSystemPage() {
       <section className="ds-section">
         <h2 className="t-h2">Finestre e Notifiche</h2>
         <div className="row">
-          <Button variant="secondary" onClick={() => setModalOpen(true)}>Apri una finestra</Button>
-          <Button variant="secondary" onClick={() => setConfirmOpen(true)}>Finestra di conferma</Button>
+          <Button variant="secondary" onClick={() => setModalOpen(true)}>
+            Apri una finestra
+          </Button>
+          <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
+            Finestra di conferma
+          </Button>
         </div>
       </section>
+
+      <Button variant="secondary" onClick={tryApi}>
+        Prova l'API
+      </Button>
 
       {modalOpen && (
         <Modal
@@ -227,13 +298,20 @@ export function DesignSystemPage() {
           onClose={() => setModalOpen(false)}
           footer={
             <>
-              <Button variant="secondary" onClick={() => setModalOpen(false)}>Annulla</Button>
-              <Button onClick={() => setModalOpen(false)}>Aggiungi movimento</Button>
+              <Button variant="secondary" onClick={() => setModalOpen(false)}>
+                Annulla
+              </Button>
+              <Button onClick={() => setModalOpen(false)}>
+                Aggiungi movimento
+              </Button>
             </>
           }
         >
           <Field id="ds-modal-title" label="Descrizione">
-            <Input id="ds-modal-title" placeholder="Es. Spesa al supermercato" />
+            <Input
+              id="ds-modal-title"
+              placeholder="Es. Spesa al supermercato"
+            />
           </Field>
         </Modal>
       )}
@@ -245,51 +323,107 @@ export function DesignSystemPage() {
           onConfirm={() => setConfirmOpen(false)}
           onClose={() => setConfirmOpen(false)}
         >
-          <b style={{ color: "var(--text)" }}>Esselunga</b> (−68,40 €, 12 ott) verrà rimosso dallo storico e dai totali.
+          <b style={{ color: "var(--text)" }}>Esselunga</b> (−68,40 €, 12 ott)
+          verrà rimosso dallo storico e dai totali.
         </ConfirmModal>
       )}
 
       <div className="row">
-        <Button variant="secondary" onClick={() => showToast({ kind: 'success', title: 'Uscita aggiunta', message: '−24,90 € · Spesa alimentare' })}>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            showToast({
+              kind: "success",
+              title: "Uscita aggiunta",
+              message: "−24,90 € · Spesa alimentare",
+            })
+          }
+        >
           Notifica di successo
         </Button>
-        <Button variant="secondary" onClick={() => showToast({ kind: 'error', title: 'Modifiche non salvate', message: 'Controlla la connessione e riprova.' })}>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            showToast({
+              kind: "error",
+              title: "Modifiche non salvate",
+              message: "Controlla la connessione e riprova.",
+            })
+          }
+        >
           Notifica d'errore
         </Button>
-        <Button variant="secondary" onClick={() => showToast({ kind: 'info', title: 'Movimento eliminato', action: { label: 'Annulla', run: () => showToast({ kind: 'success', title: 'Movimento ripristinato' }) } })}>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            showToast({
+              kind: "info",
+              title: "Movimento eliminato",
+              action: {
+                label: "Annulla",
+                run: () =>
+                  showToast({
+                    kind: "success",
+                    title: "Movimento ripristinato",
+                  }),
+              },
+            })
+          }
+        >
           Notifica con azione
         </Button>
       </div>
 
       <section className="ds-section">
-  <h2 className="t-h2">Stati</h2>
-  <div className="ds-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-    <Card>
-      <EmptyState
-        title="Nessun movimento ancora"
-        text="Aggiungi la tua prima entrata o uscita: la panoramica si riempirà da sola."
-        actions={<Button size="sm" icon="plus">Aggiungi movimento</Button>}
-      />
-    </Card>
-    <Card>
-      <EmptyState illustration="categories" title="Nessuna categoria" text="Creane una per organizzare le spese." />
-    </Card>
-    <Card>
-      <EmptyState illustration="search" title="Nessun risultato" text="Prova a cambiare i filtri o azzerali." />
-    </Card>
-    <Card>
-      <ErrorState onRetry={() => showToast({ kind: 'info', title: 'Nuovo tentativo in corso' })} />
-    </Card>
-    <Card padded>
-      <div className="stack" style={{ gap: 12 }}>
-        <Skeleton width={140} />
-        <Skeleton height={40} radius={12} />
-        <Skeleton width="55%" />
-        <Skeleton width="30%" height={10} />
-      </div>
-    </Card>
-  </div>
-</section>
+        <h2 className="t-h2">Stati</h2>
+        <div
+          className="ds-grid"
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          }}
+        >
+          <Card>
+            <EmptyState
+              title="Nessun movimento ancora"
+              text="Aggiungi la tua prima entrata o uscita: la panoramica si riempirà da sola."
+              actions={
+                <Button size="sm" icon="plus">
+                  Aggiungi movimento
+                </Button>
+              }
+            />
+          </Card>
+          <Card>
+            <EmptyState
+              illustration="categories"
+              title="Nessuna categoria"
+              text="Creane una per organizzare le spese."
+            />
+          </Card>
+          <Card>
+            <EmptyState
+              illustration="search"
+              title="Nessun risultato"
+              text="Prova a cambiare i filtri o azzerali."
+            />
+          </Card>
+          <Card>
+            <ErrorState
+              onRetry={() =>
+                showToast({ kind: "info", title: "Nuovo tentativo in corso" })
+              }
+            />
+          </Card>
+          <Card padded>
+            <div className="stack" style={{ gap: 12 }}>
+              <Skeleton width={140} />
+              <Skeleton height={40} radius={12} />
+              <Skeleton width="55%" />
+              <Skeleton width="30%" height={10} />
+            </div>
+          </Card>
+        </div>
+      </section>
     </div>
   );
 }
