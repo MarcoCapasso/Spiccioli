@@ -1,0 +1,120 @@
+/* ───────────── Finestra modale ───────────── */
+
+/* La radice */
+.modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+/* Lo sfondo che oscura la pagina */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 25, 17, .42);
+  animation: fade .18s ease;
+}
+
+/* La finestra */
+.modal {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  animation: pop .22s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.modal-sm {
+  width: min(420px, 100%);
+}
+
+/* intestazione, contenuto, pulsanti */
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 24px 6px;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 14px 24px 8px;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 22px;
+}
+
+/* Le animazioni di apertura */
+@keyframes fade {
+  from { opacity: 0; }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.98);
+  }
+}
+
+/* L'intestazione con un'icona sopra il titolo, per le conferme */
+.modal-head-stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 0;
+}
+
+/* L'icona di avviso delle azioni distruttive */
+.warn-ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.warn-ico svg {
+  width: 24px;
+  height: 24px;
+}
+
+
+/* Mobile */
+@media (max-width: 760px) {
+  .modal-root {
+    align-items: end;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    animation: sheet .25s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .modal-foot .btn {
+    flex: 1;
+  }
+}
+
+@keyframes sheet {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}

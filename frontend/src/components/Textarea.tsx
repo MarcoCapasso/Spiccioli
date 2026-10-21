@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { errorIdFor } from "./Field";
+import { errorIdFor } from './field-ids';
 
 type TextareaProps = ComponentProps<"textarea"> & {
   id: string;

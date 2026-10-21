@@ -1,10 +1,7 @@
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
+import { errorIdFor } from './field-ids';
 
-//L'id del messaggio d'errore di un campo: la stessa regola per il contenitore e per il controllo
-export function errorIdFor(id: string) {
-  return `${id}-error`;
-}
 
 type FieldProps = {
   id: string;

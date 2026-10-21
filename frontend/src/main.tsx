@@ -15,12 +15,18 @@ import "./styles/card.css";
 import "./styles/input.css";
 import "./styles/field.css";
 import "./styles/amount-input.css";
-import "./styles/type-toggle.css"
+import "./styles/type-toggle.css";
+import "./styles/modal.css";
+import "./styles/toast.css";
+import "./styles/states.css";
 
+import { ToastProvider } from "./components/ToastProvied.tsx";
 import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <ToastProvider>
+      <App />
+    </ToastProvider>
   </StrictMode>,
 );

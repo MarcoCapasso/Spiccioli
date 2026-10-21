@@ -1,0 +1,110 @@
+/* ───────────── Notifiche ───────────── */
+
+/* Il contenitore in basso a destra */
+.toasts {
+  position: fixed;
+  z-index: 200;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100% - 40px));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  background: var(--secondary);
+  color: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn .25s cubic-bezier(.2, .9, .3, 1.1);
+}
+
+/* In uscita */
+.toast.out {
+  animation: toastOut .2s ease forwards;
+}
+
+/* Il cerchio colorato con l'icona: verde, rosso o arancione secondo il tipo */
+.toast .t-ico {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  margin-top: 1px;
+}
+
+.toast .t-ico svg {
+  width: 14px;
+  height: 14px;
+  color: #fff;
+}
+
+.t-ico-success { background: var(--success); }
+.t-ico-error { background: var(--danger); }
+.t-ico-info { background: var(--primary); }
+
+.toast .t-body {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.toast .t-body b {
+  display: block;
+  font-weight: 650;
+}
+
+.toast .t-body span {
+  opacity: .75;
+  font-size: 13px;
+}
+
+/* L'azione, come "Annulla" */
+.toast .t-act {
+  background: transparent;
+  border: 0;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.toast .t-x {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  opacity: .6;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.toast .t-x svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+/* Sul telefono: a tutta larghezza, sopra il pulsante flottante */
+@media (max-width: 760px) {
+  .toasts {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    bottom: 88px;
+  }
+}

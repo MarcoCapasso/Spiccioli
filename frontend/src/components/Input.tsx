@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { errorIdFor } from "./Field";
+import { errorIdFor } from './field-ids';
 import { Icon, type IconName } from "./Icon";
 
 type InputProps = ComponentProps<"input"> & {

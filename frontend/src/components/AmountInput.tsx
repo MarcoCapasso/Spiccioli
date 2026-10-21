@@ -1,5 +1,5 @@
 import type { TransactionType } from "../types";
-import { errorIdFor } from "./Field";
+import { errorIdFor } from './field-ids';
 
 type AmountInputProps = {
   id: string;
