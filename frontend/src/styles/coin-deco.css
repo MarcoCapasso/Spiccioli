@@ -1,0 +1,14 @@
+/* ───────────── Anello decorativo ───────────── */
+/* Utilizzato nella LoginPage */
+
+.coin-deco {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
+  border: 22px solid var(--primary);
+  border-radius: 50%;
+  opacity: .9;
+  pointer-events: none;
+}

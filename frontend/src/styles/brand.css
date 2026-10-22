@@ -1,0 +1,28 @@
+/* ───────────── Logo ───────────── */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 750;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+/* Il quadrato arancione con la moneta */
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--primary);
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.35);
+}
+
+.brand-mark svg {
+  width: 19px;
+  height: 19px;
+  color: #fff;
+}

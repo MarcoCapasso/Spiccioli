@@ -1,0 +1,107 @@
+/* ───────────── Pulsante "Continua con Google" ─────────────
+   Valori dei file ufficiali di Google */
+
+.btn.google-btn {
+  position: relative;
+  overflow: hidden;
+  justify-content: flex-start;
+  gap: 10px;
+  max-width: 400px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border-color: #747775;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: "Google Sans Variable", var(--font);
+  font-weight: 500;
+  line-height: 20px;
+  transition:
+    background-color 0.218s,
+    border-color 0.218s,
+    box-shadow 0.218s;
+}
+
+:root[data-theme="dark"] .btn.google-btn {
+  border-color: #8e918f;
+  background: #131314;
+  color: #e3e3e3;
+}
+
+/* Il logo e il testo stanno sopra il velo */
+.google-btn img {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.google-btn-label {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+/* Il velo: uno strato che copre il pulsante, invisibile finché non serve */
+.btn.google-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #303030;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.218s;
+}
+
+:root[data-theme="dark"] .btn.google-btn::before {
+  background: #fff;
+}
+
+.btn.google-btn:not(:disabled):hover::before {
+  opacity: 0.08;
+}
+.btn.google-btn:not(:disabled):active::before,
+.btn.google-btn:not(:disabled):focus::before {
+  opacity: 0.12;
+}
+
+.btn.google-btn:not(:disabled):hover {
+  box-shadow:
+    0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+/* Con la tastiera, l'anello arancione dell'app ha la precedenza sull'ombra del passaggio del mouse */
+.btn.google-btn:not(:disabled):focus-visible {
+  box-shadow: var(--ring);
+}
+
+.btn.google-btn:not(:disabled):active {
+  transform: none;
+}
+
+/* Disabilitato: colori propri, testo e logo al 38% */
+.btn.google-btn:disabled {
+  background: #ffffff61;
+  border-color: #1f1f1f1f;
+  color: #1f1f1f;
+  box-shadow: none;
+  cursor: default;
+}
+
+:root[data-theme="dark"] .btn.google-btn:disabled {
+  background: #13131461;
+  border-color: #8e918f1f;
+  color: #e3e3e3;
+}
+
+:root[data-theme="dark"] .btn.google-btn:disabled::before {
+  background: #e3e3e31f;
+  opacity: 1;
+}
+
+.google-btn:disabled img,
+.google-btn:disabled .google-btn-label {
+  opacity: 0.38;
+}

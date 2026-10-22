@@ -1,0 +1,20 @@
+/* ───────────── Avvisi dentro la pagina ───────────── */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  font-size: 13.5px;
+}
+
+.alert svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 1px;
+}
+
+.alert-danger { background: var(--danger-soft); color: var(--danger-ink); }
+.alert-info { background: var(--primary-soft); color: var(--primary-ink); }

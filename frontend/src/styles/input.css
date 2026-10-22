@@ -99,3 +99,13 @@
 input[type="date"].input {
   padding-right: 8px;
 }
+
+/* Un pulsante dentro il campo, a destra: per mostrare la password */
+.input-wrap .trail {
+  position: absolute;
+  right: 4px;
+}
+
+.input-with-trail {
+  padding-right: 44px;
+}

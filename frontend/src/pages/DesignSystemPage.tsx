@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { TransactionType } from "../types";
+import type { TransactionType, UserResponse } from "../types";
 import { AmountInput } from "../components/AmountInput";
+import { useAuth } from "../auth/auth-context";
 import { Badge, TransactionTypeBadge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { Card, CardHeader } from "../components/Card";
@@ -71,21 +72,18 @@ export function DesignSystemPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const showToast = useToast();
+  const { session, loading, signOut } = useAuth();
 
-  //Prova: una chiamata al backend con il client dell'API
-  async function tryApi() {
-    try {
-      await apiFetch("/api/me");
-      showToast({ kind: "success", title: "Risposta ricevuta" });
-    } catch (error) {
-      const status = error instanceof ApiError ? ` (${error.status})` : "";
-      showToast({
-        kind: "error",
-        title: `Richiesta non riuscita${status}`,
-        message: errorMessage(error),
-      });
-    }
+//Prova: legge il profilo dall'API, con il tipo del DTO
+async function tryApi() {
+  try {
+    const user = await apiFetch<UserResponse>('/api/me');
+    showToast({ kind: 'success', title: `Ciao, ${user.firstName}`, message: user.email });
+  } catch (error) {
+    const status = error instanceof ApiError ? ` (${error.status})` : '';
+    showToast({ kind: 'error', title: `Richiesta non riuscita${status}`, message: errorMessage(error) });
   }
+}
 
   return (
     <div className="ds-page">
@@ -96,8 +94,19 @@ export function DesignSystemPage() {
           <p className="t-small" style={{ margin: 0 }}>
             Componenti e stati riutilizzabili
           </p>
+          <p className="t-small">
+            Sessione:{" "}
+            {loading
+              ? "in verifica…"
+              : session
+                ? session.user.email
+                : "nessuna"}
+          </p>
         </div>
         <ThemeToggle />
+        <Button variant="secondary" size="sm" onClick={signOut}>
+          Esci
+        </Button>
       </header>
 
       {/* ───────────── Fondamenta ───────────── */}

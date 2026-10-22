@@ -1,0 +1,205 @@
+/* ───────────── Schermata di accesso ───────────── */
+
+/* Due colonne uguali: il pannello di benvenuto e l'area del modulo */
+.auth {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+/* Il pannello di benvenuto: il logo in alto, il messaggio in basso */
+.auth-side {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  background: var(--panna-deep);
+  border-right: 1px solid var(--panna-line);
+  color: var(--secondary);
+}
+
+.auth-side h2 {
+  margin: 0;
+  max-width: 14ch;
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.auth-side p {
+  margin: 16px 0 0;
+  max-width: 38ch;
+  color: var(--text-2);
+}
+
+/* L'area del modulo: il contenuto al centro, il pulsante del tema nell'angolo */
+.auth-main {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+}
+
+.auth-theme {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.auth-card {
+  width: min(400px, 100%);
+}
+
+.auth-card .brand {
+  margin-bottom: 28px;
+}
+
+.auth-title {
+  font-size: 28px;
+}
+
+.auth-subtitle {
+  margin: 6px 0 0;
+}
+
+/* L'anello del pannello: più grande, ancorato in basso a destra */
+.auth-side .coin-deco {
+  top: auto;
+  right: -60px;
+  bottom: -60px;
+  width: 220px;
+  height: 220px;
+  border-width: 34px;
+}
+
+/* L'avviso sopra il modulo, per esempio dopo la registrazione */
+.auth-notice {
+  margin-top: 20px;
+}
+
+.auth-notice + .auth-form {
+  margin-top: 16px;
+}
+
+/* ───────────── Anteprima di due movimenti ───────────── */
+
+.auth-mock {
+  max-width: 360px;
+  margin-top: 36px;
+  padding: 6px;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-2deg);
+}
+
+.mock-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+}
+
+.mock-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.mock-ico-inc {
+  background: var(--success-soft);
+  color: var(--success-ink);
+}
+.mock-ico-exp {
+  background: var(--primary-soft);
+  color: var(--primary-ink);
+}
+
+.mock-title {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.mock-amt {
+  font-weight: 700;
+  font-size: 15px;
+}
+.mock-amt-inc {
+  color: var(--success-ink);
+}
+.mock-amt-exp {
+  color: var(--danger-ink);
+}
+
+/* Il modulo accesso a registrazione */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.auth-switch {
+  margin-top: 22px;
+  text-align: center;
+}
+
+/* pulsante che cambia lo stato */
+.switch-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--primary-ink);
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+/* Il separatore "oppure": una linea, la parola, un'altra linea */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.google-signin {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+
+
+/* Sotto i 1024px il pannello sparisce: resta solo il modulo */
+@media (max-width: 1024px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-side {
+    display: none;
+  }
+}
