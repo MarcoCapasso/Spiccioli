@@ -136,5 +136,37 @@ public class TransactionServiceTests
         Assert.Equal(1, saved.CategoryId);
     }
 
+        [Fact]
+    public async Task GetByUserAsync_PassesTypeAndSearchToRepository()
+    {
+        //Arrange
+        var filter = new TransactionFilter(
+            From: null, To: null, CategoryId: null, Page: null, PageSize: null,
+            Type: TransactionType.Expense, Search: "super");
+
+        //Act
+        await _service.GetByUserAsync(UserId, filter);
+
+        //Assert
+        Assert.Equal(TransactionType.Expense, _transactions.LastCriteria!.Type);
+        Assert.Equal("super", _transactions.LastCriteria.Search);
+    }
+
+    [Fact]
+    public async Task GetSummaryAsync_PassesTypeAndSearchToRepository()
+    {
+        //Arrange
+        var filter = new TransactionSummaryFilter(
+            From: null, To: null, CategoryId: null,
+            Type: TransactionType.Income, Search: "stipendio");
+
+        //Act
+        await _service.GetSummaryAsync(UserId, filter);
+
+        //Assert
+        Assert.Equal(TransactionType.Income, _transactions.LastCriteria!.Type);
+        Assert.Equal("stipendio", _transactions.LastCriteria.Search);
+    }
+
 
 }

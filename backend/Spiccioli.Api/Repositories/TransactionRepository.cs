@@ -16,14 +16,14 @@ public class TransactionRepository : ITransactionRepository
     }
 
     public async Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(
-        Guid userId, DateOnly? from, DateOnly? to, int? categoryId, int page, int pageSize)
+        Guid userId, TransactionCriteria criteria, int page, int pageSize)
     {
         var query = _context.Transactions
             .AsNoTracking()
             .Include(t => t.Category)
             .Where(t => t.UserId == userId);
 
-        query = ApplyFilters(query, from, to, categoryId);
+        query = ApplyFilters(query, criteria);
 
         var totalCount = await query.CountAsync();
 
@@ -65,30 +65,30 @@ public class TransactionRepository : ITransactionRepository
         return deletedRows > 0;
     }
 
-    public async Task<(decimal TotalIncome, decimal TotalExpense)> GetTotalsAsync(
-        Guid userId, DateOnly? from, DateOnly? to, int? categoryId)
+    public async Task<TransactionTotals> GetTotalsAsync(Guid userId, TransactionCriteria criteria)
     {
         var query = _context.Transactions.Where(t => t.UserId == userId);
-        query = ApplyFilters(query, from, to, categoryId);
+        query = ApplyFilters(query, criteria);
 
-        //Il database raggruppa per tipo e somma, tornano al massimo due righe
-        var sums = await query
+        //Il database raggruppa per tipo, somma e conta: tornano al massimo due righe
+        var groups = await query
             .GroupBy(t => t.Type)
-            .Select(g => new { Type = g.Key, Total = g.Sum(t => t.Amount) })
+            .Select(g => new { Type = g.Key, Total = g.Sum(t => t.Amount), Count = g.Count() })
             .ToListAsync();
 
-        //Un tipo senza transazioni non forma nessun gruppo e il suo totale è zero
-        var income = sums.FirstOrDefault(s => s.Type == TransactionType.Income)?.Total ?? 0;
-        var expense = sums.FirstOrDefault(s => s.Type == TransactionType.Expense)?.Total ?? 0;
+        //Un tipo senza transazioni non forma nessun gruppo: totale e conteggio sono zero
+        var income = groups.FirstOrDefault(g => g.Type == TransactionType.Income);
+        var expense = groups.FirstOrDefault(g => g.Type == TransactionType.Expense);
 
-        return (income, expense);
+        return new TransactionTotals(
+            income?.Total ?? 0, expense?.Total ?? 0, income?.Count ?? 0, expense?.Count ?? 0);
     }
 
-    public async Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total)>>
+    public async Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)>>
         GetTotalsByCategoryAsync(Guid userId, DateOnly? from, DateOnly? to)
     {
         var query = _context.Transactions.Where(t => t.UserId == userId);
-        query = ApplyFilters(query, from, to, categoryId: null);
+        query = ApplyFilters(query, new TransactionCriteria(from, to));
 
         //Chiave composta categoria e tipo, entrate e uscite non si mescolano mai
         var groups = await query
@@ -98,27 +98,44 @@ public class TransactionRepository : ITransactionRepository
                 CategoryName = t.Category == null ? null : t.Category.Name,
                 t.Type
             })
-            .Select(g => new { g.Key.CategoryId, g.Key.CategoryName, g.Key.Type, Total = g.Sum(t => t.Amount) })
-            .OrderByDescending(x => x.Total)   // Ordinato dal database, per totale
-            .ToListAsync();
+            
+        .Select(g => new { g.Key.CategoryId, g.Key.CategoryName, g.Key.Type, Total = g.Sum(t => t.Amount), Count = g.Count() })
+        .OrderByDescending(x => x.Total)   // Ordinato dal database, per totale
+        .ToListAsync();
 
-        return groups.Select(x => (x.CategoryId, x.CategoryName, x.Type, x.Total)).ToList();
+        return groups.Select(x => (x.CategoryId, x.CategoryName, x.Type, x.Total, x.Count)).ToList();
     }
 
     //Unico punto dove vengono applicati i filtri sulle transazioni
-    private static IQueryable<Transaction> ApplyFilters(IQueryable<Transaction> query, DateOnly? from, DateOnly? to, int? categoryId)
+    private static IQueryable<Transaction> ApplyFilters(IQueryable<Transaction> query, TransactionCriteria criteria)
     {
-        if (from is not null)
-            query = query.Where(t => t.Date >= from.Value);
-        
-        if (to is not null)
-            query = query.Where(t => t.Date <= to.Value);
+        if (criteria.From is not null)
+            query = query.Where(t => t.Date >= criteria.From.Value);
 
-        if (categoryId is not null)
-            query = query.Where(t => t.CategoryId == categoryId.Value);
+        if (criteria.To is not null)
+            query = query.Where(t => t.Date <= criteria.To.Value);
+
+        if (criteria.CategoryId is not null)
+            query = query.Where(t => t.CategoryId == criteria.CategoryId.Value);
+
+        if (criteria.Type is not null)
+            query = query.Where(t => t.Type == criteria.Type.Value);
+
+        var search = criteria.Search?.Trim();
+        if (!string.IsNullOrEmpty(search))
+        {
+            //% e _ sono caratteri speciali di LIKE: si neutralizzano, così "50%" cerca davvero "50%"
+            var escaped = search.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+            var pattern = $"%{escaped}%";
+
+            //Senza maiuscole, in descrizione, nota e nome della categoria
+            query = query.Where(t =>
+                EF.Functions.ILike(t.Description!, pattern) ||
+                EF.Functions.ILike(t.Note!, pattern) ||
+                (t.Category != null && EF.Functions.ILike(t.Category.Name, pattern)));
+        }
 
         return query;
-    
     }
 
 }

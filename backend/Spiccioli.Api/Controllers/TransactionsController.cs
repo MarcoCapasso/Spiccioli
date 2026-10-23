@@ -17,7 +17,7 @@ public class TransactionsController : ApiControllerBase
     }
 
     //Restituisce tutte le transazioni dell'utente (filtri facoltativi)
-    // GET /api/transactions?from={data}&to={data}&categoryId={id}&page={n}&pageSize={n}
+    // GET /api/transactions?from={data}&to={data}&categoryId={id}&type={Income|Expense}&search={testo}&page={n}&pageSize={n}
     [HttpGet]
     public async Task<ActionResult<PagedResponse<TransactionResponse>>> GetAll([FromQuery] TransactionFilter filter)
     {

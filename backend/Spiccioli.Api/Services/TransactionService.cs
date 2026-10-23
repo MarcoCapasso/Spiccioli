@@ -27,8 +27,9 @@ public class TransactionService : ITransactionService
         var page = filter.Page ?? DefaultPage;
         var pageSize = filter.PageSize ?? DefaultPageSize;
 
-        var (transactions, totalCount) = await _repository.GetByUserAsync(
-            userId, filter.From, filter.To, filter.CategoryId, page, pageSize);
+        var criteria = new TransactionCriteria(filter.From, filter.To, filter.CategoryId, filter.Type, filter.Search);
+
+        var (transactions, totalCount) = await _repository.GetByUserAsync(userId, criteria, page, pageSize);
 
         var items = transactions.Select(t => TransactionResponse.FromTransaction(t)).ToList();
 
@@ -116,10 +117,11 @@ public class TransactionService : ITransactionService
     public async Task<TransactionSummaryResponse> GetSummaryAsync(
         Guid userId, TransactionSummaryFilter filter)
     {
-        var (totalIncome, totalExpense) = await _repository.GetTotalsAsync(
-            userId, filter.From, filter.To, filter.CategoryId);
+        var criteria = new TransactionCriteria(filter.From, filter.To, filter.CategoryId, filter.Type, filter.Search);
+        var totals = await _repository.GetTotalsAsync(userId, criteria);
 
-        return new TransactionSummaryResponse(totalIncome, totalExpense);
+        return new TransactionSummaryResponse(
+            totals.TotalIncome, totals.TotalExpense, totals.IncomeCount, totals.ExpenseCount);
     }
 
     public async Task<IReadOnlyList<CategoryTotalResponse>> GetTotalsByCategoryAsync(Guid userId, DateRangeFilter filter)
@@ -128,7 +130,7 @@ public class TransactionService : ITransactionService
             userId, filter.From, filter.To);
         
         return totals
-            .Select(x => new CategoryTotalResponse(x.CategoryId, x.CategoryName, x.Type, x.Total))
+            .Select(x => new CategoryTotalResponse(x.CategoryId, x.CategoryName, x.Type, x.Total, x.Count))
             .ToList();
         
     }

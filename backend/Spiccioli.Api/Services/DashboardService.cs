@@ -31,7 +31,7 @@ public class DashboardService : IDashboardService
         var to = new DateOnly(year, month, DateTime.DaysInMonth(year, month));
 
         //Il reale, con le query della Fase 6: totali del mese e totali per categoria
-        var (actualIncome, actualExpense) = await _transactions.GetTotalsAsync(userId, from, to, null);
+        var (actualIncome, actualExpense, _, _) = await _transactions.GetTotalsAsync(userId, new TransactionCriteria(from, to));
         var categoryTotals = await _transactions.GetTotalsByCategoryAsync(userId, from, to);
 
         //Le scadenze ancora da pagare: quelle senza una transazione collegata
@@ -54,9 +54,9 @@ public class DashboardService : IDashboardService
     }
 
     //Passo 3: previsto contro speso, per ogni categoria del piano o delle spese
-    private static IReadOnlyList<CategoryProgressResponse> BuildCategoryProgress(
+        private static IReadOnlyList<CategoryProgressResponse> BuildCategoryProgress(
         MonthlyBudget budget,
-        IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total)> categoryTotals)
+        IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)> categoryTotals)
     {
        //Solo le uscite: le entrate non hanno voci di spesa da confrontare
         var expenses = categoryTotals.Where(t => t.Type == TransactionType.Expense).ToList();

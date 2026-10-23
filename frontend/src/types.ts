@@ -64,6 +64,8 @@ export type TransactionSummaryResponse = {
   totalIncome: number;
   totalExpense: number;
   balance: number;
+  incomeCount: number;
+  expenseCount: number;
 };
 
 //Gli elementi di GET /api/transactions/summary/by-category
@@ -72,6 +74,7 @@ export type CategoryTotalResponse = {
   categoryName: string | null;
   type: TransactionType;
   total: number;
+  count: number;
 };
 
 // ───────────── Spese ricorrenti ─────────────

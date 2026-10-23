@@ -1,9 +1,11 @@
 namespace Spiccioli.Api.Dtos;
 
-//Totali del periodo richiesto
+//Totali e conteggi del periodo richiesto
 public record TransactionSummaryResponse(
     decimal TotalIncome,
-    decimal TotalExpense)
+    decimal TotalExpense,
+    int IncomeCount,
+    int ExpenseCount)
 {
     public decimal Balance => TotalIncome - TotalExpense;
 }
