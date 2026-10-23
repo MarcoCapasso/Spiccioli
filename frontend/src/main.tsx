@@ -1,6 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "./api/query-client.ts";
 
 import "@fontsource-variable/google-sans/wght.css";
 import "@fontsource-variable/inter";
@@ -30,7 +33,6 @@ import "./styles/app-layout.css";
 import "./styles/topbar.css";
 import "./styles/fab.css";
 
-
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";
 import App from "./App.tsx";
@@ -38,11 +40,14 @@ import App from "./App.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <ToastProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ToastProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ToastProvider>
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+      </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
 );

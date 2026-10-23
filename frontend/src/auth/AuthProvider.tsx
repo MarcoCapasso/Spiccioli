@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { setAccessTokenProvider } from "../api/client";
 import { supabase } from "../api/supabase";
 import { AuthContext, type AuthState } from "./auth-context";
+import { queryClient } from "../api/query-client";
 
 //Possione la sessione di Supabase e la passa a tutta l'app
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -16,7 +17,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return data.session?.access_token ?? null;
     });
 
-    const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === "SIGNED_OUT") {
+        queryClient.clear();
+      }
       setSession(newSession);
       setLoading(false);
     });
