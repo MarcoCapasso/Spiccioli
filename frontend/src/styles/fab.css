@@ -1,0 +1,29 @@
+/* ───────────── Pulsante flottante ───────────── */
+
+.fab {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .fab {
+    position: fixed;
+    z-index: 40;
+    right: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 18px;
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(234, 88, 12, .4);
+    cursor: pointer;
+  }
+
+  .fab svg {
+    width: 26px;
+    height: 26px;
+  }
+}

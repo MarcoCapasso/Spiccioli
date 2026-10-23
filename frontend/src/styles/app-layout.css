@@ -1,0 +1,223 @@
+/* ───────────── Struttura dell'app: barra laterale e area dei contenuti ───────────── */
+
+/* Due colonne */
+.app {
+  display: grid;
+  grid-template-columns: 252px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* La barra resta ferma mentre la pagina scorre */
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 14px;
+  border-right: 1px solid var(--border);
+  background: var(--sidebar);
+}
+
+.sidebar-brand {
+  padding: 4px 10px 18px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  color: var(--text-2);
+  font-weight: 550;
+  font-size: 14.5px;
+  text-decoration: none;
+}
+
+.nav-item svg {
+  width: 19px;
+  height: 19px;
+  flex: none;
+}
+
+.nav-item:hover {
+  background: var(--surface-sunk);
+  color: var(--text);
+}
+
+/* La voce della pagina in cui ci si trova: "sollevata", con l'icona arancione */
+.nav-item[aria-current="page"] {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+}
+
+.nav-item[aria-current="page"] svg {
+  color: var(--primary);
+}
+
+.nav-sep {
+  height: 1px;
+  margin: 10px 8px;
+  background: var(--border);
+}
+
+/* L'area a destra: il contenuto della pagina */
+.main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  width: 100%;
+  max-width: 1240px;
+  padding: 8px 32px 48px;
+}
+
+/* L'utente collegato, in fondo alla barra */
+.sidebar-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--surface);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.sidebar-foot .who {
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-foot .who div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ───────────── Schermi medi: la barra laterale si restringe a sole icone ───────────── */
+@media (min-width: 761px) and (max-width: 1024px) {
+  .app {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    align-items: center;
+    padding: 20px 12px;
+  }
+
+  .sidebar-brand {
+    padding: 4px 0 18px;
+  }
+
+  .sidebar-brand .brand span {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    width: 48px;
+    padding: 0;
+  }
+
+  /* Il nome della voce resta nella pagina, ma non si vede */
+  .nav-item span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .sidebar-foot {
+    flex-direction: column;
+    padding: 8px;
+    border: 0;
+    background: transparent;
+  }
+
+  .sidebar-foot .who {
+    display: none;
+  }
+}
+
+/* ───────────── Telefono: la barra laterale diventa un menu a scomparsa ───────────── */
+
+/* Lo sfondo che oscura la pagina esiste sempre, ma si vede solo con il menu aperto */
+.drawer-backdrop {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  /* Fuori dallo schermo, a sinistra: fissa, sopra la pagina */
+  .sidebar {
+    position: fixed;
+    z-index: 60;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    align-self: stretch;
+    width: 270px;
+    height: auto;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 14px
+      calc(20px + env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s 0.25s;
+  }
+
+  .sidebar.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .drawer-backdrop.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: var(--scrim);
+  }
+
+  /* In fondo, spazio per il pulsante flottante */
+  .content {
+    padding: 4px 16px 110px;
+  }
+}

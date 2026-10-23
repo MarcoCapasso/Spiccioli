@@ -1,5 +1,5 @@
 :root {
-/* ───────────── Design colori ───────────── */
+  /* ───────────── Design colori ───────────── */
   /* Sfondo, per livelli */
   --bg: #f5f1e8;
   --surface: #fffcf6;
@@ -7,6 +7,7 @@
   --surface-sunk: #ece4d3;
   --panna-deep: #ebe2ce;
   --panna-line: #ddd2bc;
+  --sidebar: var(--panna-deep);
 
   /* Colore primario */
   --primary: #f97316;
@@ -35,18 +36,21 @@
   --danger-ink: #dc2626;
   --danger-soft: #fdecec;
 
-/* ───────────── Ombre ───────────── */
+  /* l'oscuramento dietro finestre e menu */
+  --scrim: rgba(31, 25, 17, 0.42);
+
+  /* ───────────── Ombre ───────────── */
   --shadow-sm: 0 1px 2px rgba(70, 52, 28, 0.06);
   --shadow: 0 1px 2px rgba(70, 52, 28, 0.05), 0 6px 20px rgba(70, 52, 28, 0.06);
   --shadow-lg: 0 12px 40px rgba(50, 36, 18, 0.18);
 
-/* ───────────── Raggi degli angoli ───────────── */
+  /* ───────────── Raggi degli angoli ───────────── */
   --r-sm: 8px;
   --r: 12px;
   --r-lg: 16px;
   --r-xl: 22px;
 
-/* ───────────── Spaziature ───────────── */
+  /* ───────────── Spaziature ───────────── */
   --s1: 4px;
   --s2: 8px;
   --s3: 12px;
@@ -56,7 +60,7 @@
   --s8: 32px;
   --s10: 40px;
 
-/* ───────────── Carattere e anello di focus ───────────── */
+  /* ───────────── Carattere e anello di focus ───────────── */
   --font:
     "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;

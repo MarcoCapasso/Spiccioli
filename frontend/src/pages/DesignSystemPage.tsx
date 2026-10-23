@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { TransactionType, UserResponse } from "../types";
 import { AmountInput } from "../components/AmountInput";
-import { useAuth } from "../auth/auth-context";
 import { Badge, TransactionTypeBadge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { Card, CardHeader } from "../components/Card";
@@ -16,7 +15,6 @@ import { Input } from "../components/Input";
 import { Modal } from "../components/Modal";
 import { Select } from "../components/Select";
 import { Textarea } from "../components/Textarea";
-import { ThemeToggle } from "../components/ThemeToggle";
 import { TypeToggle } from "../components/TypeToggle";
 
 import { Skeleton } from "../components/States";
@@ -72,42 +70,28 @@ export function DesignSystemPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const showToast = useToast();
-  const { session, loading, signOut } = useAuth();
 
-//Prova: legge il profilo dall'API, con il tipo del DTO
-async function tryApi() {
-  try {
-    const user = await apiFetch<UserResponse>('/api/me');
-    showToast({ kind: 'success', title: `Ciao, ${user.firstName}`, message: user.email });
-  } catch (error) {
-    const status = error instanceof ApiError ? ` (${error.status})` : '';
-    showToast({ kind: 'error', title: `Richiesta non riuscita${status}`, message: errorMessage(error) });
+  //Prova: legge il profilo dall'API, con il tipo del DTO
+  async function tryApi() {
+    try {
+      const user = await apiFetch<UserResponse>("/api/me");
+      showToast({
+        kind: "success",
+        title: `Ciao, ${user.firstName}`,
+        message: user.email,
+      });
+    } catch (error) {
+      const status = error instanceof ApiError ? ` (${error.status})` : "";
+      showToast({
+        kind: "error",
+        title: `Richiesta non riuscita${status}`,
+        message: errorMessage(error),
+      });
+    }
   }
-}
 
   return (
     <div className="ds-page">
-      {/* ───────────── Intestazione ───────────── */}
-      <header className="row">
-        <div className="spacer">
-          <h1 className="t-h1">Sistema di design</h1>
-          <p className="t-small" style={{ margin: 0 }}>
-            Componenti e stati riutilizzabili
-          </p>
-          <p className="t-small">
-            Sessione:{" "}
-            {loading
-              ? "in verifica…"
-              : session
-                ? session.user.email
-                : "nessuna"}
-          </p>
-        </div>
-        <ThemeToggle />
-        <Button variant="secondary" size="sm" onClick={signOut}>
-          Esci
-        </Button>
-      </header>
 
       {/* ───────────── Fondamenta ───────────── */}
       <section className="ds-section">

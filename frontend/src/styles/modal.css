@@ -8,14 +8,15 @@
   display: grid;
   place-items: center;
   padding: 20px;
+  background: var(--scrim);
 }
 
 /* Lo sfondo che oscura la pagina */
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(31, 25, 17, .42);
-  animation: fade .18s ease;
+  background: rgba(31, 25, 17, 0.42);
+  animation: fade 0.18s ease;
 }
 
 /* La finestra */
@@ -27,7 +28,7 @@
   background: var(--surface);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-lg);
-  animation: pop .22s cubic-bezier(.2, .9, .3, 1.2);
+  animation: pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 
 .modal-sm {
@@ -59,13 +60,15 @@
 
 /* Le animazioni di apertura */
 @keyframes fade {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(.98);
+    transform: translateY(10px) scale(0.98);
   }
 }
 
@@ -93,7 +96,6 @@
   height: 24px;
 }
 
-
 /* Mobile */
 @media (max-width: 760px) {
   .modal-root {
@@ -104,7 +106,7 @@
   .modal {
     width: 100%;
     border-radius: 22px 22px 0 0;
-    animation: sheet .25s cubic-bezier(.2, .8, .2, 1);
+    animation: sheet 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .modal-foot .btn {

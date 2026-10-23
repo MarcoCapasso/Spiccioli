@@ -1,28 +1,38 @@
-import { useAuth } from "./auth/auth-context";
+import { Route, Routes } from "react-router";
+import { PublicOnly } from "./auth/PublicOnly";
+import { RequireAuth } from "./auth/RequireAuth";
+import { AppLayout } from "./layout/AppLayout";
+import { CategoriesPage } from "./pages/CategoriesPage";
 import { DesignSystemPage } from "./pages/DesignSystemPage";
 import { LoginPage } from "./pages/LoginPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { OverviewPage } from "./pages/OverviewPage";
+import { TransactionsPage } from "./pages/TransactionsPage";
 
-//Il componente radice, provvisorio: le pagine vere e le rotte arrivano nella lezione 12.9
+//Contenuto radice
 function App() {
-  const { session, loading } = useAuth();
-
-  //Non si sa ancora se esiste una sessione salvata: meglio non mostrare nulla
-  if (loading) {
-    return null;
-  }
-
-  if (!session) {
-    return <LoginPage />;
-  }
-
-  if (import.meta.env.DEV) {
-    return <DesignSystemPage />;
-  }
-
   return (
-    <main>
-      <h1 className="t-h1">Spiccioli</h1>
-    </main>
+    <Routes>
+      {/* Solo per chi non è collegato */}
+      <Route element={<PublicOnly />}>
+        <Route path="/accedi" element={<LoginPage />} />
+      </Route>
+
+      {/* Solo per chi è collegato */}
+      <Route element={<RequireAuth />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<OverviewPage />} />
+          <Route path="/movimenti" element={<TransactionsPage />} />
+          <Route path="/categorie" element={<CategoriesPage />} />
+          {import.meta.env.DEV && (
+            <Route path="/sviluppo" element={<DesignSystemPage />} />
+          )}
+        </Route>
+      </Route>
+
+      {/* Qualunque altro indirizzo */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

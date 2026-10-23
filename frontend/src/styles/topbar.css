@@ -1,0 +1,67 @@
+/* ───────────── Barra in alto ───────────── */
+
+/* Resta in cima mentre la pagina scorre */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+}
+
+/* Il bordo compare solo quando la pagina è scesa */
+.topbar.scrolled {
+  border-bottom-color: var(--border);
+}
+
+.topbar-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar-title .t-small {
+  margin-top: 2px;
+}
+
+/* Il tasto della scorciatoia, dentro il pulsante */
+.kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* Il pulsante del menu esiste solo sul telefono */
+.topbar .burger {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  }
+
+  .topbar .burger {
+    display: inline-grid;
+  }
+
+  /* Al suo posto c'è il pulsante flottante */
+  .topbar .quick-add {
+    display: none;
+  }
+
+  .topbar .t-h1 {
+    font-size: 21px;
+  }
+}

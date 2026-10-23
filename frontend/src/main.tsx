@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 
 import "@fontsource-variable/google-sans/wght.css";
 import "@fontsource-variable/inter";
@@ -25,8 +26,10 @@ import "./styles/coin-deco.css";
 import "./styles/auth.css";
 import "./styles/alert.css";
 import "./styles/google-button.css";
+import "./styles/app-layout.css";
+import "./styles/topbar.css";
+import "./styles/fab.css";
 
-//import "./styles/";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";
@@ -34,10 +37,12 @@ import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ToastProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ToastProvider>
+    <BrowserRouter>
+      <ToastProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ToastProvider>
+    </BrowserRouter>
   </StrictMode>,
 );
