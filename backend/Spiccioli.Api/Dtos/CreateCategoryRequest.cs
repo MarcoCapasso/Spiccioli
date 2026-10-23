@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Spiccioli.Api.Common;
 using Spiccioli.Api.Models;
 
 namespace Spiccioli.Api.Dtos;
@@ -9,5 +10,17 @@ public record CreateCategoryRequest(
     string Name,
 
     [EnumDataType(typeof(TransactionType), ErrorMessage = "Tipo non valido: usa Income o Expense.")]
-    TransactionType Type
-);
+    TransactionType Type,
+
+    //Facoltativo: se manca, il Service sceglie il prossimo colore della tavolozza
+    string? Color = null) : IValidatableObject
+{
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (Color is not null && !CategoryPalette.Contains(Color))
+        {
+            yield return new ValidationResult(
+                "Colore non valido: scegli uno della tavolozza.", [nameof(Color)]);
+        }
+    }
+}

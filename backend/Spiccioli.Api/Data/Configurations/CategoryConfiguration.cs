@@ -19,5 +19,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         //Lo utente non può avere due categorie con lo stesso nome
         builder.HasIndex(c => new { c.UserId, c.Name }).IsUnique();
+
+        builder.Property(c => c.Color).HasMaxLength(7);
     }
 }

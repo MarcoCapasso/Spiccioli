@@ -36,10 +36,13 @@ public class CategoryService : ICategoryService
             return Result<CategoryResponse>.Failure(nameError);
         }
 
+        var color = request.Color?.ToUpperInvariant() ?? await NextColorAsync(userId);
+
         var category = new Category
         {
             Name = name,
             Type = request.Type,
+            Color = color,
             UserId = userId,
         };
 
@@ -65,6 +68,12 @@ public class CategoryService : ICategoryService
         }
 
         category.Name = name;
+
+        if (request.Color is not null)
+        {
+            category.Color = request.Color.ToUpperInvariant();
+        }
+
         await _repository.SaveChangesAsync();
 
         return Result<CategoryResponse>.Success(ToResponse(category));
@@ -114,7 +123,8 @@ public class CategoryService : ICategoryService
             category.Id,
             category.Name,
             category.Type,
-            category.IsArchived
+            category.IsArchived,
+            category.Color
         );
     }
 
@@ -131,5 +141,12 @@ public class CategoryService : ICategoryService
         return existing.IsArchived
             ? Error.Conflict($"Esiste già una categoria archiviata chiamata \"{existing.Name}\": puoi ripristinarla.")
             : Error.Conflict($"Esiste già una categoria chiamata \"{existing.Name}\".");
+    }
+
+    //Senza una scelta dell'utente, il prossimo colore della tavolozza, a rotazione
+    private async Task<string> NextColorAsync(Guid userId)
+    {
+        var count = (await _repository.GetByUserAsync(userId, true)).Count();
+        return CategoryPalette.Colors[count % CategoryPalette.Colors.Count];
     }
 }

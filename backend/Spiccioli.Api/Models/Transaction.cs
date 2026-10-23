@@ -5,6 +5,9 @@ public class Transaction
     public int Id { get; set; }
     public string? Description { get; set; }
 
+    //Dettaglio facoltativo
+    public string? Note { get; set; }
+
     //importo sempre positivo, il segno lo decide il Type
     public decimal Amount { get; set; }
 

@@ -6,5 +6,6 @@ public record CategoryResponse(
     int Id,
     string Name,
     TransactionType Type,
-    bool IsArchived
+    bool IsArchived,
+    string Color
 );

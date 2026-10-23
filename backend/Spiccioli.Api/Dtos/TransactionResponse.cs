@@ -10,7 +10,8 @@ public record TransactionResponse(
     TransactionType Type,
     string? Description,
     int? CategoryId,
-    string? CategoryName)
+    string? CategoryName,
+    string? Note = null)
 {
     //Unico punto di conversione dal modello, utilizzato da tutti i service
     public static TransactionResponse FromTransaction(Transaction transaction) =>
@@ -21,6 +22,7 @@ public record TransactionResponse(
             transaction.Type,
             transaction.Description,
             transaction.CategoryId,
-            transaction.Category?.Name
+            transaction.Category?.Name,
+            transaction.Note
         );
 }

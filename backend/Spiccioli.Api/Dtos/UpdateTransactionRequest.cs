@@ -16,8 +16,12 @@ public record UpdateTransactionRequest(
     [Range(1, int.MaxValue, ErrorMessage = "La categoria è obbligatoria.")]
     int CategoryId,
 
-    [StringLength(200, ErrorMessage = "La descrizione non può superare i 200 caratteri.")]
-    string? Description) : IValidatableObject
+    [StringLength(200, ErrorMessage = "La descrizione non può superare i 100 caratteri.")]
+    string? Description,
+
+    [StringLength(240, ErrorMessage = "La nota non può superare i 240 caratteri.")]
+    string? Note = null) : IValidatableObject
+
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         => ValidationRules.RequiredDate(Date);

@@ -60,6 +60,7 @@ public class TransactionService : ITransactionService
             Type = request.Type,
             CategoryId = request.CategoryId,
             Description = request.Description,
+            Note = request.Note,
             UserId = userId,
         };
 
@@ -94,6 +95,7 @@ public class TransactionService : ITransactionService
         transaction.Type = request.Type;
         transaction.CategoryId = request.CategoryId;
         transaction.Description = request.Description;
+        transaction.Note = request.Note;
 
         await _repository.SaveChangesAsync();
 

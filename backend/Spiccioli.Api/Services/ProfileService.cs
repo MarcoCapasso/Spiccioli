@@ -55,7 +55,12 @@ public class ProfileService : IProfileService
 
         var toCreate = chosen
             .Where(d => !existingNames.Contains(d.Name.ToLowerInvariant()))
-            .Select(d => new Category { Name = d.Name, Type = d.Type, UserId = userId });
+            .Select((d, index) => new Category { 
+                Name = d.Name, 
+                Type = d.Type, 
+                UserId = userId, 
+                Color = CategoryPalette.Colors[(existing.Count() + index) % CategoryPalette.Colors.Count] 
+                });
 
         _categories.AddRange(toCreate);
         user.HasCompletedOnboarding = true;

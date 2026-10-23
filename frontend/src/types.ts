@@ -33,6 +33,7 @@ export type CategoryResponse = {
   name: string;
   type: TransactionType;
   isArchived: boolean;
+  color: string;
 };
 
 // ───────────── Transazioni ─────────────
@@ -44,6 +45,7 @@ export type TransactionResponse = {
   date: IsoDate;
   type: TransactionType;
   description: string | null;
+  note: string | null;
   categoryId: number | null;
   categoryName: string | null;
 };
