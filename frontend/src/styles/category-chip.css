@@ -1,0 +1,72 @@
+/* ───────────── Categoria da scegliere ───────────── */
+
+.cat-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 550;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.cat-chip:hover {
+  border-color: var(--text-3);
+}
+
+.cat-chip[aria-pressed="true"] {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.cat-chip-dot {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.cat-chip-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Il cerchio con la spunta: vuoto se non scelta, arancione se scelta */
+.cat-chip-check {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  color: #fff;
+}
+
+.cat-chip-check svg {
+  width: 13px;
+  height: 13px;
+  visibility: hidden;
+}
+
+.cat-chip[aria-pressed="true"] .cat-chip-check {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.cat-chip[aria-pressed="true"] .cat-chip-check svg {
+  visibility: visible;
+}

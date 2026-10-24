@@ -53,14 +53,11 @@ public class ProfileService : IProfileService
         var existing = await _categories.GetByUserAsync(userId, includeArchived: true);
         var existingNames = existing.Select(c => c.Name.ToLowerInvariant()).ToHashSet();
 
-        var toCreate = chosen
-            .Where(d => !existingNames.Contains(d.Name.ToLowerInvariant()))
-            .Select((d, index) => new Category { 
-                Name = d.Name, 
-                Type = d.Type, 
-                UserId = userId, 
-                Color = CategoryPalette.Colors[(existing.Count() + index) % CategoryPalette.Colors.Count] 
-                });
+        //Ogni categoria proposta ha un colore fisso, dalla sua posizione nell'elenco
+        var toCreate = DefaultCategories.All
+            .Select((d, position) => (Default: d, Color: CategoryPalette.Colors[position % CategoryPalette.Colors.Count]))
+            .Where(x => requested.Contains(x.Default.Name) && !existingNames.Contains(x.Default.Name.ToLowerInvariant()))
+            .Select(x => new Category { Name = x.Default.Name, Type = x.Default.Type, UserId = userId, Color = x.Color });
 
         _categories.AddRange(toCreate);
         user.HasCompletedOnboarding = true;

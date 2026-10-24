@@ -36,6 +36,12 @@ export type CategoryResponse = {
   color: string;
 };
 
+//Una categoria proposta nell'onboarding
+export type DefaultCategory = {
+  name: string;
+  type: TransactionType;
+};
+
 // ───────────── Transazioni ─────────────
 
 //Una transazione: GET /api/transactions/{id}, e gli elementi dell'elenco

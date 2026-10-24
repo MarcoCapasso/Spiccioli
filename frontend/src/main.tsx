@@ -32,6 +32,8 @@ import "./styles/google-button.css";
 import "./styles/app-layout.css";
 import "./styles/topbar.css";
 import "./styles/fab.css";
+import "./styles/category-chip.css";
+import "./styles/onboarding.css";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";
@@ -46,7 +48,10 @@ createRoot(document.getElementById("root")!).render(
             <App />
           </AuthProvider>
         </ToastProvider>
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-right"
+        />
       </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
