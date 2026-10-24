@@ -1,54 +1,36 @@
-import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router";
-import { Brand } from "../components/Brand";
-import { Fab } from "../components/Fab";
-import { Icon, type IconName } from "../components/Icon";
-import { useToast } from "../components/toast-context";
-import { SidebarUser } from "../components/SidebarUser";
-import { TopBar } from "./TopBar";
+import { useEffect, useRef, useState } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router';
+import { Brand } from '../components/Brand';
+import { Fab } from '../components/Fab';
+import { Icon, type IconName } from '../components/Icon';
+import { useTransactionActions } from '../components/transaction-actions-context';
+import { TransactionActionsProvider } from '../components/TransactionActionsProvider';
+import { SidebarUser } from '../components/SidebarUser';
+import { TopBar } from './TopBar';
 
 type NavItem = { to: string; icon: IconName; label: string; subtitle: string };
 
-//Le voci della barra laterale
+//Le voci della barra laterale: il titolo e il sottotitolo della pagina vengono da qui
 const MAIN_NAV: NavItem[] = [
-  {
-    to: "/",
-    icon: "home",
-    label: "Panoramica",
-    subtitle: "Come stanno andando i tuoi conti",
-  },
-  {
-    to: "/movimenti",
-    icon: "list",
-    label: "Movimenti",
-    subtitle: "Tutte le entrate e le uscite",
-  },
-  {
-    to: "/categorie",
-    icon: "tag",
-    label: "Categorie",
-    subtitle: "Organizza le tue spese",
-  },
+  { to: '/', icon: 'home', label: 'Panoramica', subtitle: 'Come stanno andando i tuoi conti' },
+  { to: '/movimenti', icon: 'list', label: 'Movimenti', subtitle: 'Tutte le entrate e le uscite' },
+  { to: '/categorie', icon: 'tag', label: 'Categorie', subtitle: 'Organizza le tue spese' },
 ];
 
 //Solo in sviluppo
 const DEV_NAV: NavItem[] = [
-  {
-    to: "/sviluppo",
-    icon: "grid",
-    label: "Sistema di design",
-    subtitle: "Componenti e stati riutilizzabili",
-  },
+  { to: '/sviluppo', icon: 'grid', label: 'Sistema di design', subtitle: 'Componenti e stati riutilizzabili' },
 ];
 
 const ALL_NAV = [...MAIN_NAV, ...DEV_NAV];
 
 type NavGroupProps = {
   items: NavItem[];
+  //Chiamata quando si sceglie una voce: sul telefono chiude il menu
   onNavigate: () => void;
 };
 
-//la voce della pagina corrente si evidenzia da sola
+//Un gruppo di voci: la voce della pagina corrente si evidenzia da sola
 function NavGroup({ items, onNavigate }: NavGroupProps) {
   return (
     <nav className="nav">
@@ -56,7 +38,7 @@ function NavGroup({ items, onNavigate }: NavGroupProps) {
         <NavLink
           key={item.to}
           to={item.to}
-          end={item.to === "/"}
+          end={item.to === '/'}
           className="nav-item"
           title={item.label}
           onClick={onNavigate}
@@ -69,23 +51,23 @@ function NavGroup({ items, onNavigate }: NavGroupProps) {
   );
 }
 
-//barra laterale, barra in alto e contenuto
-export function AppLayout() {
+//Il guscio: barra laterale, barra in alto e contenuto
+function AppShell() {
   const { pathname } = useLocation();
   const current = ALL_NAV.find((item) => item.to === pathname);
-  const showToast = useToast();
+  const { openNew } = useTransactionActions();
 
-  //Il menu a scomparsa del telefono
+  //Il menu a scomparsa del telefono: lo possiede il guscio, perché lo usano barra laterale, barra in alto e sfondo
   const [menuOpen, setMenuOpen] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
   const closeMenu = () => setMenuOpen(false);
 
   //Il titolo della scheda del browser segue la pagina
   useEffect(() => {
-    document.title = current ? `${current.label} · Spiccioli` : "Spiccioli";
+    document.title = current ? `${current.label} · Spiccioli` : 'Spiccioli';
   }, [current]);
 
-  //Cambiando pagina si torna in cima
+  //Cambiando pagina si torna in cima: in questa modalità il router non lo fa da solo
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
@@ -96,38 +78,27 @@ export function AppLayout() {
       return;
     }
 
-    sidebarRef.current?.querySelector<HTMLElement>("a")?.focus();
+    sidebarRef.current?.querySelector<HTMLElement>('a')?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         setMenuOpen(false);
       }
     }
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [menuOpen]);
-
-  //Provvisorio: la finestra del movimento arriva nella lezione 12.14
-  function handleNewTransaction() {
-    showToast({
-      kind: "info",
-      title: "In arrivo",
-      message: "La finestra del movimento arriva nella lezione 12.14.",
-    });
-  }
 
   return (
     <div className="app">
       <aside
         ref={sidebarRef}
         id="sidebar"
-        className={menuOpen ? "sidebar open" : "sidebar"}
+        className={menuOpen ? 'sidebar open' : 'sidebar'}
         aria-label="Navigazione principale"
       >
-        <div className="sidebar-brand">
-          <Brand />
-        </div>
+        <div className="sidebar-brand"><Brand /></div>
         <NavGroup items={MAIN_NAV} onNavigate={closeMenu} />
         {import.meta.env.DEV && (
           <>
@@ -137,26 +108,31 @@ export function AppLayout() {
         )}
         <SidebarUser />
       </aside>
-      <div
-        className={menuOpen ? "drawer-backdrop show" : "drawer-backdrop"}
-        onClick={closeMenu}
-        aria-hidden="true"
-      />
+      <div className={menuOpen ? 'drawer-backdrop show' : 'drawer-backdrop'} onClick={closeMenu} aria-hidden="true" />
 
       <div className="main">
         <TopBar
-          title={current?.label ?? "Spiccioli"}
-          subtitle={current?.subtitle ?? ""}
+          title={current?.label ?? 'Spiccioli'}
+          subtitle={current?.subtitle ?? ''}
           menuOpen={menuOpen}
           onMenuClick={() => setMenuOpen(true)}
-          onNewTransaction={handleNewTransaction}
+          onNewTransaction={openNew}
         />
         <main className="content">
           <Outlet />
         </main>
       </div>
 
-      <Fab icon="plus" label="Nuovo movimento" onClick={handleNewTransaction} />
+      <Fab icon="plus" label="Nuovo movimento" onClick={openNew} />
     </div>
+  );
+}
+
+//La struttura dell'app, con le finestre dei movimenti a disposizione di tutte le pagine
+export function AppLayout() {
+  return (
+    <TransactionActionsProvider>
+      <AppShell />
+    </TransactionActionsProvider>
   );
 }

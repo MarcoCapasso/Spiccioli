@@ -1,5 +1,5 @@
 import { tint } from "../color";
-import { formatShortDate, formatSigned } from "../format";
+import { formatShortDate, formatSigned, transactionTitle } from "../format";
 import type { TransactionResponse } from "../types";
 import { TransactionTypeBadge } from "./Badge";
 import { IconButton } from "./IconButton";
@@ -26,8 +26,8 @@ export function TransactionRow({
   onEdit,
   onDelete,
 }: TransactionRowProps) {
-  const { description, note, categoryName, date, amount, type } = transaction;
-  const title = description || categoryName || "Senza categoria";
+  const { note, categoryName, date, amount, type } = transaction;
+  const title = transactionTitle(transaction);
   const hasActions = onEdit !== undefined || onDelete !== undefined;
 
   return (

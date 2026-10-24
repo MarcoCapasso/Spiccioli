@@ -3,6 +3,7 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  type QueryClient,
 } from "@tanstack/react-query";
 import { apiFetch } from "./client";
 import type {
@@ -119,5 +120,60 @@ export function useTransactionSummary(filters: TransactionFilters) {
         `/api/transactions/summary${toQuery(filters)}`,
       ),
     placeholderData: keepPreviousData,
+  });
+}
+
+//Ciò che il modulo invia: gli stessi campi di CreateTransactionRequest e UpdateTransactionRequest
+export type TransactionInput = {
+  amount: number;
+  date: IsoDate;
+  type: TransactionType;
+  categoryId: number;
+  description: string | null;
+  note: string | null;
+};
+
+//Dopo ogni modifica ai movimenti si rileggono elenchi, riepiloghi e conteggi:
+//tutte le chiavi che iniziano con 'transactions' diventano vecchie in un colpo solo
+function refreshTransactions(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: ["transactions"] });
+}
+
+//Crea un movimento: POST /api/transactions
+export function useCreateTransaction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: TransactionInput) =>
+      apiFetch<TransactionResponse>("/api/transactions", {
+        method: "POST",
+        body: input,
+      }),
+    onSuccess: () => refreshTransactions(queryClient),
+  });
+}
+
+//Modifica un movimento: PUT /api/transactions/{id}
+export function useUpdateTransaction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, input }: { id: number; input: TransactionInput }) =>
+      apiFetch<TransactionResponse>(`/api/transactions/${id}`, {
+        method: "PUT",
+        body: input,
+      }),
+    onSuccess: () => refreshTransactions(queryClient),
+  });
+}
+
+//Elimina un movimento: DELETE /api/transactions/{id}
+export function useDeleteTransaction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) =>
+      apiFetch<void>(`/api/transactions/${id}`, { method: "DELETE" }),
+    onSuccess: () => refreshTransactions(queryClient),
   });
 }

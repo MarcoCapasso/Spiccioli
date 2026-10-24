@@ -51,6 +51,13 @@
   padding: 14px 24px 8px;
 }
 
+/* Un modulo dentro la finestra */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .modal-foot {
   display: flex;
   justify-content: flex-end;

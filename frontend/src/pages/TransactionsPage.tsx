@@ -9,6 +9,7 @@ import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Pagination } from "../components/Pagination";
 import { EmptyState, ErrorState } from "../components/States";
+import { useTransactionActions } from "../components/transaction-actions-context";
 import { TransactionFilterBar } from "../components/TransactionFilterBar";
 import { TransactionListSkeleton } from "../components/TransactionListSkeleton";
 import { TransactionRow } from "../components/TransactionRow";
@@ -24,6 +25,7 @@ import { useDebouncedValue } from "../useDebouncedValue";
 export function TransactionsPage() {
   const [filters, setFilters] = useState<FilterState>(NO_FILTERS);
   const [page, setPage] = useState(1);
+  const { openNew, openEdit, askDelete } = useTransactionActions();
 
   //La ricerca parte solo quando si smette di scrivere
   const search = useDebouncedValue(filters.search);
@@ -39,6 +41,12 @@ export function TransactionsPage() {
   const colors = new Map(
     categories.data?.map((category) => [category.id, category.color]),
   );
+
+  //Se la pagina corrente non esiste più (per esempio dopo un'eliminazione), si torna all'ultima
+  const lastPage = Math.max(1, transactions.data?.totalPages ?? 1);
+  if (transactions.data && !transactions.isPlaceholderData && page > lastPage) {
+    setPage(lastPage);
+  }
 
   //Ogni cambio di filtro riporta alla prima pagina
   function updateFilters(patch: Partial<FilterState>) {
@@ -80,10 +88,14 @@ export function TransactionsPage() {
         }
       />
     ) : (
-      //Il pulsante per aggiungere il primo movimento arriva nella lezione 12.14
       <EmptyState
         title="Nessun movimento ancora"
         text="Qui troverai lo storico completo di entrate e uscite, dal più recente."
+        actions={
+          <Button icon="plus" size="sm" onClick={openNew}>
+            Aggiungi movimento
+          </Button>
+        }
       />
     );
   } else {
@@ -98,8 +110,8 @@ export function TransactionsPage() {
             key={t.id}
             transaction={t}
             categoryColor={t.categoryId ? colors.get(t.categoryId) : undefined}
-            onEdit={() => {}}
-            onDelete={() => {}}
+            onEdit={() => openEdit(t)}
+            onDelete={() => askDelete(t)}
           />
         ))}
       </ul>

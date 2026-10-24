@@ -84,3 +84,18 @@ export function errorMessage(error: unknown): string {
   //fetch lancia un TypeError quando la richiesta non arriva: server spento, rete assente, CORS
   return 'Impossibile contattare il server. Controlla la connessione e riprova.';
 }
+
+
+//I messaggi del backend per campo, con i nomi in camelCase come nei moduli: { categoryId: "…" }
+export function fieldErrors(error: unknown): Record<string, string> {
+  const result: Record<string, string> = {};
+
+  if (error instanceof ApiError && error.problem?.errors) {
+    for (const [field, messages] of Object.entries(error.problem.errors)) {
+      const key = field.charAt(0).toLowerCase() + field.slice(1);
+      result[key] = messages.join(' ');
+    }
+  }
+
+  return result;
+}

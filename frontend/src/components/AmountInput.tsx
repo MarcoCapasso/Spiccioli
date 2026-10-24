@@ -1,5 +1,5 @@
 import type { TransactionType } from "../types";
-import { errorIdFor } from './field-ids';
+import { errorIdFor } from "./field-ids";
 
 type AmountInputProps = {
   id: string;
@@ -7,6 +7,7 @@ type AmountInputProps = {
   onChange: (value: string) => void;
   tone: TransactionType;
   invalid?: boolean;
+  autoFocus?: boolean;
 };
 
 //Il campo dell'importo
@@ -16,6 +17,7 @@ export function AmountInput({
   onChange,
   tone,
   invalid = false,
+  autoFocus = false,
 }: AmountInputProps) {
   const toneClass = tone === "Income" ? "inc" : "exp";
 
@@ -30,6 +32,7 @@ export function AmountInput({
         autoComplete="off"
         placeholder="0,00"
         value={value}
+        autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value.replace(/[^\d.,]/g, ""))}
         aria-invalid={invalid}
         aria-describedby={invalid ? errorIdFor(id) : undefined}

@@ -1,4 +1,4 @@
-import type { IsoDate, TransactionType } from "./types";
+import type { IsoDate, TransactionType, TransactionResponse } from "./types";
 
 const EUR = new Intl.NumberFormat("it-IT", {
   style: "currency",
@@ -56,4 +56,26 @@ export function formatDayLabel(date: IsoDate) {
     year: parsed.getFullYear() === today.getFullYear() ? undefined : "numeric",
   });
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+//Da "1.234,56" o "12,5" a un numero; NaN se non è un importo valido
+export function parseAmount(text: string) {
+  const normalized = text
+    .replace(/\s|€/g, "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "")
+    .replace(",", ".");
+  //Solo cifre, con al massimo due decimali: niente segni, niente notazione scientifica
+  return /^\d+(\.\d{1,2})?$/.test(normalized) ? Number(normalized) : NaN;
+}
+
+//La data di oggi nel formato dell'API
+export function todayIso() {
+  return toIso(new Date());
+}
+
+//Il titolo di una riga: la descrizione, altrimenti la categoria
+export function transactionTitle(transaction: TransactionResponse) {
+  return (
+    transaction.description || transaction.categoryName || "Senza categoria"
+  );
 }
