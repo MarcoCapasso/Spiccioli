@@ -1,0 +1,145 @@
+/* ───────────── Riga di un movimento ───────────── */
+
+.tx-list {
+  margin: 0;
+  padding: 4px 8px 8px;
+  list-style: none;
+}
+
+.tx {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--r);
+  transition: background .12s;
+}
+
+/* Con i pulsanti di modifica ed eliminazione c'è una quarta colonna */
+.tx-with-actions {
+  grid-template-columns: 40px minmax(0, 1fr) auto auto;
+}
+
+.tx:hover {
+  background: var(--surface-2);
+}
+
+.tx-ico {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.tx-main {
+  min-width: 0;
+}
+
+.tx-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.tx-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-top: 2px;
+}
+
+.tx-meta .t-xs {
+  white-space: nowrap;
+}
+
+.tx-note {
+  margin-top: 3px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+  font-size: 12.5px;
+}
+
+.tx-amt {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.tx-amt .badge {
+  margin-top: 3px;
+}
+
+.tx-amt.inc { color: var(--success-ink); }
+.tx-amt.exp { color: var(--danger-ink); }
+
+/* Visibili solo al passaggio del mouse o con la tastiera; sui dispositivi touch sempre */
+.tx-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity .12s;
+}
+
+.tx:hover .tx-actions,
+.tx:focus-within .tx-actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .tx-actions {
+    opacity: 1;
+  }
+}
+
+/* Categoria: pallino e nome */
+.cat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+  font-weight: 500;
+  font-size: 12.5px;
+}
+
+.cat-label-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+}
+
+@media (max-width: 760px) {
+  .tx,
+  .tx-with-actions {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 10px 8px;
+  }
+
+  .tx-ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  /* I pulsanti vanno su una riga a parte, sotto l'importo */
+  .tx-actions {
+    grid-column: 2 / -1;
+    justify-content: flex-end;
+    margin-top: -6px;
+  }
+}

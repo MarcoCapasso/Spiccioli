@@ -1,0 +1,37 @@
+/* ───────────── Riepilogo e pagine sotto l'elenco ───────────── */
+
+/* Il riepilogo chiude la card, con gli angoli in basso arrotondati */
+.summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.summary-bar b {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.summary-bar .inc { color: var(--success-ink); }
+.summary-bar .exp { color: var(--danger-ink); }
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Mentre arriva il nuovo elenco, quello vecchio resta visibile ma attenuato */
+.list-stale {
+  opacity: .6;
+  transition: opacity .15s;
+}

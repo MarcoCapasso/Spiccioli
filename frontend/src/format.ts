@@ -1,0 +1,59 @@
+import type { IsoDate, TransactionType } from "./types";
+
+const EUR = new Intl.NumberFormat("it-IT", {
+  style: "currency",
+  currency: "EUR",
+  useGrouping: "always",
+});
+
+//Un importo in euro: "1.800,00 €"
+export function formatMoney(amount: number) {
+  return EUR.format(amount);
+}
+
+//Un importo con segno: "+1.800,00 €" per le entrate, "−68,40 €" per le uscite
+export function formatSigned(amount: number, type: TransactionType) {
+  return (type === "Income" ? "+" : "−") + EUR.format(Math.abs(amount));
+}
+
+//A mezzogiorno, per non cambiare giorno con i fusi orari
+function parse(date: IsoDate) {
+  return new Date(`${date}T12:00:00`);
+}
+
+function toIso(date: Date) {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+//"13 ott"
+export function formatShortDate(date: IsoDate) {
+  return parse(date).toLocaleDateString("it-IT", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+//"Oggi", "Ieri", oppure "Martedì 13 ottobre" (con l'anno se non è quello corrente)
+export function formatDayLabel(date: IsoDate) {
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (date === toIso(today)) {
+    return "Oggi";
+  }
+  if (date === toIso(yesterday)) {
+    return "Ieri";
+  }
+
+  const parsed = parse(date);
+  const text = parsed.toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: parsed.getFullYear() === today.getFullYear() ? undefined : "numeric",
+  });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

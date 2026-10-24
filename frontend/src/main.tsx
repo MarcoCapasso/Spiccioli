@@ -34,6 +34,11 @@ import "./styles/topbar.css";
 import "./styles/fab.css";
 import "./styles/category-chip.css";
 import "./styles/onboarding.css";
+import "./styles/transaction-row.css";
+import "./styles/tabs.css";
+import "./styles/toolbar.css";
+import "./styles/pager.css";
+
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";

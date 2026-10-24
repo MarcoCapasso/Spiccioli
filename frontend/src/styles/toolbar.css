@@ -1,0 +1,37 @@
+/* ───────────── Barra dei filtri ───────────── */
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toolbar .input-wrap {
+  flex: 1 1 220px;
+}
+
+.toolbar .select {
+  width: auto;
+  min-width: 170px;
+}
+
+.toolbar input[type="date"] {
+  width: auto;
+}
+
+@media (max-width: 760px) {
+  .toolbar .select,
+  .toolbar input[type="date"] {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+}
