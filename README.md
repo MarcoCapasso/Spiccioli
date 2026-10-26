@@ -51,8 +51,12 @@ Backend (da `backend/Spiccioli.Api`):
 dotnet run
 ```
 
-Frontend (da `frontend`): crea il file `.env.development` con l'indirizzo del backend
-(`VITE_API_URL`, quello mostrato all'avvio) e le chiavi pubbliche di Supabase, poi:
+Frontend (da `frontend`): copia `.env.example` in `.env.development` e compila i valori:
+
+- `VITE_API_URL`: l'indirizzo del backend (in locale `http://localhost:5046`)
+- `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`: indirizzo e chiave pubblica del tuo progetto Supabase (Project Settings → API)
+
+Poi:
 
 ```
 npm install
