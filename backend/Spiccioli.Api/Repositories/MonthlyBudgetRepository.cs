@@ -26,7 +26,6 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
 
     public async Task<MonthlyBudget?> GetLatestBeforeAsync(Guid userId, int year, int month)
     {
-        //"Prima" di un mese: un anno precedente, oppure lo stesso anno con un mese precedente
         return await _context.MonthlyBudgets
             .AsNoTracking()
             .Include(b => b.Allocations).ThenInclude(a => a.Category)
@@ -38,16 +37,13 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
     public async Task<bool> TryAddAsync(MonthlyBudget budget)
     {
         _context.MonthlyBudgets.Add(budget);
-
         try
         {
-            //Un solo salvataggio: piano, voci e pagamenti in un'unica transazione
             await _context.SaveChangesAsync();
             return true;
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
         {
-            //Un'altra richiesta ha creato lo stesso mese un istante prima: si scarta il nostro tentativo
             _context.ChangeTracker.Clear();
             return false;
         }
@@ -60,7 +56,6 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
 
     public async Task<IReadOnlyList<MonthlyBudget>> GetFromMonthAsync(Guid userId, int year, int month)
     {
-        //"Da quel mese in avanti": un anno successivo, oppure lo stesso anno da quel mese in poi
         return await _context.MonthlyBudgets
             .Include(b => b.PlannedPayments)
             .Where(b => b.UserId == userId && (b.Year > year || (b.Year == year && b.Month >= month)))
@@ -69,7 +64,7 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
 
     public async Task<HashSet<int>> GetPaidPaymentIdsAsync(IEnumerable<int> plannedPaymentIds)
     {
-        //Un pagamento è saldato se una transazione lo indica: la regola 8, nessun campo IsPaid
+        //Un pagamento è saldato se una transazione lo indica
         var paid = await _context.Transactions
             .Where(t => t.PlannedPaymentId != null && plannedPaymentIds.Contains(t.PlannedPaymentId.Value))
             .Select(t => t.PlannedPaymentId!.Value)
@@ -78,9 +73,19 @@ public class MonthlyBudgetRepository : IMonthlyBudgetRepository
         return paid.ToHashSet();
     }
 
+    public async Task<IReadOnlyDictionary<int, Transaction>> GetPaymentTransactionsAsync(IEnumerable<int> plannedPaymentIds)
+    {
+        var ids = plannedPaymentIds.ToList();
+        var transactions = await _context.Transactions
+            .AsNoTracking()
+            .Where(t => t.PlannedPaymentId != null && ids.Contains(t.PlannedPaymentId.Value))
+            .ToListAsync();
+
+        return transactions.ToDictionary(t => t.PlannedPaymentId!.Value);
+    }
+
     public async Task<PlannedPayment?> GetPlannedPaymentAsync(Guid userId, int plannedPaymentId)
     {
-        //Il pagamento non ha uno UserId: l'appartenenza si verifica attraverso il suo piano
         return await _context.PlannedPayments
             .AsNoTracking()
             .Include(p => p.RecurringExpense)

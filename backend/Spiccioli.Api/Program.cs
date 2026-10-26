@@ -35,6 +35,7 @@ builder.Services.AddScoped<IMonthlyBudgetService, MonthlyBudgetService>();
 builder.Services.AddScoped<IPlannedPaymentSynchronizer, PlannedPaymentSynchronizer>();
 builder.Services.AddScoped<IPlannedPaymentService, PlannedPaymentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 //Crea l'utente al primo accesso; la cache ricorda chi esiste già
 builder.Services.AddScoped<IUserProvisioner, UserProvisioner>();

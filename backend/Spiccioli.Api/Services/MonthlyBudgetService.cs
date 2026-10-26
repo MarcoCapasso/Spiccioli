@@ -212,7 +212,7 @@ public class MonthlyBudgetService : IMonthlyBudgetService
 
         var plannedPayments = budget.PlannedPayments
             .OrderBy(p => p.DueDate).ThenBy(p => p.Name)
-            .Select(p => new PlannedPaymentResponse(p.Id, p.Name, p.Amount, p.DueDate, paidIds.Contains(p.Id)))
+            .Select(p => new PlannedPaymentResponse(p.Id, p.Name, p.Amount, p.DueDate, paidIds.Contains(p.Id), p.RecurringExpenseId))
             .ToList();
 
         return new MonthlyBudgetResponse(

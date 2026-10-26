@@ -6,5 +6,6 @@ public record PlannedPaymentResponse(
     string Name,
     decimal Amount,
     DateOnly DueDate,
-    bool IsPaid
+    bool IsPaid,
+    int RecurringExpenseId
 );

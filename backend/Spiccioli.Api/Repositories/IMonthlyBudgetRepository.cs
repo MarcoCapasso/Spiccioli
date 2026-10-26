@@ -24,6 +24,9 @@ public interface IMonthlyBudgetRepository
     //Tra i pagamenti indicati, quelli già saldati (con una transazione collegata)
     Task<HashSet<int>> GetPaidPaymentIdsAsync(IEnumerable<int> plannedPaymentIds);
 
+    //Le transazioni che hanno saldato i pagamenti indicati, per Id del pagamento: servono l'importo e la data del pagamento vero
+    Task<IReadOnlyDictionary<int, Transaction>> GetPaymentTransactionsAsync(IEnumerable<int> plannedPaymentIds);
+
     //Un pagamento previsto, solo se appartiene a un piano dell'utente, con la sua spesa ricorrente; null altrimenti
     Task<PlannedPayment?> GetPlannedPaymentAsync(Guid userId, int plannedPaymentId);
 }
