@@ -11,4 +11,5 @@ public record RecurringExpenseResponse(
     DateOnly StartDate,
     DateOnly? EndDate,
     int CategoryId,
-    string? CategoryName);
+    string? CategoryName,
+    bool hasPaidPayments = false);

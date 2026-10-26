@@ -26,7 +26,11 @@ public class RecurringExpenseService : IRecurringExpenseService
     public async Task<IReadOnlyList<RecurringExpenseResponse>> GetByUserAsync(Guid userId)
     {
         var expenses = await _repository.GetByUserAsync(userId);
-        return expenses.Select(e => ToResponse(e)).ToList();
+
+        //Quali hanno scadenze saldate: una sola query per tutte, non una per spesa
+        var paidIds = await _repository.GetIdsWithPaidPaymentsAsync(expenses.Select(e => e.Id));
+
+        return expenses.Select(e => ToResponse(e, paidIds.Contains(e.Id))).ToList();
     }
 
     public async Task<RecurringExpenseResponse?> GetByIdAsync(Guid userId, int id)
@@ -34,7 +38,9 @@ public class RecurringExpenseService : IRecurringExpenseService
         var recurringExpense = await _repository.GetByIdAsync(id, userId);
 
         //Non trovata (o non dell'utente): null; altrimenti la risposta
-        return recurringExpense is null ? null : ToResponse(recurringExpense);
+        return recurringExpense is null
+            ? null
+            : ToResponse(recurringExpense, await _repository.HasPaidPaymentsAsync(id));
     }
 
     public async Task<Result<RecurringExpenseResponse>> CreateAsync(Guid userId, CreateRecurringExpenseRequest request)
@@ -67,6 +73,7 @@ public class RecurringExpenseService : IRecurringExpenseService
         var created = await _repository.GetByIdAsync(expense.Id, userId)
             ?? throw new InvalidOperationException("Spesa ricorrente appena creata non trovata.");
 
+        //Appena creata: nessuna scadenza può essere già saldata
         return Result<RecurringExpenseResponse>.Success(ToResponse(created));
     }
 
@@ -102,10 +109,10 @@ public class RecurringExpenseService : IRecurringExpenseService
         var updated = await _repository.GetByIdAsync(id, userId)
             ?? throw new InvalidOperationException("Spesa ricorrente appena modificata non trovata");
         
-        return Result<RecurringExpenseResponse>.Success(ToResponse(updated));
+        return Result<RecurringExpenseResponse>.Success(ToResponse(updated, await _repository.HasPaidPaymentsAsync(id)));
     }
 
-    //Se mai usata si elimina. Già usata si termina alla fine del mese corrente, conservando lo storico
+    //Nessuna scadenza saldata si elimina, con le scadenze non saldate. Altrimenti si termina alla fine del mese corrente, conservando lo storico
     public async Task<bool> DeleteAsync(Guid userId, int id)
     {
         var expense = await _repository.GetByIdAsync(id, userId);
@@ -114,7 +121,7 @@ public class RecurringExpenseService : IRecurringExpenseService
             return false;
         }
 
-        if (!await _repository.HasPlannedPaymentsAsync(id))
+        if (!await _repository.HasPaidPaymentsAsync(id))
         {
             await _repository.DeleteAsync(expense);
             return true;
@@ -137,7 +144,7 @@ public class RecurringExpenseService : IRecurringExpenseService
         return true;
     }
 
-    private static RecurringExpenseResponse ToResponse(RecurringExpense expense)
+    private static RecurringExpenseResponse ToResponse(RecurringExpense expense, bool hasPaidPayments = false)
     {
         return new RecurringExpenseResponse(
             expense.Id,
@@ -147,7 +154,8 @@ public class RecurringExpenseService : IRecurringExpenseService
             expense.StartDate,
             expense.EndDate,
             expense.CategoryId,
-            expense.Category?.Name
+            expense.Category?.Name,
+            hasPaidPayments
         );
     }
-}       
+}

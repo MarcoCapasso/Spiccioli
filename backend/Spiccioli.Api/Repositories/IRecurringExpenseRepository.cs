@@ -21,5 +21,8 @@ public interface IRecurringExpenseRepository
     Task DeleteAsync(RecurringExpense expense);
 
     //Restituisce true se la spesa ha generato almeno un pagamento previsto
-    Task<bool> HasPlannedPaymentsAsync(int recurringExpenseId);
+    Task<bool> HasPaidPaymentsAsync(int recurringExpenseId);
+
+    //Gli Id tra quelli indicati, delle spese che hanno almeno una scadenza saldata
+    Task<HashSet<int>> GetIdsWithPaidPaymentsAsync(IEnumerable<int> recurringExpenseIds);
 }

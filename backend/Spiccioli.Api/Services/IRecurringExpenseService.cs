@@ -18,6 +18,6 @@ public interface IRecurringExpenseService
     //Sostituisce i dati di una spesa; NotFound se non esiste, Validation se la categoria non è valida
     Task<Result<RecurringExpenseResponse>> UpdateAsync(Guid userId, int id, UpdateRecurringExpenseRequest request);
 
-    //Mai usata: la elimina. Già usata: la termina alla fine del mese corrente. False se non esiste
+    //Nessuna scadenza saldata: la elimina con le scadenze non saldate. Altrimenti la termina alla fine del mese corrente. False se non esiste
     Task<bool> DeleteAsync(Guid userId, int id);
 }

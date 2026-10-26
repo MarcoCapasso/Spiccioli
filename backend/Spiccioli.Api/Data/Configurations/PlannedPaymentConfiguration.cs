@@ -17,7 +17,8 @@ public class PlannedPaymentConfiguration : IEntityTypeConfiguration<PlannedPayme
             .HasForeignKey(p => p.MonthlyBudgetId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        //La spesa ricorrente non si elimina (si chiude con EndDate)
+        //Il database impedisce di eliminare una spesa ricorrente che ha ancora pagamenti previsti
+        // il Service elimina prima quelli non saldati, e se ce n'è uno saldato la spesa si chiude con EndDate
         builder.HasOne(p => p.RecurringExpense)
             .WithMany()
             .HasForeignKey(p => p.RecurringExpenseId)
