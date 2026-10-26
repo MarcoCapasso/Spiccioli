@@ -12,6 +12,7 @@ public static class CategoryPalette
     //Colore default
     public const string Default = "#64748B";
 
-    public static bool Contains(string color) =>
-        Colors.Contains(color, StringComparer.OrdinalIgnoreCase);
+    //Un colore valido è #RRGGBB: il cancelletto e sei cifre esadecimali
+    public static bool IsValidColor(string color) =>
+        color.Length == 7 && color[0] == '#' && color.Skip(1).All(Uri.IsHexDigit);
 }

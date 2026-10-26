@@ -17,10 +17,10 @@ public record CreateCategoryRequest(
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (Color is not null && !CategoryPalette.Contains(Color))
+        if (Color is not null && !CategoryPalette.IsValidColor(Color))
         {
             yield return new ValidationResult(
-                "Colore non valido: scegli uno della tavolozza.", [nameof(Color)]);
+                "Colore non valido: usa il formato #RRGGBB.", [nameof(Color)]);
         }
     }
 }
