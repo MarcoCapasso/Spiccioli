@@ -1,0 +1,290 @@
+/* ───────────── Calendario delle scadenze ───────────── */
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.month-title {
+  min-width: 130px;
+  text-align: center;
+  font-weight: 650;
+  font-size: 16px;
+}
+
+/* I tre totali del mese */
+.sched-sum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sched-sum-item {
+  min-width: 140px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sched-sum-value {
+  margin-top: 2px;
+  font-weight: 650;
+  font-size: 18px;
+}
+
+.sched-sum-value.inc { color: var(--success-ink); }
+.sched-sum-value.exp { color: var(--danger-ink); }
+
+/* La griglia: sette colonne, le intestazioni dei giorni e poi le celle */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.cal-dow {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-3);
+  font-weight: 550;
+  font-size: 12px;
+  text-align: center;
+}
+
+.cal-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 92px;
+  padding: 6px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Le intestazioni sono i primi sette figli: la colonna di destra e l'ultima riga non hanno bordo */
+.cal-cell:nth-child(7n) {
+  border-right: 0;
+}
+
+.cal-cell:nth-last-child(-n + 7) {
+  border-bottom: 0;
+}
+
+.cal-cell-out {
+  background: var(--surface-2);
+}
+
+.cal-num {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.cal-cell-out .cal-num {
+  color: var(--text-3);
+}
+
+/* Oggi: il numero nel cerchio arancione */
+.cal-cell-today .cal-num {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Una scadenza: nel colore della categoria, con la spunta se è saldata */
+.cal-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 3px 5px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cal-chip:hover {
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.cal-chip span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cal-chip svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: var(--success-ink);
+}
+
+/* Scaduta e non saldata: contorno rosso */
+.cal-chip-late {
+  box-shadow: inset 0 0 0 1px var(--danger);
+}
+
+/* L'elenco per giorno: solo sul telefono, al posto della griglia */
+.agenda {
+  display: none;
+  padding: 4px 16px;
+}
+
+.ag-day {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.ag-day:first-child {
+  border-top: 0;
+}
+
+.ag-date {
+  width: 42px;
+  flex: none;
+  color: var(--text-3);
+  font-size: 11px;
+  text-align: center;
+}
+
+.ag-date b {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Il giorno di oggi: data in arancione */
+.ag-day-today .ag-date,
+.ag-day-today .ag-date b {
+  color: var(--primary-ink);
+}
+
+.ag-items {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ag-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ag-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ag-item-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ag-item-end {
+  flex: none;
+  text-align: right;
+}
+
+.ag-item-amt {
+  color: var(--danger-ink);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ag-item-end .badge {
+  margin-top: 3px;
+}
+
+/* Il segnaposto di oggi, quando non ci sono scadenze in quel giorno */
+.ag-today {
+  padding: 8px 0;
+  border-top: 2px solid var(--primary);
+  color: var(--primary-ink);
+  font-size: 12.5px;
+}
+
+@media (max-width: 760px) {
+  .cal-grid {
+    display: none;
+  }
+
+  .agenda {
+    display: block;
+  }
+
+  .month-nav {
+    justify-content: space-between;
+  }
+
+  /* I tre totali affiancati, più compatti */
+  .sched-sum {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .sched-sum-item {
+    min-width: 0;
+    padding: 8px 10px;
+  }
+
+  .sched-sum-value {
+    font-size: 15px;
+  }
+}
+
+/* L'elenco dei dettagli di una scadenza: etichetta a sinistra, valore a destra */
+.detail-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.detail-list dt {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.detail-list dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 550;
+  font-size: 14px;
+}
+
+.modal-section {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}

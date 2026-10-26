@@ -42,6 +42,7 @@ import "./styles/category-card.css";
 import "./styles/color-picker.css";
 import "./styles/overview.css";
 import "./styles/recurring-card.css";
+import "./styles/calendar.css";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";

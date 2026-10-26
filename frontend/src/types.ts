@@ -114,6 +114,7 @@ export type PlannedPaymentResponse = {
   amount: number;
   dueDate: IsoDate;
   isPaid: boolean;
+  recurringExpenseId: number;
 };
 
 //POST /api/budgets/{year}/{month}, e le risposte delle modifiche del piano
@@ -154,4 +155,34 @@ export type DashboardResponse = {
   categories: CategoryProgressResponse[];
   unallocated: number;
   actualSavings: number;
+};
+
+//Una scadenza del mese: dal piano se è aperto, altrimenti calcolata dalla spesa ricorrente
+export type ScheduledPaymentResponse = {
+  recurringExpenseId: number;
+  //Null se il piano del mese non è aperto: senza piano non c'è nulla da saldare
+  plannedPaymentId: number | null;
+  name: string;
+  amount: number;
+  dueDate: IsoDate;
+  categoryId: number;
+  categoryName: string | null;
+  isPaid: boolean;
+  //Importo e data del pagamento vero, se saldata: possono differire da quelli previsti
+  paidAmount: number | null;
+  paidDate: IsoDate | null;
+  //Non saldata e con la data già passata; sempre false senza piano
+  isOverdue: boolean;
+};
+
+//GET /api/budgets/{year}/{month}/schedule
+export type ScheduleResponse = {
+  year: number;
+  month: number;
+  //False se il piano del mese non è stato aperto: le scadenze sono calcolate e non si possono saldare
+  budgetOpen: boolean;
+  payments: ScheduledPaymentResponse[];
+  plannedTotal: number;
+  paidTotal: number;
+  pendingTotal: number;
 };

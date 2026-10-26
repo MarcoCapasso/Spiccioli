@@ -89,3 +89,20 @@ export function formatDate(date: IsoDate) {
 export function formatNumericDate(date: IsoDate) {
   return parse(date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
+
+//Visualizzazione data
+export function formatMonth(year: number, month: number) {
+  const text = new Date(year, month - 1, 1).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+//Il giorno della settimana abbreviato
+export function formatWeekday(date: IsoDate) {
+  const text = parse(date).toLocaleDateString('it-IT', { weekday: 'short' });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+//Il numero del giorno nel mese
+export function dayOfMonth(date: IsoDate) {
+  return parse(date).getDate();
+}

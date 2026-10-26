@@ -1,4 +1,4 @@
-import { apiFetch } from "./client";
+import { apiFetch, ApiError } from "./client";
 import type { DateRange } from "../period";
 
 import {
@@ -21,6 +21,9 @@ import type {
   CategoryTotalResponse,
   RecurrenceFrequency,
   RecurringExpenseResponse,
+  ScheduleResponse,
+  ScheduledPaymentResponse,
+  MonthlyBudgetResponse,
 } from "../types";
 
 
@@ -50,6 +53,7 @@ export const queryKeys = {
   categoryTotals: (range: DateRange) =>
     ["transactions", "by-category", range] as const,
   recurringExpenses: ['recurring-expenses'] as const,
+  schedule: (year: number, month: number) => ["budgets", "schedule", year, month] as const,
 };
 
 //Il profilo dell'utente collegato: GET /api/me
@@ -326,5 +330,61 @@ export function useDeleteRecurringExpense() {
   return useMutation({
     mutationFn: (id: number) => apiFetch<void>(`/api/recurring-expenses/${id}`, { method: 'DELETE' }),
     onSuccess: () => refreshRecurring(queryClient),
+  });
+}
+
+//Le scadenze di un mese: GET /api/budgets/{year}/{month}/schedule
+export function useSchedule(year: number, month: number) {
+  return useQuery({
+    queryKey: queryKeys.schedule(year, month),
+    queryFn: () => apiFetch<ScheduleResponse>(`/api/budgets/${year}/${month}/schedule`),
+    //Cambiando mese, quello precedente resta visibile finché arriva il nuovo
+    placeholderData: keepPreviousData,
+  });
+}
+
+//Importo e data del pagamento vero
+export type PaymentInput = { amount: number; date: IsoDate };
+
+//Salda una scadenza. 
+// Se il piano del mese non è aperto lo apre prima e ritrova la scadenza
+export function usePayScheduledPayment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      payment,
+      year,
+      month,
+      input,
+    }: {
+      payment: ScheduledPaymentResponse;
+      year: number;
+      month: number;
+      input: PaymentInput;
+    }) => {
+      let plannedPaymentId = payment.plannedPaymentId;
+
+      if (plannedPaymentId === null) {
+        const budget = await apiFetch<MonthlyBudgetResponse>(`/api/budgets/${year}/${month}`, { method: "POST" });
+        plannedPaymentId =
+          budget.plannedPayments.find((p) => p.recurringExpenseId === payment.recurringExpenseId)?.id ?? null;
+
+        if (plannedPaymentId === null) {
+          throw new ApiError(404, { detail: "La scadenza non è nel piano del mese: aggiorna la pagina e riprova." });
+        }
+      }
+
+      return apiFetch<TransactionResponse>(`/api/planned-payments/${plannedPaymentId}/pay`, {
+        method: "POST",
+        body: input,
+      });
+    },
+    //Il pagamento crea una transazione e cambia piano, scadenze e dashboard
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["budgets"] }),
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+      ]),
   });
 }
