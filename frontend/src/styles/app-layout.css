@@ -21,7 +21,12 @@
   background: var(--sidebar);
 }
 
+/* Testata: il marchio a sinistra, il pulsante del tema a destra, alla stessa altezza */
 .sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 4px 10px 18px;
 }
 
@@ -134,7 +139,10 @@
     padding: 20px 12px;
   }
 
+  /* Poco spazio: il tema va sotto la moneta */
   .sidebar-brand {
+    flex-direction: column;
+    gap: 10px;
     padding: 4px 0 18px;
   }
 

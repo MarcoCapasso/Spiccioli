@@ -11,6 +11,7 @@ import { TransactionsPage } from "./pages/TransactionsPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { OnboardingGate } from "./auth/OnboardingGate";
 import { RecurringPage } from "./pages/RecurringPage";
+import { PlanPage } from "./pages/PlanPage";
 
 //Contenuto radice
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/movimenti" element={<TransactionsPage />} />
             <Route path="/spese-ricorrenti" element={<RecurringPage />} />
             <Route path="/categorie" element={<CategoriesPage />} />
+            <Route path="/piano" element={<PlanPage />} />
             {import.meta.env.DEV && (
               <Route path="/sviluppo" element={<DesignSystemPage />} />
             )}

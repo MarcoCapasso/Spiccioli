@@ -10,6 +10,8 @@ type ModalProps = {
   children: ReactNode;
   footer?: ReactNode;
   icon?: ReactNode;
+  //L'id del campo che riceve il cursore all'apertura; senza, il primo campo del contenuto
+  initialFocusId?: string;
 };
 
 //Gli elementi che vengono focussati da TAB con tastiera
@@ -25,6 +27,7 @@ export function Modal({
   children,
   footer,
   icon,
+  initialFocusId,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
@@ -46,7 +49,13 @@ export function Modal({
       return;
     }
 
-    if (!dialog.contains(document.activeElement)) {
+    //Il campo indicato riceve il cursore a ogni esecuzione dell'effetto, anche alla seconda
+    //che React fa in sviluppo: l'autoFocus parte una volta sola e verrebbe scavalcato
+    const wanted = initialFocusId ? document.getElementById(initialFocusId) : null;
+
+    if (wanted && dialog.contains(wanted)) {
+      wanted.focus();
+    } else if (!dialog.contains(document.activeElement)) {
       const body = dialog.querySelector(".modal-body");
       const first =
         body?.querySelector<HTMLElement>(FOCUSABLE) ??
@@ -85,7 +94,7 @@ export function Modal({
       document.removeEventListener("keydown", handleKeyDown);
       previousFocus?.focus();
     };
-  }, []);
+  }, [initialFocusId]);
 
   const classes = ["modal", size === "sm" && "modal-sm"]
     .filter(Boolean)

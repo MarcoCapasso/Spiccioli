@@ -36,7 +36,7 @@ export function TransactionFilterBar({ filters, counts, categories, onChange, on
         )}
       </div>
 
-      <div className="toolbar-row">
+      <div className="toolbar-row toolbar-filters">
         <Input
           small
           icon="search"
@@ -61,26 +61,36 @@ export function TransactionFilterBar({ filters, counts, categories, onChange, on
             </option>
           ))}
         </Select>
-        <Input
-          small
-          id="tx-from"
-          type="date"
-          aria-label="Dal"
-          title="Dal"
-          value={filters.from}
-          max={filters.to || undefined}
-          onChange={(e) => onChange({ from: e.target.value })}
-        />
-        <Input
-          small
-          id="tx-to"
-          type="date"
-          aria-label="Al"
-          title="Al"
-          value={filters.to}
-          min={filters.from || undefined}
-          onChange={(e) => onChange({ to: e.target.value })}
-        />
+
+        {/* Le due date stanno insieme, ognuna con la sua etichetta sopra */}
+        <div className="toolbar-dates">
+          <div className="toolbar-date">
+            <label className="toolbar-label" htmlFor="tx-from">
+              Dal
+            </label>
+            <Input
+              small
+              id="tx-from"
+              type="date"
+              value={filters.from}
+              max={filters.to || undefined}
+              onChange={(e) => onChange({ from: e.target.value })}
+            />
+          </div>
+          <div className="toolbar-date">
+            <label className="toolbar-label" htmlFor="tx-to">
+              Al
+            </label>
+            <Input
+              small
+              id="tx-to"
+              type="date"
+              value={filters.to}
+              min={filters.from || undefined}
+              onChange={(e) => onChange({ to: e.target.value })}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

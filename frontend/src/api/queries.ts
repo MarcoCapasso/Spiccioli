@@ -24,6 +24,7 @@ import type {
   ScheduleResponse,
   ScheduledPaymentResponse,
   MonthlyBudgetResponse,
+  DashboardResponse,
 } from "../types";
 
 
@@ -54,6 +55,7 @@ export const queryKeys = {
     ["transactions", "by-category", range] as const,
   recurringExpenses: ['recurring-expenses'] as const,
   schedule: (year: number, month: number) => ["budgets", "schedule", year, month] as const,
+  dashboard: (year: number, month: number) => ["budgets", "dashboard", year, month] as const,
 };
 
 //Il profilo dell'utente collegato: GET /api/me
@@ -152,10 +154,11 @@ export type TransactionInput = {
   note: string | null;
 };
 
-//Dopo ogni modifica ai movimenti si rileggono elenchi, riepiloghi e conteggi:
-//tutte le chiavi che iniziano con 'transactions' diventano vecchie in un colpo solo
 function refreshTransactions(queryClient: QueryClient) {
-  return queryClient.invalidateQueries({ queryKey: ["transactions"] });
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+    queryClient.invalidateQueries({ queryKey: ["budgets"] }),
+  ]);
 }
 
 //Crea un movimento: POST /api/transactions
@@ -214,6 +217,7 @@ function refreshCategories(queryClient: QueryClient) {
   return Promise.all([
     queryClient.invalidateQueries({ queryKey: ["categories"] }),
     queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+    queryClient.invalidateQueries({ queryKey: ["budgets"] }),
   ]);
 }
 
@@ -388,3 +392,79 @@ export function usePayScheduledPayment() {
       ]),
   });
 }
+
+//L'andamento del mese, previsto contro reale
+//Null se il piano del mese non è stato aperto 
+export function useDashboard(year: number, month: number) {
+  return useQuery({
+    queryKey: queryKeys.dashboard(year, month),
+    queryFn: async () => {
+      try {
+        return await apiFetch<DashboardResponse>(`/api/budgets/${year}/${month}/dashboard`);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }
+    },
+    //Cambiando mese, quello precedente resta visibile finché arriva il nuovo
+    placeholderData: keepPreviousData,
+  });
+}
+
+//Dopo ogni modifica al piano si rileggono dashboard e scadenze: le chiavi iniziano con 'budgets'
+function refreshBudgets(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: ["budgets"] });
+}
+
+//Apre il piano del mese: POST /api/budgets/{year}/{month} (idempotente: se esiste lo restituisce)
+export function useOpenBudget() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ year, month }: { year: number; month: number }) =>
+      apiFetch<MonthlyBudgetResponse>(`/api/budgets/${year}/${month}`, { method: "POST" }),
+    onSuccess: () => refreshBudgets(queryClient),
+  });
+}
+
+//Entrate previste e obiettivo di risparmio
+export type BudgetInput = { plannedIncome: number; savingsTarget: number };
+
+//Imposta entrate e risparmio: PUT /api/budgets/{year}/{month}
+export function useUpdateBudget() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ year, month, input }: { year: number; month: number; input: BudgetInput }) =>
+      apiFetch<MonthlyBudgetResponse>(`/api/budgets/${year}/${month}`, { method: "PUT", body: input }),
+    onSuccess: () => refreshBudgets(queryClient),
+  });
+}
+
+//Imposta la voce di una categoria (la crea o la aggiorna): PUT /api/budgets/{year}/{month}/allocations/{categoryId}
+export function useSetAllocation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ year, month, categoryId, amount }: { year: number; month: number; categoryId: number; amount: number }) =>
+      apiFetch<MonthlyBudgetResponse>(`/api/budgets/${year}/${month}/allocations/${categoryId}`, {
+        method: "PUT",
+        body: { amount },
+      }),
+    onSuccess: () => refreshBudgets(queryClient),
+  });
+}
+
+//Toglie la voce di una categoria dal piano: DELETE /api/budgets/{year}/{month}/allocations/{categoryId}
+export function useRemoveAllocation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ year, month, categoryId }: { year: number; month: number; categoryId: number }) =>
+      apiFetch<void>(`/api/budgets/${year}/${month}/allocations/${categoryId}`, { method: "DELETE" }),
+    onSuccess: () => refreshBudgets(queryClient),
+  });
+}
+

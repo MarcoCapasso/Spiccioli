@@ -15,6 +15,11 @@
   gap: 10px;
 }
 
+/* Riga dei filtri: i campi si allineano in basso, perché le date hanno l'etichetta sopra */
+.toolbar-filters {
+  align-items: flex-end;
+}
+
 .toolbar .input-wrap {
   flex: 1 1 220px;
 }
@@ -28,10 +33,50 @@
   width: auto;
 }
 
+/* Le due date, affiancate */
+.toolbar-dates {
+  display: flex;
+  gap: 10px;
+}
+
+.toolbar-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Nelle date il contenitore dell'input non si allarga */
+.toolbar-date .input-wrap {
+  flex: none;
+  width: 100%;
+}
+
+.toolbar-label {
+  color: var(--text-2);
+  font-weight: 550;
+  font-size: 12px;
+}
+
 @media (max-width: 760px) {
-  .toolbar .select,
+  /* Ricerca e categoria: una riga ciascuna, a tutta larghezza */
+  .toolbar-filters .input-wrap,
+  .toolbar .select {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  /* "Dal" e "Al" sulla stessa riga, metà e metà */
+  .toolbar-dates {
+    flex: 1 1 100%;
+  }
+
+  .toolbar-date {
+    flex: 1;
+  }
+
   .toolbar input[type="date"] {
-    flex: 1 1 140px;
+    width: 100%;
     min-width: 0;
   }
 }

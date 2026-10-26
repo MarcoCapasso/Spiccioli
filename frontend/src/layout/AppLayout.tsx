@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router';
 import { Brand } from '../components/Brand';
 import { Fab } from '../components/Fab';
 import { Icon, type IconName } from '../components/Icon';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useTransactionActions } from '../components/transaction-actions-context';
 import { TransactionActionsProvider } from '../components/TransactionActionsProvider';
 import { SidebarUser } from '../components/SidebarUser';
@@ -14,6 +15,7 @@ type NavItem = { to: string; icon: IconName; label: string; subtitle: string };
 const MAIN_NAV: NavItem[] = [
   { to: '/', icon: 'home', label: 'Panoramica', subtitle: 'Come stanno andando i tuoi conti' },
   { to: '/movimenti', icon: 'list', label: 'Movimenti', subtitle: 'Tutte le entrate e le uscite' },
+  { to: '/piano', icon: 'wallet', label: 'Piano del mese', subtitle: 'Andamento previsto contro reale' },
   { to: '/spese-ricorrenti', icon: 'repeat', label: 'Spese ricorrenti', subtitle: 'Abbonamenti, affitto e rate' },
   { to: '/categorie', icon: 'tag', label: 'Categorie', subtitle: 'Organizza le tue spese' },
 ];
@@ -99,7 +101,11 @@ function AppShell() {
         className={menuOpen ? 'sidebar open' : 'sidebar'}
         aria-label="Navigazione principale"
       >
-        <div className="sidebar-brand"><Brand /></div>
+        {/* Marchio a sinistra, tema a destra: stessa altezza */}
+        <div className="sidebar-brand">
+          <Brand />
+          <ThemeToggle />
+        </div>
         <NavGroup items={MAIN_NAV} onNavigate={closeMenu} />
         {import.meta.env.DEV && (
           <>

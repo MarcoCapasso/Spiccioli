@@ -106,3 +106,8 @@ export function formatWeekday(date: IsoDate) {
 export function dayOfMonth(date: IsoDate) {
   return parse(date).getDate();
 }
+
+//Un importo con il segno meno vero davanti ai negativi: "−350,00 €"
+export function formatBalance(amount: number) {
+  return (amount < 0 ? '−' : '') + EUR.format(Math.abs(amount));
+}

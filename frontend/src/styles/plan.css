@@ -1,0 +1,161 @@
+/* ───────────── Piano del mese ───────────── */
+
+.plan-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 16px 18px;
+}
+
+.plan-label {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.plan-value {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+}
+
+.plan-value.pos { color: var(--success-ink); }
+.plan-value.neg { color: var(--danger-ink); }
+
+.plan-sub {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+/* La barra di avanzamento: il tratto si riempie da sinistra */
+.plan-bar {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--surface-sunk);
+}
+
+.plan-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  transition: width .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* Pianificato oltre le entrate: la scheda diventa rossa */
+.plan-card-alert {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.plan-card-alert .plan-sub {
+  color: var(--danger-ink);
+}
+/* Le categorie del piano: una riga ciascuna, con barra e nota */
+.plan-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-row {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.plan-row:first-child {
+  border-top: 0;
+}
+
+.plan-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plan-row-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.plan-row-amounts {
+  color: var(--text-2);
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.plan-row-amounts b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.plan-row-note {
+  margin-top: 6px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+/* Sforata: importo e nota in rosso */
+.plan-over .plan-row-amounts b,
+.plan-over .plan-row-note {
+  color: var(--danger-ink);
+}
+
+/* Il riquadro delle scadenze ancora da pagare */
+.plan-pending {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.plan-pending svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--primary-ink);
+}
+
+.plan-pending-text {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* L'intestazione di una scheda */
+.plan-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 22px;
+  margin: -7px 0;
+}
+
+/* La matita rientra un po' nel bordo */
+.plan-edit {
+  margin-right: -8px;
+}
+
+@media (max-width: 760px) {
+  .plan-cards {
+    grid-template-columns: 1fr;
+  }
+  .month-nav {
+    justify-content: space-between;
+  }
+}

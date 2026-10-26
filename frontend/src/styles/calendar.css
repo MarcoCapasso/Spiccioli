@@ -1,6 +1,14 @@
 /* ───────────── Calendario delle scadenze ───────────── */
 
+/* Il navigatore del mese: su computer centrato; due righe, frecce e titolo + "Oggi" */
 .month-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.month-nav-row {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -11,6 +19,17 @@
   text-align: center;
   font-weight: 650;
   font-size: 16px;
+}
+
+/* La riga di "Oggi" occupa sempre lo spazio; nascosta, non si vede e non prende il focus */
+.month-nav-today {
+  display: flex;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.month-nav-today.hidden {
+  visibility: hidden;
 }
 
 /* I tre totali del mese */
@@ -242,8 +261,17 @@
     display: block;
   }
 
+  /* A tutta larghezza: frecce ai lati e titolo al centro; "Oggi" a destra, nella riga sotto */
   .month-nav {
+    align-items: stretch;
+  }
+
+  .month-nav-row {
     justify-content: space-between;
+  }
+
+  .month-nav-today {
+    justify-content: flex-end;
   }
 
   /* I tre totali affiancati, più compatti */

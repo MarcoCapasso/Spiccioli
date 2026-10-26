@@ -1,6 +1,5 @@
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
-import { ThemeToggle } from "../components/ThemeToggle";
 import { useScrolled } from "./useScrolled";
 
 type TopBarProps = {
@@ -35,7 +34,6 @@ export function TopBar({
         <h1 className="t-h1">{title}</h1>
         <div className="t-small">{subtitle}</div>
       </div>
-      <ThemeToggle />
       <Button
         icon="plus"
         className="quick-add"

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { errorMessage } from '../api/client';
 import { useCategories, useSchedule } from '../api/queries';
-import { shiftMonth } from '../calendar';
 import type { ScheduledPaymentResponse } from '../types';
+import { useMonth } from '../useMonth';
 import { Alert } from './Alert';
 import { CalendarGrid } from './CalendarGrid';
 import { Card } from './Card';
@@ -14,16 +14,11 @@ import { ErrorState, Skeleton } from './States';
 
 //La vista a calendario: il mese, i totali e le scadenze
 export function ScheduleView() {
-  const now = new Date();
-  const [current, setCurrent] = useState({ year: now.getFullYear(), month: now.getMonth() + 1 });
   const [selected, setSelected] = useState<ScheduledPaymentResponse | null>(null);
-  const { year, month } = current;
-
+  const { year, month, isCurrent, previous, next, today } = useMonth();
   const schedule = useSchedule(year, month);
   const categories = useCategories(true);
   const colors = new Map(categories.data?.map((category) => [category.id, category.color]));
-
-  const isCurrent = year === now.getFullYear() && month === now.getMonth() + 1;
 
   let content;
   if (schedule.isPending) {
@@ -81,9 +76,9 @@ export function ScheduleView() {
         year={year}
         month={month}
         isCurrent={isCurrent}
-        onPrevious={() => setCurrent(shiftMonth(year, month, -1))}
-        onNext={() => setCurrent(shiftMonth(year, month, 1))}
-        onToday={() => setCurrent({ year: now.getFullYear(), month: now.getMonth() + 1 })}
+        onPrevious={previous}
+        onNext={next}
+        onToday={today}
       />
       {content}
     </div>
