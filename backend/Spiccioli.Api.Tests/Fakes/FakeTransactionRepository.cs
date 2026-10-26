@@ -14,11 +14,16 @@ public class FakeTransactionRepository : ITransactionRepository
     //L'ultimo criterio ricevuto: serve ai test per verificare cosa il Service ha passato
     public TransactionCriteria? LastCriteria { get; private set; }
 
+    //I totali che il finto restituirà: li decide il test (di default tutto a zero)
+    public TransactionTotals Totals { get; set; } = new(0, 0, 0, 0);
+
+    //I totali per categoria che il finto restituirà: li decide il test
+    public List<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)> CategoryTotals { get; } = new();
+
     public Task<Transaction?> GetByIdAsync(int id, Guid userId) =>
         Task.FromResult(Transactions.FirstOrDefault(c => c.Id == id && c.UserId == userId));
 
-    public Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(
-        Guid userId, TransactionCriteria criteria, int page, int pageSize)
+    public Task<(IReadOnlyList<Transaction> Items, int TotalCount)> GetByUserAsync(Guid userId, TransactionCriteria criteria, int page, int pageSize)
     {
         LastCriteria = criteria;
         return Task.FromResult(((IReadOnlyList<Transaction>)new List<Transaction>(), 0));
@@ -37,9 +42,10 @@ public class FakeTransactionRepository : ITransactionRepository
     public Task<TransactionTotals> GetTotalsAsync(Guid userId, TransactionCriteria criteria)
     {
         LastCriteria = criteria;
-        return Task.FromResult(new TransactionTotals(0, 0, 0, 0));
+        return Task.FromResult(Totals);
     }
 
-    public Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)>> GetTotalsByCategoryAsync(Guid userId, DateOnly? from, DateOnly? to) => throw new NotImplementedException();
+    public Task<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)>> GetTotalsByCategoryAsync(Guid userId, DateOnly? from, DateOnly? to) =>
+        Task.FromResult<IReadOnlyList<(int? CategoryId, string? CategoryName, TransactionType Type, decimal Total, int Count)>>(CategoryTotals);
 
 }

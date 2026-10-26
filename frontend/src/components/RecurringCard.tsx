@@ -1,4 +1,4 @@
-import { tint } from '../color';
+import { inkOn, tint } from '../color';
 import { formatMoney, formatNumericDate, formatShortDate } from '../format';
 import { NO_CATEGORY_COLOR } from '../palette';
 import { FREQUENCY_LABELS, recurrenceStatus } from '../recurrence';
@@ -23,7 +23,7 @@ export function RecurringCard({ expense, categoryColor = NO_CATEGORY_COLOR, onEd
   return (
     <Card className={ended ? 'rc-card rc-ended' : 'rc-card'}>
       <div className="rc-top">
-        <div className="cat-swatch" style={{ background: tint(categoryColor, 0.15), color: categoryColor }} aria-hidden="true">
+        <div className="cat-swatch" style={{ background: tint(categoryColor, 0.15), color: inkOn(categoryColor) }} aria-hidden="true">
           {name.charAt(0).toUpperCase()}
         </div>
         <div className="rc-title">

@@ -1,17 +1,33 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router";
 import { PublicOnly } from "./auth/PublicOnly";
 import { RequireAuth } from "./auth/RequireAuth";
 import { AppLayout } from "./layout/AppLayout";
-import { CategoriesPage } from "./pages/CategoriesPage";
-import { DesignSystemPage } from "./pages/DesignSystemPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { OverviewPage } from "./pages/OverviewPage";
-import { TransactionsPage } from "./pages/TransactionsPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { OnboardingGate } from "./auth/OnboardingGate";
-import { RecurringPage } from "./pages/RecurringPage";
-import { PlanPage } from "./pages/PlanPage";
+
+//Le pagine dentro l'app si scaricano solo quando si aprono: le pagine hanno export con nome,
+//quindi si presenta l'export come "default", che è ciò che lazy si aspetta
+const OverviewPage = lazy(() =>
+  import("./pages/OverviewPage").then((m) => ({ default: m.OverviewPage })),
+);
+const TransactionsPage = lazy(() =>
+  import("./pages/TransactionsPage").then((m) => ({ default: m.TransactionsPage })),
+);
+const RecurringPage = lazy(() =>
+  import("./pages/RecurringPage").then((m) => ({ default: m.RecurringPage })),
+);
+const CategoriesPage = lazy(() =>
+  import("./pages/CategoriesPage").then((m) => ({ default: m.CategoriesPage })),
+);
+const PlanPage = lazy(() =>
+  import("./pages/PlanPage").then((m) => ({ default: m.PlanPage })),
+);
+const DesignSystemPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/DesignSystemPage").then((m) => ({ default: m.DesignSystemPage })))
+  : null;
 
 //Contenuto radice
 function App() {
@@ -37,7 +53,7 @@ function App() {
             <Route path="/spese-ricorrenti" element={<RecurringPage />} />
             <Route path="/categorie" element={<CategoriesPage />} />
             <Route path="/piano" element={<PlanPage />} />
-            {import.meta.env.DEV && (
+            {DesignSystemPage && (
               <Route path="/sviluppo" element={<DesignSystemPage />} />
             )}
           </Route>

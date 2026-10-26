@@ -252,6 +252,13 @@
   font-size: 12.5px;
 }
 
+/* Oggi: il numero nel cerchio arancione */
+.cal-cell-today .cal-num {
+  background: var(--primary-strong);
+  color: #fff;
+  font-weight: 600;
+}
+
 @media (max-width: 760px) {
   .cal-grid {
     display: none;

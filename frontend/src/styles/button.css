@@ -31,11 +31,11 @@
 
 /* Le varianti */
 .btn-primary {
-  background: var(--primary);
+  background: var(--primary-strong);
   color: #fff;
   box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 1px 2px rgba(194, 65, 12, .3);
 }
-.btn-primary:hover:not(:disabled) { background: var(--primary-h); }
+.btn-primary:hover:not(:disabled) { background: var(--primary-strong-h); }
 
 .btn-secondary {
   background: var(--surface);
@@ -54,10 +54,10 @@
 .btn-dark:hover:not(:disabled) { background: var(--secondary-h); }
 
 .btn-danger {
-  background: var(--danger);
+  background: #dc2626;
   color: #fff;
 }
-.btn-danger:hover:not(:disabled) { background: var(--danger-ink); }
+.btn-danger:hover:not(:disabled) { background: #b91c1c; }
 
 .btn-ghost {
   background: transparent;

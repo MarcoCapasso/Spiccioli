@@ -1,4 +1,4 @@
-import { tint } from '../color';
+import { inkOn, tint } from '../color';
 import { formatMoney } from '../format';
 import type { CategoryResponse } from '../types';
 import { Button } from './Button';
@@ -21,7 +21,7 @@ export function CategoryCard({ category, count, total, onEdit, onDelete, onResto
 
   return (
     <Card className={isArchived ? 'cat-card cat-card-archived' : 'cat-card'}>
-      <div className="cat-swatch" style={{ background: tint(color, 0.15), color }} aria-hidden="true">
+      <div className="cat-swatch" style={{ background: tint(color, 0.15), color: inkOn(color) }} aria-hidden="true">
         {name.charAt(0).toUpperCase()}
       </div>
 

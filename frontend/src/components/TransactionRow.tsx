@@ -1,4 +1,4 @@
-import { tint } from "../color";
+import { inkOn, tint } from "../color";
 import { formatShortDate, formatSigned, transactionTitle } from "../format";
 import type { TransactionResponse } from "../types";
 import { TransactionTypeBadge } from "./Badge";
@@ -32,7 +32,7 @@ export function TransactionRow({
     <li className={hasActions ? "tx tx-with-actions" : "tx"}>
       <div
         className="tx-ico"
-        style={{ background: tint(categoryColor, 0.14), color: categoryColor }}
+        style={{ background: tint(categoryColor, 0.14), color: inkOn(categoryColor) }}
         aria-hidden="true"
       >
         {(categoryName ?? "?").charAt(0).toUpperCase()}

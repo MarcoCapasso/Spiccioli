@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router";
 import { errorMessage } from "../api/client";
 import {
   useCategories,
@@ -14,17 +15,21 @@ import { TransactionFilterBar } from "../components/TransactionFilterBar";
 import { TransactionListSkeleton } from "../components/TransactionListSkeleton";
 import { TransactionRow } from "../components/TransactionRow";
 import {
-  NO_FILTERS,
+  filtersFromParams,
   hasActiveFilters,
+  pageFromParams,
   toApiFilters,
+  toSearchParams,
   type FilterState,
 } from "../filters";
 import { formatMoney } from "../format";
 import { useDebouncedValue } from "../useDebouncedValue";
 
 export function TransactionsPage() {
-  const [filters, setFilters] = useState<FilterState>(NO_FILTERS);
-  const [page, setPage] = useState(1);
+  //Filtri e pagina vivono nell'indirizzo: si ricaricano con la pagina e si possono condividere
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filters = useMemo(() => filtersFromParams(searchParams), [searchParams]);
+  const page = pageFromParams(searchParams);
   const { openNew, openEdit, askDelete } = useTransactionActions();
 
   //La ricerca parte solo quando si smette di scrivere
@@ -44,23 +49,24 @@ export function TransactionsPage() {
 
   //Se la pagina corrente non esiste più (per esempio dopo un'eliminazione), si torna all'ultima
   const lastPage = Math.max(1, transactions.data?.totalPages ?? 1);
-  if (transactions.data && !transactions.isPlaceholderData && page > lastPage) {
-    setPage(lastPage);
-  }
+  useEffect(() => {
+    if (transactions.data && !transactions.isPlaceholderData && page > lastPage) {
+      setSearchParams(toSearchParams(filters, lastPage), { replace: true });
+    }
+  }, [transactions.data, transactions.isPlaceholderData, page, lastPage, filters, setSearchParams]);
 
-  //Ogni cambio di filtro riporta alla prima pagina
+  //Ogni cambio di filtro riporta alla prima pagina; "replace" evita una voce nella cronologia a ogni tasto
   function updateFilters(patch: Partial<FilterState>) {
-    setFilters((current) => ({ ...current, ...patch }));
-    setPage(1);
+    setSearchParams(toSearchParams({ ...filters, ...patch }), { replace: true });
   }
 
   function resetFilters() {
-    setFilters(NO_FILTERS);
-    setPage(1);
+    setSearchParams({}, { replace: true });
   }
 
+  //Cambiare pagina invece sì: Indietro torna alla pagina precedente
   function changePage(next: number) {
-    setPage(next);
+    setSearchParams(toSearchParams(filters, next));
     window.scrollTo({ top: 0 });
   }
 

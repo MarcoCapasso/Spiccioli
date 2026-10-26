@@ -5,6 +5,7 @@ import { EmptyState, ErrorState } from '../components/States';
 import { errorMessage } from '../api/client';
 import { Icon } from '../components/Icon';
 import { OverviewFilterSheet } from '../components/OverviewFilterSheet';
+import { NO_FILTERS, toSearchParams } from '../filters';
 import { formatShortDate } from '../format';
 import { Link } from 'react-router';
 import { PERIOD_LABELS, periodRange, type PeriodKey } from '../period';
@@ -29,6 +30,13 @@ export function OverviewPage() {
   //L'intervallo del periodo scelto, più la categoria: gli stessi filtri per tutta la pagina
   const range = periodRange(period, custom);
   const filters = { ...range, categoryId: categoryId ? Number(categoryId) : undefined };
+  const query = toSearchParams({
+    ...NO_FILTERS,
+    from: range.from ?? '',
+    to: range.to ?? '',
+    categoryId,
+  }).toString();
+  const allLink = query ? `/movimenti?${query}` : '/movimenti';
 
   const summary = useTransactionSummary(filters);
   const recent = useTransactions(filters, 1, 6);
@@ -161,7 +169,7 @@ export function OverviewPage() {
           <CardHeader
             title="Movimenti recenti"
             action={
-              <Link className="card-link" to="/movimenti">
+              <Link className="card-link" to={allLink}>
                 Vedi tutti
               </Link>
             }

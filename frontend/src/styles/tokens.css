@@ -14,6 +14,8 @@
   --primary-h: #ea580c; /*hover*/
   --primary-soft: #fff1e6;
   --primary-ink: #c2410c;
+  --primary-strong: #c2410c;
+  --primary-strong-h: #9a3412;
 
   /* Colore secondario */
   --secondary: #414141;
@@ -22,7 +24,7 @@
   /* Gerarchia del testo */
   --text: #1f1f1f;
   --text-2: #6b6b6b;
-  --text-3: #9a958c;
+  --text-3: #726d64;
 
   /* Bordi */
   --border: #e9e1d1;
@@ -35,6 +37,8 @@
   --danger: #ef4444;
   --danger-ink: #dc2626;
   --danger-soft: #fdecec;
+  --danger-strong: #dc2626;
+  --danger-strong-h: #b91c1c;
 
   /* l'oscuramento dietro finestre e menu */
   --scrim: rgba(31, 25, 17, 0.42);

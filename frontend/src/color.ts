@@ -10,6 +10,12 @@ export function tint(hex: string, alpha: number) {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
+//Il colore di una lettera o di un'icona sopra la tinta di una categoria:
+//40% il colore della categoria e 60% il colore del testo del tema, così resta leggibile in chiaro e in scuro
+export function inkOn(hex: string) {
+  return `color-mix(in srgb, ${hex} 40%, var(--text))`;
+}
+
 //I colori di riferimento, con il loro nome
 const NAMED_COLORS: readonly (readonly [string, string])[] = [
   ['Nero', '#111827'],
