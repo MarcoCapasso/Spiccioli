@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
-import { Icon } from "./Icon";
+import { Icon, type IconName } from "./Icon";
 import { Modal } from "./Modal";
 
 type ConfirmModalProps = {
@@ -10,6 +10,7 @@ type ConfirmModalProps = {
   loading?: boolean;
   onConfirm: () => void;
   onClose: () => void;
+  icon?: IconName;
 };
 
 //Chiede conferma prima di un'azione distruttiva
@@ -20,6 +21,7 @@ export function ConfirmModal({
   loading = false,
   onConfirm,
   onClose,
+  icon = 'trash',
 }: ConfirmModalProps) {
   return (
     <Modal
@@ -33,12 +35,10 @@ export function ConfirmModal({
       onClose={onClose}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose} autoFocus>
-            Annulla
-          </Button>
+          <Button variant="secondary" onClick={onClose} autoFocus>Annulla</Button>
           <Button
             variant="danger"
-            icon="trash"
+            icon={icon}
             loading={loading}
             onClick={onConfirm}
           >
@@ -47,9 +47,7 @@ export function ConfirmModal({
         </>
       }
     >
-      <p className="muted" style={{ margin: 0 }}>
-        {children}
-      </p>
+      <p className="muted confirm-text">{children}</p>
     </Modal>
   );
 }

@@ -1,3 +1,6 @@
+import { apiFetch } from "./client";
+import type { DateRange } from "../period";
+
 import {
   keepPreviousData,
   useMutation,
@@ -5,7 +8,7 @@ import {
   useQueryClient,
   type QueryClient,
 } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+
 import type {
   CategoryResponse,
   DefaultCategory,
@@ -15,12 +18,17 @@ import type {
   TransactionSummaryResponse,
   TransactionType,
   UserResponse,
+  CategoryTotalResponse,
+  RecurrenceFrequency,
+  RecurringExpenseResponse,
 } from "../types";
+
+
 
 //I movimenti per pagina
 export const PAGE_SIZE = 20;
 
-//I filtri dell'elenco: gli stessi nomi dei parametri dell'API
+//I filtri dell'elenco
 export type TransactionFilters = {
   type?: TransactionType;
   categoryId?: number;
@@ -29,16 +37,19 @@ export type TransactionFilters = {
   search?: string;
 };
 
-//Le chiavi della cache: una per ogni tipo di dato
+//Le chiavi della cache
 export const queryKeys = {
   profile: ["profile"] as const,
   defaultCategories: ["default-categories"] as const,
   categories: (includeArchived: boolean) =>
     ["categories", includeArchived] as const,
-  transactions: (filters: TransactionFilters, page: number) =>
-    ["transactions", "list", filters, page] as const,
+  transactions: (filters: TransactionFilters, page: number, pageSize: number) =>
+    ["transactions", "list", filters, page, pageSize] as const,
   summary: (filters: TransactionFilters) =>
     ["transactions", "summary", filters] as const,
+  categoryTotals: (range: DateRange) =>
+    ["transactions", "by-category", range] as const,
+  recurringExpenses: ['recurring-expenses'] as const,
 };
 
 //Il profilo dell'utente collegato: GET /api/me
@@ -99,12 +110,16 @@ export function useCategories(includeArchived = false) {
 }
 
 //Una pagina di movimenti: GET /api/transactions
-export function useTransactions(filters: TransactionFilters, page: number) {
+export function useTransactions(
+  filters: TransactionFilters,
+  page: number,
+  pageSize = PAGE_SIZE,
+) {
   return useQuery({
-    queryKey: queryKeys.transactions(filters, page),
+    queryKey: queryKeys.transactions(filters, page, pageSize),
     queryFn: () =>
       apiFetch<PagedResponse<TransactionResponse>>(
-        `/api/transactions${toQuery({ ...filters, page, pageSize: PAGE_SIZE })}`,
+        `/api/transactions${toQuery({ ...filters, page, pageSize })}`,
       ),
     //Cambiando filtro o pagina, l'elenco precedente resta visibile finché arriva il nuovo
     placeholderData: keepPreviousData,
@@ -175,5 +190,141 @@ export function useDeleteTransaction() {
     mutationFn: (id: number) =>
       apiFetch<void>(`/api/transactions/${id}`, { method: "DELETE" }),
     onSuccess: () => refreshTransactions(queryClient),
+  });
+}
+
+//Numero di movimenti e totale per ogni categoria nel periodo
+export function useCategoryTotals(range: DateRange = {}) {
+  return useQuery({
+    queryKey: queryKeys.categoryTotals(range),
+    queryFn: () =>
+      apiFetch<CategoryTotalResponse[]>(
+        `/api/transactions/summary/by-category${toQuery(range)}`,
+      ),
+    placeholderData: keepPreviousData,
+  });
+}
+
+//Il nome di una categoria compare anche nei movimenti
+function refreshCategories(queryClient: QueryClient) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["categories"] }),
+    queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+  ]);
+}
+
+//Ciò che il modulo invia per una categoria
+export type CategoryInput = {
+  name: string;
+  color?: string;
+};
+
+//Crea una categoria
+export function useCreateCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: CategoryInput & { type: TransactionType }) =>
+      apiFetch<CategoryResponse>("/api/categories", {
+        method: "POST",
+        body: input,
+      }),
+    onSuccess: () => refreshCategories(queryClient),
+  });
+}
+
+//Rinomina o cambia colore
+export function useUpdateCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, input }: { id: number; input: CategoryInput }) =>
+      apiFetch<CategoryResponse>(`/api/categories/${id}`, {
+        method: "PUT",
+        body: input,
+      }),
+    onSuccess: () => refreshCategories(queryClient),
+  });
+}
+
+//Elimina: se ha movimenti il backend la archivia, altrimenti la cancella: DELETE /api/categories/{id}
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) =>
+      apiFetch<void>(`/api/categories/${id}`, { method: "DELETE" }),
+    onSuccess: () => refreshCategories(queryClient),
+  });
+}
+
+//Ripristina una categoria archiviata: POST /api/categories/{id}/restore
+export function useRestoreCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) =>
+      apiFetch<CategoryResponse>(`/api/categories/${id}/restore`, {
+        method: "POST",
+      }),
+    onSuccess: () => refreshCategories(queryClient),
+  });
+}
+
+//Le spese ricorrenti: GET /api/recurring-expenses
+export function useRecurringExpenses() {
+  return useQuery({
+    queryKey: queryKeys.recurringExpenses,
+    queryFn: () => apiFetch<RecurringExpenseResponse[]>('/api/recurring-expenses'),
+  });
+}
+
+//Ciò che il modulo invia: gli stessi campi delle richieste di creazione e modifica
+export type RecurringExpenseInput = {
+  name: string;
+  amount: number;
+  frequency: RecurrenceFrequency;
+  startDate: IsoDate;
+  endDate: IsoDate | null;
+  categoryId: number;
+};
+
+//Il backend sincronizza i piani dal mese corrente: si rileggono anche quelli (chiavi 'budgets', dalla 12.18)
+function refreshRecurring(queryClient: QueryClient) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['recurring-expenses'] }),
+    queryClient.invalidateQueries({ queryKey: ['budgets'] }),
+  ]);
+}
+
+//Crea una spesa ricorrente: POST /api/recurring-expenses
+export function useCreateRecurringExpense() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: RecurringExpenseInput) =>
+      apiFetch<RecurringExpenseResponse>('/api/recurring-expenses', { method: 'POST', body: input }),
+    onSuccess: () => refreshRecurring(queryClient),
+  });
+}
+
+//Modifica una spesa ricorrente: PUT /api/recurring-expenses/{id}
+export function useUpdateRecurringExpense() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, input }: { id: number; input: RecurringExpenseInput }) =>
+      apiFetch<RecurringExpenseResponse>(`/api/recurring-expenses/${id}`, { method: 'PUT', body: input }),
+    onSuccess: () => refreshRecurring(queryClient),
+  });
+}
+
+//Elimina (se mai usata) o termina (se ha già generato pagamenti): DELETE /api/recurring-expenses/{id}
+export function useDeleteRecurringExpense() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => apiFetch<void>(`/api/recurring-expenses/${id}`, { method: 'DELETE' }),
+    onSuccess: () => refreshRecurring(queryClient),
   });
 }

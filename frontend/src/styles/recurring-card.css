@@ -1,0 +1,65 @@
+/* ───────────── Schede delle spese ricorrenti ───────────── */
+
+.rc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* Le terminate sono attenuate */
+.rc-ended {
+  opacity: 0.7;
+}
+
+.rc-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rc-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.rc-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 650;
+}
+
+.rc-amount {
+  color: var(--danger-ink);
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Categoria sopra, date sotto: due righe fisse, così le schede restano allineate */
+.rc-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* "dal" e "al" leggeri, le date un po' più marcate */
+.rc-dates {
+  color: var(--text-2);
+  font-size: 12.5px;
+}
+
+.rc-dates b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Il piede resta sempre in fondo alla scheda, anche se le altre sono più alte */
+.rc-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}

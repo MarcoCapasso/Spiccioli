@@ -1,0 +1,74 @@
+/* ───────────── Selettore di colore ───────────── */
+
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-picker button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  outline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Il colore scelto: un doppio anello, uno dello sfondo e uno del testo */
+.color-picker button[aria-checked="true"] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+.color-picker button svg {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+}
+
+/* Colore personalizzato: un cerchio tratteggiato con il più; il campo vero lo ricopre, invisibile */
+.color-custom {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--border-strong);
+  border-radius: 50%;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.color-custom svg {
+  width: 16px;
+  height: 16px;
+}
+
+.color-custom input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Scelto: pieno del suo colore, con lo stesso doppio anello degli altri */
+.color-custom.selected {
+  border-color: transparent;
+  color: #fff;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+/* L'anello della tastiera, perché il campo è invisibile */
+.color-custom:has(input:focus-visible) {
+  box-shadow: var(--ring);
+}

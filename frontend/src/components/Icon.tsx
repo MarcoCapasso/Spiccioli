@@ -26,6 +26,9 @@ const PATHS = {
   sparkle: <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8" />,
   left: <path d="m15 6-6 6 6 6" />,
   right: <path d="m9 6 6 6-6 6" />,
+  filter: <path d="M4 6h16M7 12h10M10 18h4" />,
+  chevron: <path d="m6 9 6 6 6-6" />,
+  repeat: <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" />,
 };
 
 //Il nome di un'icona: solo uno di quelli definiti sopra

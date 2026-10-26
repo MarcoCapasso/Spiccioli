@@ -31,6 +31,8 @@
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .card-link:hover {

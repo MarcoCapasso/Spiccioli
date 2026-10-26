@@ -95,6 +95,7 @@ export type RecurringExpenseResponse = {
   endDate: IsoDate | null;
   categoryId: number;
   categoryName: string | null;
+  hasPaidPayments: boolean;
 };
 
 // ───────────── Piani mensili ─────────────

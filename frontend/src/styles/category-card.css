@@ -1,0 +1,48 @@
+/* ───────────── Schede delle categorie ───────────── */
+
+.cat-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+/* Le archiviate sono attenuate */
+.cat-card-archived {
+  opacity: 0.7;
+}
+
+.cat-swatch {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 13px;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.cat-card .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-card .name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 650;
+}

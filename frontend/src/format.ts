@@ -21,7 +21,7 @@ function parse(date: IsoDate) {
   return new Date(`${date}T12:00:00`);
 }
 
-function toIso(date: Date) {
+export function toIso(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
@@ -78,4 +78,14 @@ export function transactionTitle(transaction: TransactionResponse) {
   return (
     transaction.description || transaction.categoryName || "Senza categoria"
   );
+}
+
+//Data con anno
+export function formatDate(date: IsoDate) {
+  return parse(date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric'});
+}
+
+//"26/10/2026": la data in numeri, per le schede delle spese ricorrenti
+export function formatNumericDate(date: IsoDate) {
+  return parse(date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }

@@ -3,9 +3,7 @@ import { formatShortDate, formatSigned, transactionTitle } from "../format";
 import type { TransactionResponse } from "../types";
 import { TransactionTypeBadge } from "./Badge";
 import { IconButton } from "./IconButton";
-
-//Il colore delle transazioni senza categoria
-const NO_CATEGORY_COLOR = "#9A958C";
+import { NO_CATEGORY_COLOR } from "../palette";
 
 type TransactionRowProps = {
   transaction: TransactionResponse;

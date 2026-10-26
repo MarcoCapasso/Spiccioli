@@ -109,3 +109,13 @@ input[type="date"].input {
 .input-with-trail {
   padding-right: 44px;
 }
+
+/* Su iPhone, un campo sotto i 16px fa ingrandire la pagina al tocco */
+@media (max-width: 760px) {
+  .input,
+  .select,
+  .textarea,
+  .input-sm {
+    font-size: 16px;
+  }
+}

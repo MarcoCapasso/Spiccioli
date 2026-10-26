@@ -14,6 +14,7 @@ type NavItem = { to: string; icon: IconName; label: string; subtitle: string };
 const MAIN_NAV: NavItem[] = [
   { to: '/', icon: 'home', label: 'Panoramica', subtitle: 'Come stanno andando i tuoi conti' },
   { to: '/movimenti', icon: 'list', label: 'Movimenti', subtitle: 'Tutte le entrate e le uscite' },
+  { to: '/spese-ricorrenti', icon: 'repeat', label: 'Spese ricorrenti', subtitle: 'Abbonamenti, affitto e rate' },
   { to: '/categorie', icon: 'tag', label: 'Categorie', subtitle: 'Organizza le tue spese' },
 ];
 

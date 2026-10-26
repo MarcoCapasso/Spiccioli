@@ -103,6 +103,15 @@
   height: 24px;
 }
 
+/* Il testo di una conferma */
+.confirm-text p {
+  margin: 0;
+}
+
+.confirm-text p + p {
+  margin-top: 10px;
+}
+
 /* Mobile */
 @media (max-width: 760px) {
   .modal-root {

@@ -38,7 +38,10 @@ import "./styles/transaction-row.css";
 import "./styles/tabs.css";
 import "./styles/toolbar.css";
 import "./styles/pager.css";
-
+import "./styles/category-card.css";
+import "./styles/color-picker.css";
+import "./styles/overview.css";
+import "./styles/recurring-card.css";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";
