@@ -4,6 +4,8 @@ Un'app per tenere sotto controllo entrate e uscite, con un piano mensile e le sp
 
 È un **progetto didattico**: nasce per imparare C#/.NET e React da zero, costruendo un'applicazione completa un passo alla volta. Il codice è ricco di commenti proprio per questo.
 
+Online: https://spiccioli-silk.vercel.app
+
 ## Cosa fa
 
 - Movimenti (entrate e uscite) con categorie, filtri e ricerca
@@ -11,68 +13,30 @@ Un'app per tenere sotto controllo entrate e uscite, con un piano mensile e le sp
 - Spese ricorrenti (affitto, abbonamenti, rate) con calendario delle scadenze e pulsante "Pagato"
 - Panoramica con totali e uscite per categoria
 - Accesso con email o con Google
+- Impostazioni: nome visualizzato, tema chiaro, scuro o del sistema, esportazione dei movimenti in CSV, cambio password (account con email) ed eliminazione dell'account con tutti i dati
+- Informativa privacy e installazione sul telefono come app (PWA, senza modalità offline)
 
 ## Tecnologie
 
 - **Backend:** .NET 10, ASP.NET Core Web API, Entity Framework Core, test con xUnit
 - **Database e accesso:** PostgreSQL e autenticazione su Supabase (JWT)
 - **Frontend:** React, TypeScript, Vite, React Router, TanStack Query, CSS
+- **Pubblicazione:** Vercel (frontend), Render con Docker (backend), Supabase (database e accesso), UptimeRobot (controllo di `/health`)
 
-## Struttura
+## Pubblicazione
 
-```
-backend/Spiccioli.Api         API: controller, servizi, repository, modelli
-backend/Spiccioli.Api.Tests   test automatici
-frontend/                     applicazione React
-```
+Tutto sui piani gratuiti. Nessun segreto è nel repository: si impostano nei servizi.
 
-## Configurazione del backend
-
-1. Clona il repository.
-2. Crea un progetto su Supabase con queste opzioni di sicurezza:
-   Data API disattivata, esposizione automatica delle tabelle
-   disattivata, RLS automatica attivata.
-3. In Supabase: Connect → Session pooler. Componi la stringa
-   in questo formato (lo username include il codice progetto):
-
-   Host=HOST;Port=5432;Database=postgres;Username=postgres.CODICE;Password=PASSWORD;SSL Mode=Require
-
-4. Dalla cartella backend/Spiccioli.Api esegui:
-
-   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "LA_TUA_STRINGA"
-
-Non inserire la connection string nei file del progetto.
-
-## Avvio
-
-Backend (da `backend/Spiccioli.Api`):
-
-```
-dotnet run
-```
-
-Frontend (da `frontend`): copia `.env.example` in `.env.development` e compila i valori:
-
-- `VITE_API_URL`: l'indirizzo del backend (in locale `http://localhost:5046`)
-- `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`: indirizzo e chiave pubblica del tuo progetto Supabase (Project Settings → API)
-
-Poi:
-
-```
-npm install
-npm run dev
-```
-
-L'app è su http://localhost:5173. Gli indirizzi ammessi dal backend (CORS) sono in `appsettings.Development.json`.
-
-Test (da `backend`):
-
-```
-dotnet test
-```
+- **Backend su Render** (servizio web con Docker, Root Directory `backend`, Health Check Path `/health`). Variabili d'ambiente:
+  - `ConnectionStrings__DefaultConnection`: la stringa del Session pooler di Supabase (il collegamento diretto non funziona da Render, perché usa solo IPv6)
+  - `Supabase__SecretKey`: la chiave segreta di Supabase
+  - `Cors__AllowedOrigins__0`: l'indirizzo del sito, senza `/` finale
+- **Frontend su Vercel** (Root Directory `frontend`, preset Vite). Variabili d'ambiente: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`. Il file `frontend/vercel.json` fa servire `index.html` a ogni indirizzo, per le pagine di React Router.
+- **Supabase:** in Authentication → URL Configuration, Site URL e Redirect URLs con l'indirizzo del sito (e quelli di `localhost` per lo sviluppo).
+- **UptimeRobot:** un controllo ogni 5 minuti su `/health`, che interroga anche il database: tiene sveglio il server (il piano gratuito di Render lo spegne dopo 15 minuti di inattività) e il database (Supabase mette in pausa i progetti inattivi).
 
 ## Stato del progetto
 
 - Backend completo e testato (58 test)
-- Frontend completo: accesso, movimenti, categorie, spese ricorrenti, piano del mese, panoramica, tema chiaro e scuro, accessibilità
-- Da fare: pubblicazione online (hosting, configurazione di Supabase e CORS di produzione) e installazione sul telefono (PWA)
+- Frontend completo: accesso, movimenti, categorie, spese ricorrenti, piano del mese, panoramica, impostazioni, tema chiaro e scuro, accessibilità
+- Pubblicato online, installabile sul telefono (PWA)
