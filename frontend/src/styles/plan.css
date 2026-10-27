@@ -20,7 +20,6 @@
 }
 
 .plan-value {
-  margin-top: 4px;
   font-weight: 700;
   font-size: 24px;
   letter-spacing: -.02em;
@@ -29,6 +28,7 @@
 
 .plan-value.pos { color: var(--success-ink); }
 .plan-value.neg { color: var(--danger-ink); }
+.plan-value.muted { color: var(--text-3); }
 
 .plan-sub {
   color: var(--text-3);
@@ -136,14 +136,14 @@
   min-width: 180px;
 }
 
-/* L'intestazione di una scheda */
-.plan-card-head {
+/* Importo e azione sulla stessa riga, centrati tra loro */
+.plan-value-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 22px;
-  margin: -7px 0;
+  min-height: 32px;
+  margin-top: 2px;
 }
 
 /* La matita rientra un po' nel bordo */

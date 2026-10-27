@@ -49,18 +49,20 @@ type PlanCardsProps = {
 export function PlanCards({ dashboard, onEdit }: PlanCardsProps) {
   const { plannedIncome, actualIncome, savingsTarget, actualSavings, unallocated } = dashboard;
 
-  const savingsReached = savingsTarget > 0 && actualSavings >= savingsTarget;
-  const savingsTone = actualSavings < 0 ? 'neg' : savingsReached ? 'pos' : '';
+  //Senza un obiettivo il risparmio non ha un riferimento: niente cifra, solo un trattino
+  const hasSavingsTarget = savingsTarget > 0;
+  const savingsReached = hasSavingsTarget && actualSavings >= savingsTarget;
+  const savingsTone = !hasSavingsTarget ? 'muted' : actualSavings < 0 ? 'neg' : savingsReached ? 'pos' : '';
   const overPlanned = unallocated < 0;
 
   return (
     <section className="plan-cards" aria-label="Riepilogo del piano">
       <Card className="plan-card">
-        <div className="plan-card-head">
-          <div className="plan-label">Entrate</div>
+        <div className="plan-label">Entrate</div>
+        <div className="plan-value-row">
+          <div className="plan-value num pos">{formatMoney(actualIncome)}</div>
           <EditAction isSet={plannedIncome > 0} name="le entrate previste" onEdit={() => onEdit('plannedIncome')} />
         </div>
-        <div className="plan-value num pos">{formatMoney(actualIncome)}</div>
         <div className="plan-sub">
           {plannedIncome > 0 ? `previste ${formatMoney(plannedIncome)}` : 'nessuna entrata prevista'}
         </div>
@@ -70,15 +72,17 @@ export function PlanCards({ dashboard, onEdit }: PlanCardsProps) {
       </Card>
 
       <Card className="plan-card">
-        <div className="plan-card-head">
-          <div className="plan-label">Risparmio</div>
-          <EditAction isSet={savingsTarget > 0} name="l'obiettivo di risparmio" onEdit={() => onEdit('savingsTarget')} />
+        <div className="plan-label">Risparmio</div>
+        <div className="plan-value-row">
+          <div className={`plan-value num ${savingsTone}`}>
+            {hasSavingsTarget ? formatBalance(actualSavings) : '—'}
+          </div>
+          <EditAction isSet={hasSavingsTarget} name="l'obiettivo di risparmio" onEdit={() => onEdit('savingsTarget')} />
         </div>
-        <div className={`plan-value num ${savingsTone}`}>{formatBalance(actualSavings)}</div>
         <div className="plan-sub">
-          {savingsTarget > 0 ? `obiettivo ${formatMoney(savingsTarget)}` : 'nessun obiettivo impostato'}
+          {hasSavingsTarget ? `obiettivo ${formatMoney(savingsTarget)}` : 'nessun obiettivo impostato'}
         </div>
-        {savingsTarget > 0 && (
+        {hasSavingsTarget && (
           <ProgressBar
             label="Risparmio rispetto all'obiettivo"
             value={percent(actualSavings, savingsTarget)}
@@ -88,10 +92,10 @@ export function PlanCards({ dashboard, onEdit }: PlanCardsProps) {
       </Card>
 
       <Card className={overPlanned ? 'plan-card plan-card-alert' : 'plan-card'}>
-        <div className="plan-card-head">
-          <div className="plan-label">Da assegnare</div>
+        <div className="plan-label">Da assegnare</div>
+        <div className="plan-value-row">
+          <div className={`plan-value num ${overPlanned ? 'neg' : ''}`}>{formatBalance(unallocated)}</div>
         </div>
-        <div className={`plan-value num ${overPlanned ? 'neg' : ''}`}>{formatBalance(unallocated)}</div>
         <div className="plan-sub">
           {overPlanned
             ? `Pianificato oltre le entrate di ${formatMoney(Math.abs(unallocated))}`
