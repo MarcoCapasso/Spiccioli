@@ -44,6 +44,8 @@ import "./styles/overview.css";
 import "./styles/recurring-card.css";
 import "./styles/calendar.css";
 import "./styles/plan.css";
+import "./styles/privacy.css";
+import "./styles/settings.css";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";

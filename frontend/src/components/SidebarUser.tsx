@@ -1,39 +1,22 @@
 import { useAuth } from "../auth/auth-context";
+import { useAccountInfo } from "../auth/useAccountInfo";
+import { Avatar } from "./Avatar";
 import { IconButton } from "./IconButton";
-
-//Iniziali come avatar
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
-}
 
 //Utente collegato
 export function SidebarUser() {
-  const { session, signOut } = useAuth();
-  const user = session?.user;
+  const { signOut } = useAuth();
+  const account = useAccountInfo();
 
-  if (!user) {
+  if (!account) {
     return null;
   }
 
-  const email = user.email ?? "";
-  const meta = user.user_metadata;
-
-  const name =
-    [meta?.full_name, meta?.name].find(
-      (value): value is string => typeof value === "string" && value !== "",
-    ) ?? email.split("@")[0];
+  const { name, email, avatarUrl } = account;
 
   return (
     <div className="sidebar-foot" title={`${name} · ${email}`}>
-      <div className="avatar" aria-hidden="true">
-        {initials(name) || "–"}
-      </div>
+      <Avatar name={name} imageUrl={avatarUrl} />
       <div className="who">
         <div className="t-h3">{name}</div>
         <div className="t-xs">{email}</div>

@@ -1,0 +1,100 @@
+/* ───────────── Impostazioni ───────────── */
+
+.account-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.account-head .who {
+  min-width: 0;
+}
+
+.account-head .avatar {
+  order: 2;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Scelta a più voci (una sola attiva) */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.segmented label {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Il pallino nativo resta, ma invisibile: tastiera e lettori di schermo funzionano */
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.segmented span {
+  display: block;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.segmented input:checked + span {
+  background: var(--primary-strong);
+  color: #fff;
+}
+
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--primary-strong);
+  outline-offset: -2px;
+}
+
+/* Moduli: nome, password, conferma di eliminazione */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.settings-input:focus-visible {
+  outline: 2px solid var(--primary-strong);
+  outline-offset: 1px;
+}
+
+/* Rosso mescolato con l'inchiostro: leggibile anche nel tema scuro */
+.settings-error {
+  margin: 0;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--danger-strong) 55%, var(--text));
+}

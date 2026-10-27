@@ -62,6 +62,22 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
   return (await response.json()) as T;
 }
 
+//Scarica un file dall'API (per esempio un CSV): stesso token e stessi errori di apiFetch.
+//Serve una chiamata e non un semplice link, perché il token va nell'intestazione
+export async function apiDownload(path: string): Promise<Blob> {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${config.apiUrl}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!response.ok) {
+    throw new ApiError(response.status, await readProblem(response));
+  }
+
+  return response.blob();
+}
+
 //Legge il Problem Details dal corpo, se c'è ed è JSON; altrimenti null (per esempio un 401 senza corpo)
 async function readProblem(response: Response): Promise<ProblemDetails | null> {
   const contentType = response.headers.get('Content-Type') ?? '';

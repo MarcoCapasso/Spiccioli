@@ -1,13 +1,15 @@
 import { useState, type ReactNode } from 'react';
 import { errorMessage } from '../api/client';
 import { useCompleteOnboarding, useDefaultCategories, useProfile } from '../api/queries';
+import { useAuth } from '../auth/auth-context';
 import { Brand } from '../components/Brand';
 import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
+import { IconButton } from '../components/IconButton';
 import { ErrorState, Skeleton } from '../components/States';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { useToast } from '../components/toast-context';
 import { CATEGORY_COLORS } from '../palette';
+import { usePageTitle } from '../usePageTitle';
 
 //I due gruppi della schermata
 const GROUPS = [
@@ -17,9 +19,13 @@ const GROUPS = [
 
 //La cornice comune a tutti gli stati della schermata
 function Shell({ children }: { children: ReactNode }) {
+  const { signOut } = useAuth();
+
   return (
     <main className="onboarding">
-      <div className="onboarding-theme"><ThemeToggle /></div>
+      <div className="onboarding-theme">
+        <IconButton icon="logout" label="Esci" onClick={signOut} />
+      </div>
       <div className="onboarding-card">
         <Brand />
         {children}
@@ -31,6 +37,8 @@ function Shell({ children }: { children: ReactNode }) {
 //Il setup iniziale
 // l'utente sceglie le categorie con cui partire
 export function OnboardingPage() {
+  usePageTitle('Benvenuto');
+
   const categories = useDefaultCategories();
   const profile = useProfile();
   const complete = useCompleteOnboarding();

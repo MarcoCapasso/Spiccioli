@@ -1,18 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Spiccioli - Expense Tracker</title>
-    <script>
+    <meta name="description" content="Spiccioli: tieni sotto controllo entrate, uscite, spese ricorrenti e piano del mese." />
+        <script>
       try {
-        if (localStorage.getItem("spiccioli:theme") === "dark") {
-          document.documentElement.dataset.theme = "dark";
-        }
+        var saved = localStorage.getItem("spiccioli:theme");
+        var dark =
+          saved === "dark" ||
+          (saved !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
       } catch {}
     </script>
   </head>

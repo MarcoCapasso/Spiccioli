@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { authenticate } from "../auth/auth-action";
 import { AuthForm } from "../auth/AuthForm";
 import type { AuthFields, AuthMode } from "../auth/validation";
@@ -6,10 +7,13 @@ import { Alert } from "../components/Alert";
 import { Brand } from "../components/Brand";
 import { GoogleButton } from "../auth/GoogleButton";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { usePageTitle } from "../usePageTitle";
 
 //La schermata di accesso
 // il pannello di benvenuto a sinistra, il modulo a destra
 export function LoginPage() {
+  usePageTitle("Accedi");
+
   const [mode, setMode] = useState<AuthMode>("login");
   const [notice, setNotice] = useState<string | null>(null);
   const isRegister = mode === "register";
@@ -109,6 +113,13 @@ export function LoginPage() {
             <button type="button" className="switch-link" onClick={switchMode}>
               {isRegister ? "Accedi" : "Registrati"}
             </button>
+          </p>
+
+          {/* Come vengono trattati i dati: pagina pubblica */}
+          <p className="t-small auth-switch">
+            <Link className="switch-link" to="/privacy">
+              Informativa privacy
+            </Link>
           </p>
         </div>
       </section>

@@ -7,6 +7,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { OnboardingGate } from "./auth/OnboardingGate";
+import { PrivacyPage } from "./pages/PrivacyPage";
 
 //Le pagine dentro l'app si scaricano solo quando si aprono: le pagine hanno export con nome,
 //quindi si presenta l'export come "default", che è ciò che lazy si aspetta
@@ -24,6 +25,9 @@ const CategoriesPage = lazy(() =>
 );
 const PlanPage = lazy(() =>
   import("./pages/PlanPage").then((m) => ({ default: m.PlanPage })),
+);
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
 );
 const DesignSystemPage = import.meta.env.DEV
   ? lazy(() => import("./pages/DesignSystemPage").then((m) => ({ default: m.DesignSystemPage })))
@@ -53,12 +57,16 @@ function App() {
             <Route path="/spese-ricorrenti" element={<RecurringPage />} />
             <Route path="/categorie" element={<CategoriesPage />} />
             <Route path="/piano" element={<PlanPage />} />
+            <Route path="/impostazioni" element={<SettingsPage />} />
             {DesignSystemPage && (
               <Route path="/sviluppo" element={<DesignSystemPage />} />
             )}
           </Route>
         </Route>
       </Route>
+
+      {/* Pubblica: raggiungibile anche senza accedere */}
+      <Route path="/privacy" element={<PrivacyPage />} />
 
       {/* Qualunque altro indirizzo */}
       <Route path="*" element={<NotFoundPage />} />

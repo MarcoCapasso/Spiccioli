@@ -10,6 +10,7 @@ import { TransactionActionsProvider } from "../components/TransactionActionsProv
 import { SidebarUser } from "../components/SidebarUser";
 import { TopBar } from "./TopBar";
 import { useNewShortcut } from "../useNewShortcut";
+import { usePageTitle } from "../usePageTitle";
 
 type NavItem = { to: string; icon: IconName; label: string; subtitle: string };
 
@@ -44,6 +45,12 @@ const MAIN_NAV: NavItem[] = [
     icon: "tag",
     label: "Categorie",
     subtitle: "Organizza le tue spese",
+  },
+  {
+    to: "/impostazioni",
+    icon: "settings",
+    label: "Impostazioni",
+    subtitle: "Il tuo account e la privacy",
   },
 ];
 
@@ -99,9 +106,7 @@ function AppShell() {
   const closeMenu = () => setMenuOpen(false);
 
   //Il titolo della scheda del browser segue la pagina
-  useEffect(() => {
-    document.title = current ? `${current.label} · Spiccioli` : "Spiccioli";
-  }, [current]);
+  usePageTitle(current?.label);
 
   //Cambiando pagina si torna in cima: in questa modalità il router non lo fa da solo
   useEffect(() => {
