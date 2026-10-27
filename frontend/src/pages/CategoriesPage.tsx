@@ -6,6 +6,7 @@ import { Card } from '../components/Card';
 import { CategoryCard } from '../components/CategoryCard';
 import { CategoryModal } from '../components/CategoryModal';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { Fab } from '../components/Fab';
 import { EmptyState, ErrorState, Skeleton } from '../components/States';
 import { useToast } from '../components/toast-context';
 import type { CategoryResponse } from '../types';
@@ -164,6 +165,9 @@ export function CategoriesPage() {
               {showArchived && <div className="cat-grid">{archived.map(card)}</div>}
             </section>
           )}
+
+          {/* Il + del telefono: qui crea una categoria, non un movimento */}
+          <Fab icon="plus" label="Nuova categoria" onClick={() => setModal({ kind: 'new' })} />
         </>
       )}
 

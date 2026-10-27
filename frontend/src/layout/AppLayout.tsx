@@ -66,6 +66,9 @@ const DEV_NAV: NavItem[] = [
 
 const ALL_NAV = [...MAIN_NAV, ...DEV_NAV];
 
+//Il pulsante + dei movimenti compare solo qui: le altre pagine hanno il proprio, o nessuno
+const NEW_TRANSACTION_PATHS = ["/", "/movimenti"];
+
 type NavGroupProps = {
   items: NavItem[];
   //Chiamata quando si sceglie una voce: sul telefono chiude il menu
@@ -174,7 +177,9 @@ function AppShell() {
         </main>
       </div>
 
-      <Fab icon="plus" label="Nuovo movimento" onClick={openNew} />
+      {NEW_TRANSACTION_PATHS.includes(pathname) && (
+        <Fab icon="plus" label="Nuovo movimento" onClick={openNew} />
+      )}
     </div>
   );
 }

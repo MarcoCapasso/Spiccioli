@@ -38,6 +38,12 @@ const FIELD_ORDER = [
   "note",
 ] as const;
 
+//L'esempio nella descrizione cambia con il tipo di movimento
+const DESCRIPTION_PLACEHOLDER: Record<TransactionType, string> = {
+  Expense: "Es. Spesa al supermercato",
+  Income: "Es. Stipendio di ottobre",
+};
+
 function initialForm(transaction?: TransactionResponse): FormState {
   if (!transaction) {
     return {
@@ -221,7 +227,7 @@ export function TransactionModal({
           <Input
             id="tx-description"
             maxLength={200}
-            placeholder="Es. Spesa al supermercato"
+            placeholder={DESCRIPTION_PLACEHOLDER[form.type]}
             value={form.description}
             onChange={(e) => setField("description", e.target.value)}
             invalid={!!errors.description}

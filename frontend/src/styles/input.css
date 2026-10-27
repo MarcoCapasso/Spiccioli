@@ -95,9 +95,21 @@
   resize: vertical;
 }
 
-/* Il campo della data: meno spazio a destra, dove il browser mette il calendario */
+/* Il campo della data: meno spazio a destra, dove il browser mette il calendario.
+   Su iPhone il campo ha uno stile suo: lo togliamo, così rispetta la larghezza
+   degli altri campi e il testo parte da sinistra */
 input[type="date"].input {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   padding-right: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: left;
+}
+
+input[type="date"].input::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 /* Un pulsante dentro il campo, a destra: per mostrare la password */
