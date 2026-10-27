@@ -64,7 +64,6 @@ export function PlanCategories({ categories, colors, onAdd, onEdit, onPlan }: Pl
                   <span className="plan-row-name">
                     {dot}
                     {name}
-                    <Badge variant="neutral">Non pianificata</Badge>
                   </span>
                   <span className="plan-row-amounts num">
                     <b>{formatMoney(spent)}</b>
@@ -74,6 +73,10 @@ export function PlanCategories({ categories, colors, onAdd, onEdit, onPlan }: Pl
                       Pianifica
                     </Button>
                   )}
+                </div>
+                {/* Lo stato sotto, come nelle righe pianificate: sul telefono non c'è spazio per metterlo accanto al nome */}
+                <div className="plan-row-note">
+                  <Badge variant="neutral">Non pianificata</Badge>
                 </div>
               </li>
             );
