@@ -1,0 +1,4 @@
+**/bin
+**/obj
+Spiccioli.Api.Tests
+**/*.http

@@ -141,4 +141,21 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//Controllo di salute risponde 200 solo se anche il database risponde.
+// Lo chiama un servizio esterno ogni pochi minuti, per tenere svegli il server e il database
+app.MapMethods("/health", ["GET", "HEAD"], async (AppDbContext db, ILogger<Program> logger) =>
+{
+    try
+    {
+        //Una query vera, non solo l'apertura della connessione
+        await db.Users.AnyAsync();
+        return Results.Ok(new { status = "ok" });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Controllo di salute fallito: il database non risponde.");
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+    }
+}).AllowAnonymous();
+
 app.Run();
