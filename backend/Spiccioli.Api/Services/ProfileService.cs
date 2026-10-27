@@ -67,4 +67,27 @@ public class ProfileService : IProfileService
 
         return Result<UserResponse>.Success(UserResponse.FromUser(user));
     }
+
+    //Cambia il nome mostrato nell'app, senza toccare i dati di Google
+    public async Task<Result<UserResponse>> UpdateAsync(Guid userId, UpdateProfileRequest request)
+    {
+        var user = await _users.GetByIdAsync(userId);
+        if (user is null)
+        {
+            return Result<UserResponse>.Failure(Error.NotFound("Utente non trovato."));
+        }
+
+        //Il controllo dell'attributo non basta: gli spazi ai bordi si tolgono, e può restare un nome vuoto
+        var name = request.FirstName.Trim();
+        if (name.Length == 0)
+        {
+            return Result<UserResponse>.Failure(Error.Validation(
+                nameof(request.FirstName), "Il nome non può essere vuoto."));
+        }
+
+        user.FirstName = name;
+        await _users.SaveChangesAsync();
+
+        return Result<UserResponse>.Success(UserResponse.FromUser(user));
+    }
 }

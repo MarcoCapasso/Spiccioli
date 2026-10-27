@@ -25,6 +25,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
 builder.Services.AddScoped<IMonthlyBudgetRepository, MonthlyBudgetRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 //Service: stesso ciclo di vita dei Repository da cui dipendono
 builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -36,6 +37,11 @@ builder.Services.AddScoped<IPlannedPaymentSynchronizer, PlannedPaymentSynchroniz
 builder.Services.AddScoped<IPlannedPaymentService, PlannedPaymentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
+//Il client per le operazioni di amministrazione su Supabase (con timeout, per non restare appesi)
+builder.Services.AddHttpClient<ISupabaseAdminClient, SupabaseAdminClient>(client =>
+    client.Timeout = TimeSpan.FromSeconds(10));
 
 //Crea l'utente al primo accesso; la cache ricorda chi esiste già
 builder.Services.AddScoped<IUserProvisioner, UserProvisioner>();

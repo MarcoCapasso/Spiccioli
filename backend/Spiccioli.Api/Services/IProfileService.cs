@@ -11,4 +11,7 @@ public interface IProfileService
     //Crea le categorie scelte e chiude il setup, in un unico salvataggio;
     // Conflict se già completato, Validation se una categoria non è tra quelle proposte
     Task<Result<UserResponse>> CompleteOnboardingAsync(Guid userId, CompleteOnboardingRequest request);
+
+    //Cambia il nome mostrato; NotFound se l'account non esiste più, Validation se il nome è vuoto
+    Task<Result<UserResponse>> UpdateAsync(Guid userId, UpdateProfileRequest request);
 }

@@ -19,6 +19,9 @@ public class UserProvisioner : IUserProvisioner
         _cache = cache;
     }
 
+    //La chiave con cui si ricorda un utente già verificato; condivisa per poterla togliere alla cancellazione dell'account
+    public static string CacheKey(Guid userId) => $"user-exists:{userId}";
+
     public async Task EnsureExistsAsync(ClaimsPrincipal principal)
     {
         var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub)
@@ -26,7 +29,7 @@ public class UserProvisioner : IUserProvisioner
         var userId = Guid.Parse(subject);
 
         //Già verificato di recente: nessuna query
-        var cacheKey = $"user-exists:{userId}";
+        var cacheKey = CacheKey(userId);
         if (_cache.TryGetValue(cacheKey, out _))
         {
             return;

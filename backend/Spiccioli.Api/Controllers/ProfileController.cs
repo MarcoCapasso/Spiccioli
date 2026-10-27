@@ -31,6 +31,20 @@ public class ProfileController : ApiControllerBase
         return Ok(result.Value);
     }
 
+    //Cambia il nome mostrato: 200 con il profilo aggiornato, 400 se il nome non è valido
+    // PUT /api/me
+    [HttpPut]
+    public async Task<ActionResult<UserResponse>> Update(UpdateProfileRequest request)
+    {
+        var result = await _service.UpdateAsync(GetCurrentUserId(), request);
+        if (!result.IsSuccess)
+        {
+            return ToProblem(result.Error!);
+        }
+
+        return Ok(result.Value);
+    }
+
     //Le categorie proposte nell'onboarding: un elenco fisso, senza logica né database
     // GET /api/me/default-categories
     [HttpGet("default-categories")]
