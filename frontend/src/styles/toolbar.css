@@ -33,10 +33,11 @@
   width: auto;
 }
 
-/* Le due date, affiancate */
+/* Le due date, affiancate. min-width: 0 permette al blocco di restringersi sotto la larghezza naturale dei campi */
 .toolbar-dates {
   display: flex;
   gap: 10px;
+  min-width: 0;
 }
 
 .toolbar-date {
@@ -50,6 +51,7 @@
 .toolbar-date .input-wrap {
   flex: none;
   width: 100%;
+  min-width: 0;
 }
 
 .toolbar-label {
@@ -57,6 +59,8 @@
   font-weight: 550;
   font-size: 12px;
 }
+
+
 
 @media (max-width: 760px) {
   /* Ricerca e categoria: una riga ciascuna, a tutta larghezza */
@@ -72,11 +76,13 @@
   }
 
   .toolbar-date {
-    flex: 1;
+    flex: 1 1 0;
   }
 
-  .toolbar input[type="date"] {
+  /* Più specifica delle regole del campo, così i campi data si restringono davvero */
+  .toolbar .toolbar-date .input-wrap input[type="date"] {
     width: 100%;
     min-width: 0;
+    box-sizing: border-box;
   }
 }

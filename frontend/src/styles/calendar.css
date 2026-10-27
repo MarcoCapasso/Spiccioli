@@ -39,7 +39,11 @@
   gap: 10px;
 }
 
+/* Titolo in alto e importo in fondo: così gli importi restano allineati anche se un titolo va su due righe */
 .sched-sum-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 140px;
   padding: 10px 14px;
   border: 1px solid var(--border);
@@ -48,13 +52,15 @@
 }
 
 .sched-sum-value {
-  margin-top: 2px;
+  margin-top: auto;
   font-weight: 650;
   font-size: 18px;
 }
 
 .sched-sum-value.inc { color: var(--success-ink); }
 .sched-sum-value.exp { color: var(--danger-ink); }
+
+
 
 /* La griglia: sette colonne, le intestazioni dei giorni e poi le celle */
 .cal-grid {
