@@ -1,5 +1,7 @@
 # Spiccioli
 
+![Spiccioli: sai sempre dove vanno i tuoi soldi](branding/spiccioli-card.png)
+
 Un'app per tenere sotto controllo entrate e uscite, con un piano mensile e le spese ricorrenti.
 
 È un **progetto didattico**: nasce per imparare C#/.NET e React da zero, costruendo un'applicazione completa un passo alla volta. Il codice è ricco di commenti proprio per questo.
