@@ -20,6 +20,9 @@ public class AppDbContext : DbContext
     public DbSet<BudgetAllocation> BudgetAllocations => Set<BudgetAllocation>();
     public DbSet<RecurringExpense> RecurringExpenses => Set<RecurringExpense>();
     public DbSet<PlannedPayment> PlannedPayments => Set<PlannedPayment>();
+    public DbSet<VoucherSettings> VoucherSettings => Set<VoucherSettings>();
+    public DbSet<VoucherTopUp> VoucherTopUps => Set<VoucherTopUp>();
+    public DbSet<VoucherUsage> VoucherUsages => Set<VoucherUsage>();
 
 
     //Applica le regole definite nelle classi di configurazione
@@ -34,6 +37,9 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new BudgetAllocationConfiguration());
         modelBuilder.ApplyConfiguration(new RecurringExpenseConfiguration());
         modelBuilder.ApplyConfiguration(new PlannedPaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new VoucherSettingsConfiguration());
+        modelBuilder.ApplyConfiguration(new VoucherTopUpConfiguration());
+        modelBuilder.ApplyConfiguration(new VoucherUsageConfiguration());
         
     }
 

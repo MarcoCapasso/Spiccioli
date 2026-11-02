@@ -30,7 +30,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .OnDelete(DeleteBehavior.SetNull);
 
         //Lunghezza massima per la descrizione
-        builder.Property(t => t.Description).HasMaxLength(100);
+        builder.Property(t => t.Description).HasMaxLength(200);
 
         //Lunghezza massima per la nota
         builder.Property(t => t.Note).HasMaxLength(240);

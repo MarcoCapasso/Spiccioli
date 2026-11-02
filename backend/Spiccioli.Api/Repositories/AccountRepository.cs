@@ -35,6 +35,9 @@ public class AccountRepository : IAccountRepository
         await _context.BudgetAllocations.Where(b => b.MonthlyBudget!.UserId == userId).ExecuteDeleteAsync();
         await _context.MonthlyBudgets.Where(m => m.UserId == userId).ExecuteDeleteAsync();
         await _context.RecurringExpenses.Where(r => r.UserId == userId).ExecuteDeleteAsync();
+        await _context.VoucherUsages.Where(u => u.UserId == userId).ExecuteDeleteAsync();
+        await _context.VoucherTopUps.Where(t => t.UserId == userId).ExecuteDeleteAsync();
+        await _context.VoucherSettings.Where(s => s.UserId == userId).ExecuteDeleteAsync();
         await _context.Categories.Where(c => c.UserId == userId).ExecuteDeleteAsync();
         await _context.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();
 
