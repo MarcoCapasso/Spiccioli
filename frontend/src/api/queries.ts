@@ -25,6 +25,9 @@ import type {
   ScheduledPaymentResponse,
   MonthlyBudgetResponse,
   DashboardResponse,
+  VoucherSummaryResponse,
+  VoucherTopUpResponse,
+  VoucherUsageResponse,
 } from "../types";
 
 
@@ -56,6 +59,9 @@ export const queryKeys = {
   recurringExpenses: ['recurring-expenses'] as const,
   schedule: (year: number, month: number) => ["budgets", "schedule", year, month] as const,
   dashboard: (year: number, month: number) => ["budgets", "dashboard", year, month] as const,
+  voucherSummary: ["vouchers", "summary"] as const,
+  voucherTopUps: ["vouchers", "top-ups"] as const,
+  voucherUsages: ["vouchers", "usages"] as const,
 };
 
 //Il profilo dell'utente collegato: GET /api/me
@@ -468,3 +474,92 @@ export function useRemoveAllocation() {
   });
 }
 
+// ───────────── Buoni pasto ─────────────
+
+//Tutte le chiavi dei buoni iniziano con "vouchers": dopo ogni modifica si rileggono insieme
+function refreshVouchers(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: ["vouchers"] });
+}
+
+//Valore del buono, credito e buoni rimasti: GET /api/vouchers/summary
+export function useVoucherSummary() {
+  return useQuery({
+    queryKey: queryKeys.voucherSummary,
+    queryFn: () => apiFetch<VoucherSummaryResponse>("/api/vouchers/summary"),
+  });
+}
+
+//Le ricariche, dalla più recente: GET /api/vouchers/top-ups
+export function useVoucherTopUps() {
+  return useQuery({
+    queryKey: queryKeys.voucherTopUps,
+    queryFn: () => apiFetch<VoucherTopUpResponse[]>("/api/vouchers/top-ups"),
+  });
+}
+
+//I buoni usati, dal più recente: GET /api/vouchers/usages
+export function useVoucherUsages() {
+  return useQuery({
+    queryKey: queryKeys.voucherUsages,
+    queryFn: () => apiFetch<VoucherUsageResponse[]>("/api/vouchers/usages"),
+  });
+}
+
+//Imposta o cambia il valore del buono: PUT /api/vouchers/settings
+export function useSetVoucherValue() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (value: number) =>
+      apiFetch<VoucherSummaryResponse>("/api/vouchers/settings", { method: "PUT", body: { value } }),
+    onSuccess: () => refreshVouchers(queryClient),
+  });
+}
+
+//Ciò che il modulo invia per una ricarica
+export type VoucherTopUpInput = { date: IsoDate; amount: number };
+
+//Registra una ricarica: POST /api/vouchers/top-ups
+export function useAddVoucherTopUp() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: VoucherTopUpInput) =>
+      apiFetch<VoucherTopUpResponse>("/api/vouchers/top-ups", { method: "POST", body: input }),
+    onSuccess: () => refreshVouchers(queryClient),
+  });
+}
+
+//Elimina una ricarica: DELETE /api/vouchers/top-ups/{id} (409 se il credito non coprirebbe i buoni già usati)
+export function useDeleteVoucherTopUp() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => apiFetch<void>(`/api/vouchers/top-ups/${id}`, { method: "DELETE" }),
+    onSuccess: () => refreshVouchers(queryClient),
+  });
+}
+
+//Ciò che il modulo invia per registrare i buoni usati: solo il numero, l'importo lo calcola il backend
+export type VoucherUsageInput = { date: IsoDate; count: number; note: string | null };
+
+//Registra un uso: POST /api/vouchers/usages (400 se il credito non basta)
+export function useAddVoucherUsage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: VoucherUsageInput) =>
+      apiFetch<VoucherUsageResponse>("/api/vouchers/usages", { method: "POST", body: input }),
+    onSuccess: () => refreshVouchers(queryClient),
+  });
+}
+
+//Elimina un uso e restituisce il credito: DELETE /api/vouchers/usages/{id}
+export function useDeleteVoucherUsage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => apiFetch<void>(`/api/vouchers/usages/${id}`, { method: "DELETE" }),
+    onSuccess: () => refreshVouchers(queryClient),
+  });
+}

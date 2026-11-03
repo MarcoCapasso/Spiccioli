@@ -186,3 +186,36 @@ export type ScheduleResponse = {
   paidTotal: number;
   pendingTotal: number;
 };
+
+// ───────────── Buoni pasto ─────────────
+
+//GET /api/vouchers/summary
+export type VoucherSummaryResponse = {
+  //Il valore di un buono: null finché non lo imposti
+  unitValue: number | null;
+  //Credito residuo in euro: ricariche meno buoni usati
+  balance: number;
+  //Quanti buoni interi puoi ancora usare con il credito residuo
+  remainingVouchers: number;
+  totalTopUps: number;
+  totalUsed: number;
+};
+
+//Gli elementi di GET /api/vouchers/top-ups
+export type VoucherTopUpResponse = {
+  id: number;
+  date: IsoDate;
+  amount: number;
+};
+
+//Gli elementi di GET /api/vouchers/usages
+export type VoucherUsageResponse = {
+  id: number;
+  date: IsoDate;
+  count: number;
+  //Il valore del buono al momento dell'uso: cambiarlo dopo non altera lo storico
+  unitValue: number;
+  //count × unitValue
+  total: number;
+  note: string | null;
+};

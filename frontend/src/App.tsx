@@ -20,6 +20,9 @@ const TransactionsPage = lazy(() =>
 const RecurringPage = lazy(() =>
   import("./pages/RecurringPage").then((m) => ({ default: m.RecurringPage })),
 );
+const VouchersPage = lazy(() =>
+  import("./pages/VouchersPage").then((m) => ({ default: m.VouchersPage })),
+);
 const CategoriesPage = lazy(() =>
   import("./pages/CategoriesPage").then((m) => ({ default: m.CategoriesPage })),
 );
@@ -55,6 +58,7 @@ function App() {
             <Route path="/" element={<OverviewPage />} />
             <Route path="/movimenti" element={<TransactionsPage />} />
             <Route path="/spese-ricorrenti" element={<RecurringPage />} />
+            <Route path="/buoni-pasto" element={<VouchersPage />} />
             <Route path="/categorie" element={<CategoriesPage />} />
             <Route path="/piano" element={<PlanPage />} />
             <Route path="/impostazioni" element={<SettingsPage />} />

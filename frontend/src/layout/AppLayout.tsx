@@ -41,6 +41,12 @@ const MAIN_NAV: NavItem[] = [
     subtitle: "Abbonamenti, affitto e rate",
   },
   {
+    to: "/buoni-pasto",
+    icon: "coin",
+    label: "Buoni pasto",
+    subtitle: "Credito e buoni usati",
+  },
+  {
     to: "/categorie",
     icon: "tag",
     label: "Categorie",

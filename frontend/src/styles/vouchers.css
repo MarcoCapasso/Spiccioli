@@ -1,0 +1,74 @@
+/* ───────────── Buoni pasto ───────────── */
+
+/* I tagli classici del buono: si sceglie con un tocco */
+.voucher-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.voucher-chip {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, border-color .12s, color .12s;
+}
+
+.voucher-chip:hover {
+  background: var(--surface-2);
+}
+
+.voucher-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.voucher-chip.on {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary-ink);
+}
+
+/* Numero di buoni: − e + ai lati del campo */
+.voucher-stepper {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+}
+
+.voucher-stepper .btn {
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.voucher-stepper .input {
+  text-align: center;
+  font-weight: 700;
+}
+
+/* L'anteprima dell'uso: quanto vale e quanti buoni restano */
+.voucher-preview {
+  padding: 12px 14px;
+  border-radius: var(--r);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.voucher-preview b {
+  color: var(--text);
+}
+
+/* L'icona della riga: il numero di buoni, o + per una ricarica */
+.voucher-ico {
+  background: var(--primary-soft);
+  color: var(--primary-ink);
+  font-size: 16px;
+}

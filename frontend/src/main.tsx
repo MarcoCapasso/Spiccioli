@@ -46,6 +46,7 @@ import "./styles/calendar.css";
 import "./styles/plan.css";
 import "./styles/privacy.css";
 import "./styles/settings.css";
+import "./styles/vouchers.css";
 
 import { ToastProvider } from "./components/ToastProvider";
 import { AuthProvider } from "./auth/AuthProvider";
