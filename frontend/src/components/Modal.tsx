@@ -53,7 +53,17 @@ export function Modal({
     //che React fa in sviluppo: l'autoFocus parte una volta sola e verrebbe scavalcato
     const wanted = initialFocusId ? document.getElementById(initialFocusId) : null;
 
-    if (wanted && dialog.contains(wanted)) {
+    //Sul telefono il focus su un campo apre la tastiera, che copre il modulo:
+    //all'apertura il focus va alla finestra, e la tastiera compare solo toccando un campo
+    const touchScreen = window.matchMedia("(pointer: coarse)").matches;
+
+    if (touchScreen) {
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && dialog.contains(active)) {
+        active.blur();
+      }
+      dialog.focus({ preventScroll: true });
+    } else if (wanted && dialog.contains(wanted)) {
       wanted.focus();
     } else if (!dialog.contains(document.activeElement)) {
       const body = dialog.querySelector(".modal-body");
@@ -106,6 +116,8 @@ export function Modal({
       <div
         ref={dialogRef}
         className={classes}
+        tabIndex={-1}
+        style={{ outline: "none" }}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
