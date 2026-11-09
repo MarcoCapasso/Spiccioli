@@ -3,7 +3,7 @@ import { usePageTitle } from "../usePageTitle";
 
 const CONTACT_EMAIL = "zeke0097@gmail.com";
 const GITHUB_URL = "https://github.com/MarcoCapasso";
-const LAST_UPDATE = "27 ottobre 2026";
+const LAST_UPDATE = "9 novembre 2026";
 
 //L'informativa sul trattamento dei dati personali: pubblica, raggiungibile anche senza accedere
 export function PrivacyPage() {
@@ -80,6 +80,23 @@ export function PrivacyPage() {
         <p>
           Alcuni di questi fornitori possono trattare i dati anche fuori
           dall'Unione Europea, con le garanzie previste dal GDPR.
+        </p>
+      </section>
+
+      <section>
+        <h2>Come proteggo i tuoi testi</h2>
+        <p>
+          I testi che scrivi (descrizioni e note dei movimenti, nomi di
+          categorie, spese ricorrenti e scadenze) vengono cifrati prima di
+          essere salvati nel database: chi guardasse il database, o ne
+          avesse una copia, vedrebbe solo testo illeggibile. Importi, date e
+          il tuo indirizzo email restano in chiaro, perché servono per
+          calcolare i totali e farti accedere.
+        </p>
+        <p>
+          La cifratura non è «end-to-end»: l'app deve poter leggere i testi
+          per mostrarteli, quindi chi gestisce il servizio e custodisce la
+          chiave potrebbe tecnicamente leggerli. Mi impegno a non farlo.
         </p>
       </section>
 

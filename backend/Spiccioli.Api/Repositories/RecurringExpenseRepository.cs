@@ -19,12 +19,16 @@ public class RecurringExpenseRepository : IRecurringExpenseRepository
     public async Task<IReadOnlyList<RecurringExpense>> GetByUserAsync(Guid userId)
     {
         //Solo i pagamenti ricorrenti dell'utente
-        return await _context.RecurringExpenses
+        var expenses = await _context.RecurringExpenses
             .AsNoTracking()
             .Include(r => r.Category)
             .Where(r => r.UserId == userId)
-            .OrderBy(r => r.Name)
             .ToListAsync();
+
+        //Il nome è cifrato nel database: l'ordine alfabetico si fa qui, sui nomi già in chiaro
+        return expenses
+            .OrderBy(r => r.Name, StringComparer.InvariantCultureIgnoreCase)
+            .ToList();
     }
 
     //Senza AsNoTracking: il Service modifica la spesa (aggiornamento o terminazione)

@@ -29,11 +29,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasForeignKey<Transaction>(t => t.PlannedPaymentId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        //Lunghezza massima per la descrizione
-        builder.Property(t => t.Description).HasMaxLength(200);
-
-        //Lunghezza massima per la nota
-        builder.Property(t => t.Note).HasMaxLength(240);
-
+        //Descrizione e nota sono cifrate (vedi AppDbContext): le lunghezze massime (200 e 240)
+        //le controllano i DTO, perché il testo cifrato è più lungo di quello in chiaro
     }
 }

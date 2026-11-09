@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Spiccioli.Api.Common;
 using Spiccioli.Api.Models;
 using Spiccioli.Api.Data;
 
@@ -8,11 +9,13 @@ namespace Spiccioli.Api.Repositories;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly AppDbContext _context;
+    private readonly IFieldCipher _cipher;
 
-    //Dependency Injection per utilizzare DbContext
-    public CategoryRepository(AppDbContext context)
+    //Dependency Injection per utilizzare DbContext e il cifratore (serve per l'impronta dei nomi)
+    public CategoryRepository(AppDbContext context, IFieldCipher cipher)
     {
         _context = context;
+        _cipher = cipher;
     }
 
     public async Task<IReadOnlyList<Category>> GetByUserAsync(Guid userId, bool includeArchived)
@@ -28,9 +31,12 @@ public class CategoryRepository : ICategoryRepository
             query = query.Where(c => !c.IsArchived);
         }
 
-        return await query
-            .OrderBy(c => c.Name)
-            .ToListAsync();
+        //I nomi sono cifrati nel database: l'ordine alfabetico si fa qui, sui nomi già in chiaro
+        var categories = await query.ToListAsync();
+
+        return categories
+            .OrderBy(c => c.Name, StringComparer.InvariantCultureIgnoreCase)
+            .ToList();
     }
     
     public async Task<Category?> GetByIdAsync(int id, Guid userId)
@@ -42,10 +48,12 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> FindByNameAsync(Guid userId, string name)
     {
-        //il confronto avviene nel database
+        //Il nome è cifrato: il database confronta le impronte (senza maiuscole), non i nomi
+        var key = _cipher.BlindIndex(name);
+
         return await _context.Categories
             .AsNoTracking()
-            .Where(c => c.UserId == userId && c.Name.ToLower() == name.ToLower())
+            .Where(c => c.UserId == userId && c.NameKey == key)
             .FirstOrDefaultAsync();
     }
     

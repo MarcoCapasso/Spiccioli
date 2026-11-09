@@ -8,7 +8,7 @@ public class RecurringExpenseConfiguration : IEntityTypeConfiguration<RecurringE
 {
     public void Configure(EntityTypeBuilder<RecurringExpense> builder)
     {
-        builder.Property(r => r.Name).HasMaxLength(100);
+        //Il nome è cifrato (vedi AppDbContext): la lunghezza massima (100) la controllano i DTO
 
         //La categoria non si elimina ma archiviata
         builder.HasOne(r => r.Category)

@@ -9,7 +9,7 @@ public class PlannedPaymentConfiguration : IEntityTypeConfiguration<PlannedPayme
 {
     public void Configure(EntityTypeBuilder<PlannedPayment> builder)
     {
-        builder.Property(p => p.Name).HasMaxLength(100);
+        //Il nome è cifrato (vedi AppDbContext): la lunghezza massima (100) la controllano i DTO
 
         //Piano eliminato, i suoi pagamenti previsti spariscono con lui
         builder.HasOne(p => p.MonthlyBudget)

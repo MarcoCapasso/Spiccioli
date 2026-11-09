@@ -16,6 +16,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new InvalidOperationException(
         "Connection string 'DefaultConnection' mancante. Vedi README.");
         
+//La chiave con cui si cifrano i testi nel database: 32 byte casuali in base64.
+//In locale sta nei user-secrets, su Render nella variabile d'ambiente Encryption__Key.
+//Senza chiave l'app non parte: meglio fermarsi che salvare in chiaro. Se la perdi, i testi cifrati sono persi
+var encryptionKey = builder.Configuration["Encryption:Key"]
+    ?? throw new InvalidOperationException(
+        "Chiave 'Encryption:Key' mancante. Vedi README.");
+builder.Services.AddSingleton<IFieldCipher>(new FieldCipher(encryptionKey));
+
 //Registra il DbContext
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
@@ -120,6 +128,16 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+//Comando una tantum per cifrare i testi già salvati in chiaro: dotnet run -- --encrypt-existing
+//Cifra, controlla e si ferma, senza avviare il server
+if (args.Contains("--encrypt-existing"))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await EncryptionBackfill.RunAsync(db, Console.Out);
+    return;
+}
 
 if (!app.Environment.IsDevelopment())
 {

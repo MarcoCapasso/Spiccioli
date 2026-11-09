@@ -15,7 +15,6 @@ public class VoucherUsageConfiguration : IEntityTypeConfiguration<VoucherUsage>
             .HasForeignKey(u => u.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        //Lunghezza massima per la nota
-        builder.Property(u => u.Note).HasMaxLength(240);
+        //La nota è cifrata (vedi AppDbContext): la lunghezza massima (240) la controllano i DTO
     }
 }

@@ -68,8 +68,11 @@ namespace Spiccioli.Api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -79,7 +82,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "Name")
+                    b.HasIndex("UserId", "NameKey")
                         .IsUnique();
 
                     b.ToTable("Categories");
@@ -138,8 +141,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<int>("RecurringExpenseId")
                         .HasColumnType("integer");
@@ -176,8 +178,7 @@ namespace Spiccioli.Api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
@@ -213,12 +214,10 @@ namespace Spiccioli.Api.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(240)
-                        .HasColumnType("character varying(240)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("PlannedPaymentId")
                         .HasColumnType("integer");
@@ -326,8 +325,7 @@ namespace Spiccioli.Api.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(240)
-                        .HasColumnType("character varying(240)");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("UnitValue")
                         .HasPrecision(18, 2)
